@@ -287,17 +287,21 @@ class LMEXExchange(ExchangeProtocol):
             
             for item in positions_data:
                 symbol = item.get("symbol")
-                # qty is the position size (positive for long, negative for short)
-                qty = float(item.get("qty", 0))
-                avg_price = float(item.get("avgPrice", 0))
+                # LMEX uses 'size' field for position size
+                qty = float(item.get("size", 0))
+                avg_price = float(item.get("entryPrice", 0))
                 mark_price = float(item.get("markPrice", avg_price))
-                unrealized_pnl = float(item.get("unrealizedPnl", 0))
+                unrealized_pnl = float(item.get("unrealizedProfitLoss", 0))
                 
                 if symbol and qty != 0:
-                    # Calculate PnL percentage
+                    # Calculate PnL percentage based on entry value
                     pnl_percentage = 0.0
-                    if avg_price != 0 and qty != 0:
-                        pnl_percentage = (unrealized_pnl / (avg_price * abs(qty))) * 100
+                    if avg_price != 0:
+                        # Get contract size for proper calculation
+                        contract_size = float(item.get("contractSize", 0.01))
+                        position_value = avg_price * abs(qty) * contract_size
+                        if position_value > 0:
+                            pnl_percentage = (unrealized_pnl / position_value) * 100
 
                     positions.append(
                         ExchangePosition(

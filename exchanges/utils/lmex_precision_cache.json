@@ -1,1167 +1,779 @@
 {
-  "precision_cache": {
+  "last_update": "2025-07-22T08:22:48.839357",
+  "symbols": {
     "SKL-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 10400000.0,
+      "tick_size": 1e-05
     },
     "SAND-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 300000.0,
+      "tick_size": 1e-05
     },
     "PYTH-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 1000000.0,
+      "tick_size": 1e-05
     },
     "PEOPLE-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 13600000.0,
+      "tick_size": 1e-05
     },
     "ONE-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 14800000.0,
+      "tick_size": 1e-05
     },
     "1KPEPE-PERP": {
-      "price_decimal": 7,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-07,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 15000000.0,
+      "tick_size": 1e-07
     },
     "1KSHIB-PERP": {
-      "price_decimal": 6,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-06,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 5000000.0,
+      "tick_size": 1e-06
     },
     "1KCAT-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 750000.0,
+      "tick_size": 1e-05
     },
     "PUMP-PERP": {
-      "price_decimal": 6,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-06,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 20000000.0,
+      "tick_size": 1e-06
     },
     "1KBONK-PERP": {
-      "price_decimal": 6,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-06,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 1000000.0,
+      "tick_size": 1e-06
     },
     "DOGE-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 3000000.0,
+      "tick_size": 1e-06
     },
     "CHZ-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 3000000.0,
+      "tick_size": 1e-05
     },
     "CELR-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 22000000.0,
+      "tick_size": 1e-05
     },
     "ZEREBRO-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 75000.0,
+      "tick_size": 0.0001
     },
     "W-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 500000.0,
+      "tick_size": 0.0001
     },
     "WLD-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 10000.0,
+      "tick_size": 0.0001
     },
     "WIF-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 1000000.0,
+      "tick_size": 0.0001
     },
     "VIRTUAL-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 400000.0,
+      "tick_size": 0.0001
     },
     "BOME-PERP": {
-      "price_decimal": 6,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-06,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 2500000.0,
+      "tick_size": 1e-06
     },
     "UNI-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 40000.0,
+      "tick_size": 0.0001
     },
     "STORJ-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 920000.0,
+      "tick_size": 0.0001
     },
     "S-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 40000.0,
+      "tick_size": 0.0001
     },
     "SEI-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 200000.0,
+      "tick_size": 0.0001
     },
     "SAGA-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 150000.0,
+      "tick_size": 0.0001
     },
     "POPCAT-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 10000.0,
+      "tick_size": 0.0001
     },
     "POL-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 150000.0,
+      "tick_size": 0.0001
     },
     "PHA-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 100000.0,
+      "tick_size": 0.0001
     },
     "PENDLE-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 10000.0,
+      "tick_size": 0.0001
     },
     "OP-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 2800000.0,
+      "tick_size": 0.0001
     },
     "ONDO-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 500000.0,
+      "tick_size": 0.0001
     },
     "NFP-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 150000.0,
+      "tick_size": 0.0001
     },
     "NEAR-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 50000.0,
+      "tick_size": 0.0001
     },
     "MOVE-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 100000.0,
+      "tick_size": 0.0001
     },
     "GRASS-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 400000.0,
+      "tick_size": 0.0001
     },
     "GOAT-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 500000.0,
+      "tick_size": 0.0001
     },
     "GLM-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 50000.0,
+      "tick_size": 0.0001
     },
     "FIL-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 760000.0,
+      "tick_size": 0.0001
     },
     "FET-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 25000.0,
+      "tick_size": 0.0001
     },
     "ENA-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 50000.0,
+      "tick_size": 0.0001
     },
     "CTSI-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 2600000.0,
+      "tick_size": 0.0001
     },
     "CRV-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 2800000.0,
+      "tick_size": 0.0001
     },
     "CHR-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 2200000.0,
+      "tick_size": 0.0001
     },
     "C98-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 2400000.0,
+      "tick_size": 0.0001
     },
     "BB-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 100000.0,
+      "tick_size": 0.0001
     },
     "ATH-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 300000.0,
+      "tick_size": 0.0001
     },
     "ARKM-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 75000.0,
+      "tick_size": 0.0001
     },
     "ENJ-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 720000.0,
+      "tick_size": 0.0001
     },
     "BAT-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 13800000.0,
+      "tick_size": 0.0001
     },
     "ARB-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 3400000.0,
+      "tick_size": 0.0001
     },
     "ALGO-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 15800000.0,
+      "tick_size": 0.0001
     },
     "AIXBT-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 50000.0,
+      "tick_size": 0.0001
     },
     "AI-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 50000.0,
+      "tick_size": 0.0001
     },
     "AI16Z-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 25000.0,
+      "tick_size": 0.0001
     },
     "1INCH-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 500000.0,
+      "tick_size": 0.0001
     },
     "JASMY-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 1000000.0,
+      "tick_size": 1e-06
     },
     "IOTX-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 2000000.0,
+      "tick_size": 1e-05
     },
     "JUP-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 50000.0,
+      "tick_size": 0.0001
     },
     "JTO-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 5000.0,
+      "tick_size": 0.0001
     },
     "LINK-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.01,
+      "min_qty": 1.0,
+      "max_qty": 1000000.0,
+      "tick_size": 0.0001
     },
     "KNC-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 440000.0,
+      "tick_size": 0.0001
     },
     "GRT-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 3600000.0,
+      "tick_size": 1e-05
     },
     "APT-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 260000.0,
+      "tick_size": 0.0001
     },
     "APE-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 20000.0,
+      "tick_size": 0.0001
     },
     "GALA-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 7400000.0,
+      "tick_size": 1e-05
     },
     "1KFLOKI-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 500000.0,
+      "tick_size": 1e-05
     },
     "DOT-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 300000.0,
+      "tick_size": 0.0001
     },
     "LDO-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 194000.0,
+      "tick_size": 0.0001
     },
     "KAS-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 2500000.0,
+      "tick_size": 1e-06
     },
     "MANA-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 500000.0,
+      "tick_size": 0.0001
     },
     "GMT-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 760000.0,
+      "tick_size": 0.0001
     },
     "ADA-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 500000.0,
+      "tick_size": 1e-05
     },
     "IMX-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 20000.0,
+      "tick_size": 0.0001
     },
     "AXS-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 24000.0,
+      "tick_size": 0.0001
     },
     "NOT-PERP": {
-      "price_decimal": 6,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-06,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 1500000.0,
+      "tick_size": 1e-06
     },
     "ZEN-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 15000.0,
+      "tick_size": 0.001
     },
     "VANA-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 40000.0,
+      "tick_size": 0.001
     },
     "TRUMP-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 5000.0,
+      "tick_size": 0.001
     },
     "SOL-PERP": {
-      "price_decimal": 1,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.1,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.01,
+      "min_qty": 1.0,
+      "max_qty": 500000.0,
+      "tick_size": 0.001
     },
     "SNX-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 1200000.0,
+      "tick_size": 0.001
     },
     "RUNE-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 50000.0,
+      "tick_size": 0.001
     },
     "RENDER-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 25000.0,
+      "tick_size": 0.001
     },
     "ORDI-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 50000.0,
+      "tick_size": 0.001
     },
     "NEO-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.01,
+      "min_qty": 1.0,
+      "max_qty": 500000.0,
+      "tick_size": 0.001
     },
     "MASK-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 88000.0,
+      "tick_size": 0.001
     },
     "LPT-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 10000.0,
+      "tick_size": 0.001
     },
     "IO-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 50000.0,
+      "tick_size": 0.001
     },
     "INJ-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 25000.0,
+      "tick_size": 0.001
     },
     "HYPE-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 25000.0,
+      "tick_size": 0.001
     },
     "ETHFI-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 200000.0,
+      "tick_size": 0.001
     },
     "ETC-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.01,
+      "min_qty": 1.0,
+      "max_qty": 150000.0,
+      "tick_size": 0.001
     },
     "ENS-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 260000.0,
+      "tick_size": 0.001
     },
     "DYDX-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 2200000.0,
+      "tick_size": 0.001
     },
     "BAND-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 1880000.0,
+      "tick_size": 0.001
     },
     "AVAX-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.01,
+      "min_qty": 1.0,
+      "max_qty": 2200000.0,
+      "tick_size": 0.001
     },
     "ATOM-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.01,
+      "min_qty": 1.0,
+      "max_qty": 1200000.0,
+      "tick_size": 0.001
     },
     "AR-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 15000.0,
+      "tick_size": 0.001
     },
     "ALICE-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 2000000.0,
+      "tick_size": 0.001
     },
     "TRX-PERP": {
-      "price_decimal": 6,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-06,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 3000000.0,
+      "tick_size": 1e-06
     },
     "TRU-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 100000.0,
+      "tick_size": 1e-05
     },
     "TOKEN-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 20000000.0,
+      "tick_size": 1e-05
     },
     "TON-PERP": {
-      "price_decimal": 3,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 100000.0,
+      "tick_size": 0.0001
     },
     "TIA-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 200000.0,
+      "tick_size": 0.0001
     },
     "THETA-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 250000.0,
+      "tick_size": 0.0001
     },
     "SUSHI-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 320000.0,
+      "tick_size": 0.0001
     },
     "SUI-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 150000.0,
+      "tick_size": 0.0001
     },
     "STX-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 100000.0,
+      "tick_size": 0.0001
     },
     "YFI-PERP": {
-      "price_decimal": 0,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.001,
+      "min_qty": 1.0,
+      "max_qty": 36000.0,
+      "tick_size": 0.01
     },
     "ZIL-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 9000000.0,
+      "tick_size": 1e-05
     },
     "XRP-PERP": {
-      "price_decimal": 5,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1e-05,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 1000000.0,
+      "tick_size": 1e-05
     },
     "ZK-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1.0,
+      "min_qty": 1.0,
+      "max_qty": 50000.0,
+      "tick_size": 0.0001
     },
     "XTZ-PERP": {
-      "price_decimal": 4,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.0001,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 2600000.0,
+      "tick_size": 0.0001
     },
     "XMR-PERP": {
-      "price_decimal": 1,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.1,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.001,
+      "min_qty": 1.0,
+      "max_qty": 2400000.0,
+      "tick_size": 0.01
     },
     "TRB-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 35000.0,
+      "tick_size": 0.01
     },
     "TAO-PERP": {
-      "price_decimal": 1,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.1,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.001,
+      "min_qty": 1.0,
+      "max_qty": 50000.0,
+      "tick_size": 0.01
     },
     "PAXG-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.0001,
+      "min_qty": 1.0,
+      "max_qty": 100000.0,
+      "tick_size": 0.01
     },
     "MKR-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.001,
+      "min_qty": 1.0,
+      "max_qty": 380000.0,
+      "tick_size": 0.01
     },
     "LTC-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.01,
+      "min_qty": 1.0,
+      "max_qty": 1000000.0,
+      "tick_size": 0.01
     },
     "KSM-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 110000.0,
+      "tick_size": 0.01
     },
     "ETH-251226": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.0001,
+      "min_qty": 1.0,
+      "max_qty": 100000.0,
+      "tick_size": 0.01
     },
     "ETH-250926": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.0001,
+      "min_qty": 1.0,
+      "max_qty": 100000.0,
+      "tick_size": 0.01
     },
     "ETH-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.0001,
+      "min_qty": 1.0,
+      "max_qty": 10000000.0,
+      "tick_size": 0.01
     },
     "EGLD-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.1,
+      "min_qty": 1.0,
+      "max_qty": 88000.0,
+      "tick_size": 0.01
     },
     "COMP-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.001,
+      "min_qty": 1.0,
+      "max_qty": 6600000.0,
+      "tick_size": 0.01
     },
     "BNB-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.001,
+      "min_qty": 1.0,
+      "max_qty": 1200000.0,
+      "tick_size": 0.01
     },
     "BCH-PERP": {
-      "price_decimal": 1,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.1,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.001,
+      "min_qty": 1.0,
+      "max_qty": 1400000.0,
+      "tick_size": 0.01
     },
     "AAVE-PERP": {
-      "price_decimal": 2,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.01,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 0.01,
+      "min_qty": 1.0,
+      "max_qty": 460000.0,
+      "tick_size": 0.01
     },
     "BTC-251226": {
-      "price_decimal": 1,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.1,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1e-05,
+      "min_qty": 1.0,
+      "max_qty": 100000.0,
+      "tick_size": 0.1
     },
     "BTC-250926": {
-      "price_decimal": 0,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 1,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1e-05,
+      "min_qty": 1.0,
+      "max_qty": 100000.0,
+      "tick_size": 0.1
     },
     "BTC-PERP": {
-      "price_decimal": 1,
-      "qty_decimal": 0,
-      "min_qty": 1,
-      "tick_size": 0.1,
-      "step_size": 1,
-      "max_leverage": 100,
-      "maintenance_margin_rate": 0.005
+      "contract_size": 1e-05,
+      "min_qty": 1.0,
+      "max_qty": 7500000.0,
+      "tick_size": 0.1
     }
-  },
-  "last_update": "2025-07-21T08:01:21.369499",
-  "version": "1.0"
+  }
 }
