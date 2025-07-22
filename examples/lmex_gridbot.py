@@ -3,9 +3,9 @@
 Test LMEX Grid Bot Creation
 
 This script tests the creation of a grid bot on LMEX with the following parameters:
-- Symbol: SOL-PERP (LONG)
-- Upper Price: 204.72
-- Lower Price: 193.99
+- Symbol: LTC-PERP (LONG)
+- Upper Price: 117.06
+- Lower Price: 112.69
 - Grid Number: 200
 - Initial Margin: 200 USDT
 - Leverage: 100x
@@ -51,10 +51,10 @@ def main(test_mode=False):
     lmex = LMEXExchange()
     
     # Grid bot parameters (matching the working curl command)
-    symbol = "SOL-PERP"
+    symbol = "LTC-PERP"
     direction = "LONG"
-    upper_price = 204.72  # Will be formatted based on symbol precision
-    lower_price = 193.99  # Will be formatted based on symbol precision
+    upper_price = 117.06  # Will be formatted based on symbol precision
+    lower_price = 112.69  # Will be formatted based on symbol precision
     grid_number = 200
     initial_margin = 200  # USDT
     leverage = 100  # Matching the curl command
@@ -163,11 +163,11 @@ def main(test_mode=False):
     if bots_result["completed"] and not bots_result["error"] and bots_result["data"]:
         print(f"\n📈 Total grid bots found: {len(bots_result['data'])}")
         
-        # Find and display the SOL bot
-        sol_bots = [bot for bot in bots_result["data"] if bot.get("symbol") == symbol]
-        if sol_bots:
+        # Find and display the LTC bot
+        ltc_bots = [bot for bot in bots_result["data"] if bot.get("symbol") == symbol]
+        if ltc_bots:
             print(f"\n🔍 {symbol} grid bots:")
-            for bot in sol_bots:
+            for bot in ltc_bots:
                 print(f"\n  Bot ID: {bot.get('tradingBotId')}")
                 print(f"  Direction: {bot.get('direction', 'N/A')}")
                 print(f"  Entry Price: ${bot.get('entryPrice', 0):,.2f}")
