@@ -1,0 +1,1167 @@
+{
+  "precision_cache": {
+    "SKL-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "SAND-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "PYTH-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "PEOPLE-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ONE-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "1KPEPE-PERP": {
+      "price_decimal": 7,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-07,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "1KSHIB-PERP": {
+      "price_decimal": 6,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-06,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "1KCAT-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "PUMP-PERP": {
+      "price_decimal": 6,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-06,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "1KBONK-PERP": {
+      "price_decimal": 6,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-06,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "DOGE-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "CHZ-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "CELR-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ZEREBRO-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "W-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "WLD-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "WIF-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "VIRTUAL-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "BOME-PERP": {
+      "price_decimal": 6,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-06,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "UNI-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "STORJ-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "S-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "SEI-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "SAGA-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "POPCAT-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "POL-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "PHA-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "PENDLE-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "OP-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ONDO-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "NFP-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "NEAR-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "MOVE-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "GRASS-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "GOAT-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "GLM-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "FIL-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "FET-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ENA-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "CTSI-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "CRV-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "CHR-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "C98-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "BB-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ATH-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ARKM-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ENJ-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "BAT-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ARB-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ALGO-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "AIXBT-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "AI-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "AI16Z-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "1INCH-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "JASMY-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "IOTX-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "JUP-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "JTO-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "LINK-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "KNC-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "GRT-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "APT-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "APE-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "GALA-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "1KFLOKI-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "DOT-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "LDO-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "KAS-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "MANA-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "GMT-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ADA-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "IMX-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "AXS-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "NOT-PERP": {
+      "price_decimal": 6,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-06,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ZEN-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "VANA-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "TRUMP-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "SOL-PERP": {
+      "price_decimal": 1,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.1,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "SNX-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "RUNE-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "RENDER-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ORDI-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "NEO-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "MASK-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "LPT-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "IO-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "INJ-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "HYPE-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ETHFI-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ETC-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ENS-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "DYDX-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "BAND-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "AVAX-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ATOM-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "AR-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ALICE-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "TRX-PERP": {
+      "price_decimal": 6,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-06,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "TRU-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "TOKEN-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "TON-PERP": {
+      "price_decimal": 3,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "TIA-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "THETA-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "SUSHI-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "SUI-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "STX-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "YFI-PERP": {
+      "price_decimal": 0,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ZIL-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "XRP-PERP": {
+      "price_decimal": 5,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1e-05,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ZK-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "XTZ-PERP": {
+      "price_decimal": 4,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.0001,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "XMR-PERP": {
+      "price_decimal": 1,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.1,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "TRB-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "TAO-PERP": {
+      "price_decimal": 1,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.1,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "PAXG-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "MKR-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "LTC-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "KSM-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ETH-251226": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ETH-250926": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "ETH-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "EGLD-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "COMP-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "BNB-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "BCH-PERP": {
+      "price_decimal": 1,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.1,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "AAVE-PERP": {
+      "price_decimal": 2,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.01,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "BTC-251226": {
+      "price_decimal": 1,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.1,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "BTC-250926": {
+      "price_decimal": 0,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 1,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    },
+    "BTC-PERP": {
+      "price_decimal": 1,
+      "qty_decimal": 0,
+      "min_qty": 1,
+      "tick_size": 0.1,
+      "step_size": 1,
+      "max_leverage": 100,
+      "maintenance_margin_rate": 0.005
+    }
+  },
+  "last_update": "2025-07-21T08:01:21.369499",
+  "version": "1.0"
+}

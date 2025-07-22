@@ -1,0 +1,3002 @@
+{
+  "precision_cache": {
+    "BTCUSDT": {
+      "basePrecision": 4,
+      "quotePrecision": 1,
+      "minTradeVolume": "0.0001",
+      "maxLimitOrderVolume": "1000",
+      "symbolStatus": "OPEN"
+    },
+    "ETHUSDT": {
+      "basePrecision": 3,
+      "quotePrecision": 2,
+      "minTradeVolume": "0.003",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "BNBUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 2,
+      "minTradeVolume": "0.01",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "XRPUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "2",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "ADAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "15",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "LTCUSDT": {
+      "basePrecision": 3,
+      "quotePrecision": 2,
+      "minTradeVolume": "0.053",
+      "maxLimitOrderVolume": "10000",
+      "symbolStatus": "OPEN"
+    },
+    "DOGEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "53",
+      "maxLimitOrderVolume": "50000000",
+      "symbolStatus": "OPEN"
+    },
+    "SOLUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "0.2",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "DOTUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.8",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "AVAXUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 3,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "TRXUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "150",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "LINKUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "200000",
+      "symbolStatus": "OPEN"
+    },
+    "ATOMUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "ETCUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.5",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "UNIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 3,
+      "minTradeVolume": "2",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "XLMUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "80",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "ICPUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 3,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "FILUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "2",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "BCHUSDT": {
+      "basePrecision": 3,
+      "quotePrecision": 2,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "10000",
+      "symbolStatus": "OPEN"
+    },
+    "APTUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "BATUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "50",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "DYDXUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "4",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "ARBUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "9",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "APEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "2.5",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "LDOUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "CRVUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "12",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "MASKUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "2.5",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "VETUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "250",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "NEARUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 3,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "AAVEUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 2,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "GRTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "25",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "OPUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "8",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "EGLDUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.2",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "STXUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "200",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "SANDUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 5,
+      "minTradeVolume": "30",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "ALGOUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "50",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "SUIUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "IMXUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "15",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "MKRUSDT": {
+      "basePrecision": 3,
+      "quotePrecision": 1,
+      "minTradeVolume": "0.01",
+      "maxLimitOrderVolume": "10000",
+      "symbolStatus": "OPEN"
+    },
+    "SNXUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "3.5",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "GALAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "420",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "THETAUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "4",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "MANAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "27",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "XTZUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "13",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "AXSUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 3,
+      "minTradeVolume": "2",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "COMPUSDT": {
+      "basePrecision": 3,
+      "quotePrecision": 2,
+      "minTradeVolume": "0.19",
+      "maxLimitOrderVolume": "10000",
+      "symbolStatus": "OPEN"
+    },
+    "CYBERUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "1.4",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "WLDUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "6",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "TRBUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.2",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "RUNEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 3,
+      "minTradeVolume": "6",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "BIGTIMEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "500",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "INJUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.8",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "CAKEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "CELOUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "7",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "XAIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "64",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "ORDIUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "JTOUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "TIAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "0.7",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "ENSUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.4",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "1000RATSUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "25",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "PEOPLEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "210",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "SEIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "AIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "1000BONKUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "300",
+      "maxLimitOrderVolume": "40000000",
+      "symbolStatus": "OPEN"
+    },
+    "MEMEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "2270",
+      "maxLimitOrderVolume": "50000000",
+      "symbolStatus": "OPEN"
+    },
+    "ACEUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 4,
+      "minTradeVolume": "0.8",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "1000SATSUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 7,
+      "minTradeVolume": "94000",
+      "maxLimitOrderVolume": "1000000000",
+      "symbolStatus": "OPEN"
+    },
+    "PYTHUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "400000",
+      "symbolStatus": "OPEN"
+    },
+    "NFPUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "BLURUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "15",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "TUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "250",
+      "maxLimitOrderVolume": "50000000",
+      "symbolStatus": "OPEN"
+    },
+    "GMTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "89",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "1000PEPEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 7,
+      "minTradeVolume": "790",
+      "maxLimitOrderVolume": "800000000",
+      "symbolStatus": "OPEN"
+    },
+    "BAKEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "23.89",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "1000SHIBUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "1020",
+      "maxLimitOrderVolume": "800000000",
+      "symbolStatus": "OPEN"
+    },
+    "CFXUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "41",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "MOVRUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.39",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "BSVUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 2,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "NTRNUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "6",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "MINAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "7",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "AUCTIONUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.3",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "1000LUNCUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "100",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "ARUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.5",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "SSVUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.27",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "MAGICUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "7.2",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "CHZUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "88",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "POWRUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "28",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "PERPUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "8",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "LUNA2USDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "14",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "PENDLEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "3",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "LPTUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.6",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "1INCHUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "21",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "FETUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "4",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "ASTRUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "56",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "WOOUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "22",
+      "maxLimitOrderVolume": "1250000",
+      "symbolStatus": "OPEN"
+    },
+    "TOKENUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "215",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "USTCUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "350",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "ROSEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "150",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "RDNTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "200",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "BEAMXUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "649",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "SKLUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "106",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "GASUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "1.5",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "MAVUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "18",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "DUSKUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "34",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "FLOWUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "10.4",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "STORJUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "13",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "NEOUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.77",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "ZENUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.9",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "OGNUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "56",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "ONTUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "37",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "HBARUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "100",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "C98USDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "27",
+      "maxLimitOrderVolume": "2500000",
+      "symbolStatus": "OPEN"
+    },
+    "ETHWUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "3",
+      "maxLimitOrderVolume": "50000",
+      "symbolStatus": "OPEN"
+    },
+    "PHBUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "100",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "SUSHIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "7",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "ARPAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "125",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "KSMUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.2",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "IDUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "16",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "CHRUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "21",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "HOOKUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "9",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "ARKMUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "4",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "HIGHUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "6",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "AGLDUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "6",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "JOEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "13",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "KASUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "80",
+      "maxLimitOrderVolume": "8000000",
+      "symbolStatus": "OPEN"
+    },
+    "ZRXUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "9",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "KAVAUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "12",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "SXPUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "25",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "FXSUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "2",
+      "maxLimitOrderVolume": "300000",
+      "symbolStatus": "OPEN"
+    },
+    "ARKUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "HFTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "25",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "JASMYUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "500",
+      "maxLimitOrderVolume": "50000000",
+      "symbolStatus": "OPEN"
+    },
+    "ONGUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "27",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "IOTAUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "30",
+      "maxLimitOrderVolume": "80000000",
+      "symbolStatus": "OPEN"
+    },
+    "QTUMUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "3",
+      "maxLimitOrderVolume": "500000",
+      "symbolStatus": "OPEN"
+    },
+    "YFIUSDT": {
+      "basePrecision": 3,
+      "quotePrecision": 0,
+      "minTradeVolume": "0.001",
+      "maxLimitOrderVolume": "500",
+      "symbolStatus": "OPEN"
+    },
+    "SUPERUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "8",
+      "maxLimitOrderVolume": "250000",
+      "symbolStatus": "OPEN"
+    },
+    "ZILUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "300",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "LRCUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "25",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "GMXUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.2",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "LEVERUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 7,
+      "minTradeVolume": "9242",
+      "maxLimitOrderVolume": "100000000",
+      "symbolStatus": "OPEN"
+    },
+    "RIFUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "40",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "1000FLOKIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "50",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "HOTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "4545",
+      "maxLimitOrderVolume": "50000000",
+      "symbolStatus": "OPEN"
+    },
+    "LQTYUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "7",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "ANKRUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "250",
+      "maxLimitOrderVolume": "60000000",
+      "symbolStatus": "OPEN"
+    },
+    "POLYXUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "25",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "FLMUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "80",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "ENJUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "20",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "ALICEUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "6",
+      "maxLimitOrderVolume": "50000",
+      "symbolStatus": "OPEN"
+    },
+    "RSRUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "1100",
+      "maxLimitOrderVolume": "50000000",
+      "symbolStatus": "OPEN"
+    },
+    "ALPHAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "65",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "HIFIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "NKNUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "138",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "MTLUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "API3USDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "3",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "GTCUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "QNTUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 2,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "WIFUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "3.5",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "JUPUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "8",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "BOMEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "2500",
+      "maxLimitOrderVolume": "200000000",
+      "symbolStatus": "OPEN"
+    },
+    "ONDOUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "20",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "ETHFIUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "1.5",
+      "maxLimitOrderVolume": "10000",
+      "symbolStatus": "OPEN"
+    },
+    "WUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "ENAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "PIXELUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "15",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "EDUUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "12",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "CTSIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "40",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "KNCUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "15",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "ONEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "370",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "AEVOUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "4",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "TONUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "1.5",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "ZETAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "SAGAUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "2",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "OMNIUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.3",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "TAOUSDT": {
+      "basePrecision": 3,
+      "quotePrecision": 2,
+      "minTradeVolume": "0.02",
+      "maxLimitOrderVolume": "300",
+      "symbolStatus": "OPEN"
+    },
+    "TNSRUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "OMUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 5,
+      "minTradeVolume": "15",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "BNTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "13",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "CKBUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "1000",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "MANTAUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "ACHUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "300",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "YGGUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "15",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "REZUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "70",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "CELRUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "500",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "STRKUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "8",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "TLMUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "890",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "DYMUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "4",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "GLMUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "20",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "BBUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "25",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "UMAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 3,
+      "minTradeVolume": "4",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "LSKUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "6",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "NOTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "1800",
+      "maxLimitOrderVolume": "30000000",
+      "symbolStatus": "OPEN"
+    },
+    "BICOUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "20",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "VANRYUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "50",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "AXLUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "BANDUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "NMRUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.3",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "IOTXUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "180",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "SPELLUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 7,
+      "minTradeVolume": "10500",
+      "maxLimitOrderVolume": "500000000",
+      "symbolStatus": "OPEN"
+    },
+    "DENTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "611",
+      "maxLimitOrderVolume": "500000000",
+      "symbolStatus": "OPEN"
+    },
+    "TURBOUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 7,
+      "minTradeVolume": "1500",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "RVNUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "350",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "TRUUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "50",
+      "maxLimitOrderVolume": "300000000",
+      "symbolStatus": "OPEN"
+    },
+    "MYROUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "40",
+      "maxLimitOrderVolume": "100000000",
+      "symbolStatus": "OPEN"
+    },
+    "ALTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "40",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "STGUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "20",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "ILVUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "10000",
+      "symbolStatus": "OPEN"
+    },
+    "IOUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "2",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "ZKUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "50",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "IOSTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "1400",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "ZROUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "3",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "LISTAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "15",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "TWTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "9",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "MEWUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "2000",
+      "maxLimitOrderVolume": "50000000",
+      "symbolStatus": "OPEN"
+    },
+    "SFPUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "12",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "ICXUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "63",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "WAXPUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "250",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "OXTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "120",
+      "maxLimitOrderVolume": "100000000",
+      "symbolStatus": "OPEN"
+    },
+    "RENDERUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "2.1",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "COTIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "125",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "RAREUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "83",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "BANANAUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.2",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "SYNUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "20",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "DOGSUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 7,
+      "minTradeVolume": "27900",
+      "maxLimitOrderVolume": "500000000",
+      "symbolStatus": "OPEN"
+    },
+    "POPCATUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "4",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "POLUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "NEIROETHUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "UXLINKUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "15",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "FIOUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "280",
+      "maxLimitOrderVolume": "20000000",
+      "symbolStatus": "OPEN"
+    },
+    "FIDAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "55",
+      "maxLimitOrderVolume": "4000000",
+      "symbolStatus": "OPEN"
+    },
+    "EIGENUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "DIAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "SUNUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "50000000",
+      "symbolStatus": "OPEN"
+    },
+    "GHSTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "GOATUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "MOODENGUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "8000000",
+      "symbolStatus": "OPEN"
+    },
+    "SAFEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "600000",
+      "symbolStatus": "OPEN"
+    },
+    "CATIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "30",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "HMSTRUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "2000",
+      "maxLimitOrderVolume": "100000000",
+      "symbolStatus": "OPEN"
+    },
+    "GRASSUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "200000",
+      "symbolStatus": "OPEN"
+    },
+    "PONKEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "KDAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "COWUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "PNUTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "60000",
+      "symbolStatus": "OPEN"
+    },
+    "ACTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "2",
+      "maxLimitOrderVolume": "150000",
+      "symbolStatus": "OPEN"
+    },
+    "METISUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 2,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "3000",
+      "symbolStatus": "OPEN"
+    },
+    "BANUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "78",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "DRIFTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "BRETTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "70",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "SLERFUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "HIPPOUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "1666",
+      "maxLimitOrderVolume": "50000000",
+      "symbolStatus": "OPEN"
+    },
+    "1000CHEEMSUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 7,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "1000000000",
+      "symbolStatus": "OPEN"
+    },
+    "THEUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "700000",
+      "symbolStatus": "OPEN"
+    },
+    "1000WHYUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 7,
+      "minTradeVolume": "128000",
+      "maxLimitOrderVolume": "4000000000",
+      "symbolStatus": "OPEN"
+    },
+    "MORPHOUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "800000",
+      "symbolStatus": "OPEN"
+    },
+    "CHILLGUYUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "60",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "SCRUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "CETUSUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "ACXUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "800000",
+      "symbolStatus": "OPEN"
+    },
+    "MOVEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "28",
+      "maxLimitOrderVolume": "1500000",
+      "symbolStatus": "OPEN"
+    },
+    "MEUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "200000",
+      "symbolStatus": "OPEN"
+    },
+    "VELODROMEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "83",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "MOCAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "PENGUUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "400",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "1000CATUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "568",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "USUALUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "KOMAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "50",
+      "maxLimitOrderVolume": "8000000",
+      "symbolStatus": "OPEN"
+    },
+    "VANAUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.01",
+      "maxLimitOrderVolume": "400000",
+      "symbolStatus": "OPEN"
+    },
+    "STEEMUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "20",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "AIXBTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "4000000",
+      "symbolStatus": "OPEN"
+    },
+    "HIVEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "1500000",
+      "symbolStatus": "OPEN"
+    },
+    "VIRTUALUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "150000",
+      "symbolStatus": "OPEN"
+    },
+    "AI16ZUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "3",
+      "maxLimitOrderVolume": "500000",
+      "symbolStatus": "OPEN"
+    },
+    "GRIFFAINUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "50",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "FARTCOINUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "4",
+      "maxLimitOrderVolume": "900000",
+      "symbolStatus": "OPEN"
+    },
+    "ZEREBROUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "117",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "BIOUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "6",
+      "maxLimitOrderVolume": "1300000",
+      "symbolStatus": "OPEN"
+    },
+    "PORTALUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 5,
+      "minTradeVolume": "74",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "SWARMSUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "12",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "ALCHUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "29",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "COOKIEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "800000",
+      "symbolStatus": "OPEN"
+    },
+    "SONICUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "1MBABYDOGEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 7,
+      "minTradeVolume": "3067",
+      "maxLimitOrderVolume": "600000000",
+      "symbolStatus": "OPEN"
+    },
+    "DFUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "SUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "7",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "TRUMPUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.2",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "MELANIAUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 4,
+      "minTradeVolume": "14",
+      "maxLimitOrderVolume": "90000",
+      "symbolStatus": "OPEN"
+    },
+    "SPXUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "3",
+      "maxLimitOrderVolume": "1500000",
+      "symbolStatus": "OPEN"
+    },
+    "SOLVUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "116",
+      "maxLimitOrderVolume": "6500000",
+      "symbolStatus": "OPEN"
+    },
+    "DEXEUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.25",
+      "maxLimitOrderVolume": "800000",
+      "symbolStatus": "OPEN"
+    },
+    "VTHOUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "2008",
+      "maxLimitOrderVolume": "100000000",
+      "symbolStatus": "OPEN"
+    },
+    "ANIMEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "50",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "PIPPINUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "8000000",
+      "symbolStatus": "OPEN"
+    },
+    "VINEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "4000000",
+      "symbolStatus": "OPEN"
+    },
+    "CGPTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "20",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "AVAUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "400000",
+      "symbolStatus": "OPEN"
+    },
+    "KMNOUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "VVVUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.5",
+      "maxLimitOrderVolume": "90000",
+      "symbolStatus": "OPEN"
+    },
+    "DEGOUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "2",
+      "maxLimitOrderVolume": "300000",
+      "symbolStatus": "OPEN"
+    },
+    "BERAUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.5",
+      "maxLimitOrderVolume": "50000",
+      "symbolStatus": "OPEN"
+    },
+    "TSTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "LAYERUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "3",
+      "maxLimitOrderVolume": "800000",
+      "symbolStatus": "OPEN"
+    },
+    "PROMUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.5",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "B3USDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "1000",
+      "maxLimitOrderVolume": "8000000",
+      "symbolStatus": "OPEN"
+    },
+    "HEIUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "3",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "IPUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 5,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "500000",
+      "symbolStatus": "OPEN"
+    },
+    "SHELLUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "GPSUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "3184",
+      "maxLimitOrderVolume": "7000000",
+      "symbolStatus": "OPEN"
+    },
+    "KAITOUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "300000",
+      "symbolStatus": "OPEN"
+    },
+    "RLCUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "300000",
+      "symbolStatus": "OPEN"
+    },
+    "GUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "300",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "FDUSDUSDT": {
+      "basePrecision": 4,
+      "quotePrecision": 2,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "PREVIEW"
+    },
+    "CHESSUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "30",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "REDUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "VICUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "20",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "MUBARAKUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "23",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "BMTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "55",
+      "maxLimitOrderVolume": "8000000",
+      "symbolStatus": "OPEN"
+    },
+    "EPICUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "3",
+      "maxLimitOrderVolume": "500000",
+      "symbolStatus": "OPEN"
+    },
+    "FORMUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "3",
+      "maxLimitOrderVolume": "10000",
+      "symbolStatus": "OPEN"
+    },
+    "TUTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "20000000",
+      "symbolStatus": "OPEN"
+    },
+    "PLUMEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "BRUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "100",
+      "maxLimitOrderVolume": "6000000",
+      "symbolStatus": "OPEN"
+    },
+    "SIRENUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "80",
+      "maxLimitOrderVolume": "15000000",
+      "symbolStatus": "OPEN"
+    },
+    "ORCAUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "2",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "BANANAS31USDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "800",
+      "maxLimitOrderVolume": "250000000",
+      "symbolStatus": "OPEN"
+    },
+    "XAUTUSDT": {
+      "basePrecision": 3,
+      "quotePrecision": 1,
+      "minTradeVolume": "0.01",
+      "maxLimitOrderVolume": "30",
+      "symbolStatus": "OPEN"
+    },
+    "PARTIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "NILUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "JELLYJELLYUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "170",
+      "maxLimitOrderVolume": "30000000",
+      "symbolStatus": "OPEN"
+    },
+    "MAVIAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "HYPEUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 2,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "30000",
+      "symbolStatus": "OPEN"
+    },
+    "WALUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "FUNUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "1000",
+      "maxLimitOrderVolume": "200000000",
+      "symbolStatus": "OPEN"
+    },
+    "GUNUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "30",
+      "maxLimitOrderVolume": "100000000",
+      "symbolStatus": "OPEN"
+    },
+    "MLNUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "90000",
+      "symbolStatus": "OPEN"
+    },
+    "PAXGUSDT": {
+      "basePrecision": 3,
+      "quotePrecision": 2,
+      "minTradeVolume": "0.001",
+      "maxLimitOrderVolume": "50",
+      "symbolStatus": "OPEN"
+    },
+    "RAYUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "0.1",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "ATHUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "170",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "AEROUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "12",
+      "maxLimitOrderVolume": "400000",
+      "symbolStatus": "OPEN"
+    },
+    "FORTHUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "2",
+      "maxLimitOrderVolume": "50000",
+      "symbolStatus": "OPEN"
+    },
+    "KAIAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "30",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "AERGOUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "40",
+      "maxLimitOrderVolume": "76000",
+      "symbolStatus": "OPEN"
+    },
+    "BABYUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "60",
+      "maxLimitOrderVolume": "150000",
+      "symbolStatus": "OPEN"
+    },
+    "BROCCOLIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "176",
+      "maxLimitOrderVolume": "500000",
+      "symbolStatus": "OPEN"
+    },
+    "PROMPTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "6000000",
+      "symbolStatus": "OPEN"
+    },
+    "XCNUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "50000000",
+      "symbolStatus": "OPEN"
+    },
+    "PUMPUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "STOUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "FHEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "15000000",
+      "symbolStatus": "OPEN"
+    },
+    "PIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "60000",
+      "symbolStatus": "OPEN"
+    },
+    "KERNELUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "15",
+      "maxLimitOrderVolume": "300000",
+      "symbolStatus": "OPEN"
+    },
+    "WCTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "20",
+      "maxLimitOrderVolume": "2500000",
+      "symbolStatus": "OPEN"
+    },
+    "RFCUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "100",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "OLUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "DEEPUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "100",
+      "maxLimitOrderVolume": "1500000",
+      "symbolStatus": "OPEN"
+    },
+    "BANKUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "100",
+      "maxLimitOrderVolume": "20000000",
+      "symbolStatus": "OPEN"
+    },
+    "VOXELUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "70",
+      "maxLimitOrderVolume": "20000000",
+      "symbolStatus": "OPEN"
+    },
+    "EPTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "500",
+      "maxLimitOrderVolume": "50000000",
+      "symbolStatus": "OPEN"
+    },
+    "HYPERUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "20",
+      "maxLimitOrderVolume": "50000",
+      "symbolStatus": "OPEN"
+    },
+    "INITUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "ZBCNUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 7,
+      "minTradeVolume": "1000",
+      "maxLimitOrderVolume": "20000000",
+      "symbolStatus": "OPEN"
+    },
+    "MEMEFIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "2000",
+      "maxLimitOrderVolume": "600000000",
+      "symbolStatus": "OPEN"
+    },
+    "FISUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "18",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "SIGNUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "60",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "JSTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "136",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "COREUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "4",
+      "maxLimitOrderVolume": "200000",
+      "symbolStatus": "OPEN"
+    },
+    "CSPRUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "300",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "PUNDIXUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "CTKUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "DOLOUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "50",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "HAEDALUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "40",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "AVAAIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "83",
+      "maxLimitOrderVolume": "4000000",
+      "symbolStatus": "OPEN"
+    },
+    "MILKUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "40",
+      "maxLimitOrderVolume": "8000000",
+      "symbolStatus": "OPEN"
+    },
+    "B2USDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "150000",
+      "symbolStatus": "OPEN"
+    },
+    "SYRUPUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "OBOLUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "ALPINEUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "SXTUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 5,
+      "minTradeVolume": "30",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "ASRUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "3",
+      "maxLimitOrderVolume": "500000",
+      "symbolStatus": "OPEN"
+    },
+    "DOODUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 7,
+      "minTradeVolume": "1250",
+      "maxLimitOrderVolume": "100000000",
+      "symbolStatus": "OPEN"
+    },
+    "XUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 8,
+      "minTradeVolume": "50000",
+      "maxLimitOrderVolume": "1000000000",
+      "symbolStatus": "OPEN"
+    },
+    "OGUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "30000",
+      "symbolStatus": "OPEN"
+    },
+    "PUFFERUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "20",
+      "maxLimitOrderVolume": "400000",
+      "symbolStatus": "OPEN"
+    },
+    "ZKJUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "2",
+      "maxLimitOrderVolume": "500000",
+      "symbolStatus": "OPEN"
+    },
+    "SKYAIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "76",
+      "maxLimitOrderVolume": "1500000",
+      "symbolStatus": "OPEN"
+    },
+    "NXPCUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "1",
+      "maxLimitOrderVolume": "500000",
+      "symbolStatus": "OPEN"
+    },
+    "CVCUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "30",
+      "maxLimitOrderVolume": "800000",
+      "symbolStatus": "OPEN"
+    },
+    "AWEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "60",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "BUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "20",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "SOONUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "30000",
+      "symbolStatus": "OPEN"
+    },
+    "HUMAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "70",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "AUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "SOPHUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "70",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "MERLUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "35",
+      "maxLimitOrderVolume": "7000000",
+      "symbolStatus": "OPEN"
+    },
+    "MNTUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "500000",
+      "symbolStatus": "OPEN"
+    },
+    "BDXNUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "60",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "PORT3USDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "100",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "1000000MOGUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "200000",
+      "symbolStatus": "OPEN"
+    },
+    "LAUSDT": {
+      "basePrecision": 1,
+      "quotePrecision": 3,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "150000",
+      "symbolStatus": "OPEN"
+    },
+    "SKATEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "HOMEUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "RESOLVUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "SQDUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "5000000",
+      "symbolStatus": "OPEN"
+    },
+    "LAUNCHCOINUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "TAIKOUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "100000",
+      "symbolStatus": "OPEN"
+    },
+    "SPKUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "15000000",
+      "symbolStatus": "OPEN"
+    },
+    "MYXUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "100",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "FUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "555",
+      "maxLimitOrderVolume": "100000000",
+      "symbolStatus": "OPEN"
+    },
+    "DMCUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "1200",
+      "maxLimitOrderVolume": "180000000",
+      "symbolStatus": "OPEN"
+    },
+    "NEWTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "3000000",
+      "symbolStatus": "OPEN"
+    },
+    "HUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "128",
+      "maxLimitOrderVolume": "25000000",
+      "symbolStatus": "OPEN"
+    },
+    "SAHARAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "40",
+      "maxLimitOrderVolume": "8000000",
+      "symbolStatus": "OPEN"
+    },
+    "ICNTUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "12",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "DOGUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "1200",
+      "maxLimitOrderVolume": "18000000",
+      "symbolStatus": "OPEN"
+    },
+    "IDOLUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "360",
+      "maxLimitOrderVolume": "60000000",
+      "symbolStatus": "OPEN"
+    },
+    "TANSSIUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "100",
+      "maxLimitOrderVolume": "2000000",
+      "symbolStatus": "OPEN"
+    },
+    "AINUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "10000000",
+      "symbolStatus": "OPEN"
+    },
+    "CROSSUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "8000000",
+      "symbolStatus": "OPEN"
+    },
+    "MUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "5",
+      "maxLimitOrderVolume": "140000",
+      "symbolStatus": "OPEN"
+    },
+    "PUMPFUNUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 6,
+      "minTradeVolume": "800",
+      "maxLimitOrderVolume": "20000000",
+      "symbolStatus": "OPEN"
+    },
+    "CUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "25",
+      "maxLimitOrderVolume": "6000000",
+      "symbolStatus": "OPEN"
+    },
+    "TACUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "278",
+      "maxLimitOrderVolume": "50000000",
+      "symbolStatus": "OPEN"
+    },
+    "VELVETUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "80",
+      "maxLimitOrderVolume": "1500000",
+      "symbolStatus": "OPEN"
+    },
+    "CVXUSDT": {
+      "basePrecision": 2,
+      "quotePrecision": 3,
+      "minTradeVolume": "0.8",
+      "maxLimitOrderVolume": "60000",
+      "symbolStatus": "OPEN"
+    },
+    "ERAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "3",
+      "maxLimitOrderVolume": "1000000",
+      "symbolStatus": "OPEN"
+    },
+    "FLRUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 5,
+      "minTradeVolume": "251",
+      "maxLimitOrderVolume": "2500000",
+      "symbolStatus": "OPEN"
+    },
+    "TAUSDT": {
+      "basePrecision": 0,
+      "quotePrecision": 4,
+      "minTradeVolume": "10",
+      "maxLimitOrderVolume": "7000000",
+      "symbolStatus": "OPEN"
+    }
+  },
+  "last_update": "2025-07-21T08:17:33.257594",
+  "version": "1.0"
+}
