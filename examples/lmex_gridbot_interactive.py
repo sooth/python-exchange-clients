@@ -149,6 +149,10 @@ def main():
     cancel_all_on_stop = get_yes_no("Cancel all orders on stop?", False)
     close_all_on_stop = get_yes_no("Close all positions on stop?", False)
     
+    # Calculate order size per grid
+    total_position_value = initial_margin * leverage
+    order_size_per_grid = total_position_value / grid_number
+    
     # Display configuration summary
     print("\n" + "=" * 50)
     print("📋 Configuration Summary")
@@ -163,10 +167,20 @@ def main():
     print(f"Grid Spacing: ${(upper_price - lower_price) / grid_number:,.4f}")
     print(f"Initial Margin: ${initial_margin:,.2f} USDT")
     print(f"Leverage: {leverage}x")
+    print(f"Total Position Value: ${total_position_value:,.2f}")
+    print(f"Order Size per Grid: ${order_size_per_grid:,.2f}")
     print(f"Wallet Mode: {wallet_mode}")
     print(f"Cancel All on Stop: {cancel_all_on_stop}")
     print(f"Close All on Stop: {close_all_on_stop}")
     print("=" * 50)
+    
+    # Check if order size is $5 or less
+    if order_size_per_grid <= 5.0:
+        print(f"\n⚠️  WARNING: Order size per grid is ${order_size_per_grid:,.2f}")
+        print("This is $5 or less, which may result in very small trades.")
+        if not get_yes_no("Are you sure you want to continue with this small order size?", False):
+            print("\n❌ Cancelled due to small order size")
+            return
     
     # Confirmation
     if not get_yes_no("\n⚠️  Create this grid bot?", False):
