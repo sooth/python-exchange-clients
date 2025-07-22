@@ -15,9 +15,10 @@ from .base import (
     ExchangeOrderResponse,
     ExchangePosition,
     ExchangeTicker,
-    OrderSide,
-    OrderType,
-    TimeInForce,
+    ExchangeBalance,
+    ExchangeOrder,
+    PositionSide,
+    TradingType,
 )
 
 # Import adapters
@@ -39,9 +40,10 @@ __all__ = [
     "ExchangeOrderResponse",
     "ExchangePosition",
     "ExchangeTicker",
-    "OrderSide",
-    "OrderType",
-    "TimeInForce",
+    "ExchangeBalance",
+    "ExchangeOrder",
+    "PositionSide",
+    "TradingType",
     
     # Adapters
     "LMEXAdapter",

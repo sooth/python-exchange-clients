@@ -1,40 +1,33 @@
-"""
-This Python module provides a BitUnix-specific implementation of an ExchangeProtocol,
-mirroring the functionality found in the Swift version of BitUnixExchange.swift.
+"""BitUnix Exchange Implementation"""
 
-It includes:
-- A reference to a (mock) BitUnixWebSocketManager.
-- Methods to subscribe to ticker/orders via WebSocket.
-- Methods to fetch tickers, positions, and place orders via REST API calls.
-- A helper function for Double SHA-256 signing, as described in the BitUnix documentation.
-
-Dependencies to consider in Python:
-- requests (for HTTP requests)
-- hashlib (for SHA-256)
-- json (for JSON parsing)
-- python-dotenv (for environment variables)
-"""
+from .base import (
+    ExchangeProtocol,
+    ExchangeOrderRequest,
+    ExchangeOrderResponse,
+    ExchangeTicker,
+    ExchangePosition,
+    ExchangeBalance,
+    ExchangeOrder
+)
+from .utils.precision import SymbolPrecisionManager
+from .utils.api_keys import APIKeyStorage
 
 import requests
 from typing import Optional, Type, Dict, Any
 import json
 import hashlib
 import time
-import uuid
-import threading
 from dotenv import load_dotenv
 import os
-from datetime import datetime, timedelta
 
-# ------------------------------------------------------------------------------
-# Mock definitions for the protocols and data structures referenced in Swift code
-# ------------------------------------------------------------------------------
+# Load environment variables
+load_dotenv()
 
 class ExchangeWebSocketManagerProtocol:
-    """
-    A protocol defining the methods a WebSocket manager should implement.
-    This is a placeholder for the Python version.
-    """
+    """Protocol for WebSocket managers"""
+    def shared(self):
+        raise NotImplementedError
+    
     def subscribeToTicker(self, symbol: str):
         raise NotImplementedError
     
@@ -43,7 +36,6 @@ class ExchangeWebSocketManagerProtocol:
     
     def subscribeToOrders(self, symbols: list[str]):
         raise NotImplementedError
-
 
 class BitUnixWebSocketManager(ExchangeWebSocketManagerProtocol):
     """
@@ -70,365 +62,13 @@ class BitUnixWebSocketManager(ExchangeWebSocketManagerProtocol):
     def subscribeToOrders(self, symbols: list[str]):
         print(f"DEBUG: Subscribing to orders for symbols {symbols} (WebSocket not actually implemented).")
 
-
-class ExchangeProtocol:
-    """
-    A protocol (or abstract base class) that an Exchange class should implement.
-    This is a placeholder for the Python version.
-    """
-    def subscribeToTicker(self, symbol: str):
-        raise NotImplementedError
-    
-    def lastTradePrice(self, symbol: str) -> float:
-        raise NotImplementedError
-
-    def subscribeToOrders(self, symbols: list[str]):
-        raise NotImplementedError
-    
-    def fetchTickers(self, completion):
-        raise NotImplementedError
-    
-    def fetchPositions(self, completion):
-        raise NotImplementedError
-    
-    def placeOrder(self, request, completion):
-        raise NotImplementedError
-    
-    def fetchBalance(self, completion):
-        raise NotImplementedError
-        
-    def fetchOrders(self, completion):
-        raise NotImplementedError
-
-
-class ExchangeTicker:
-    """
-    A placeholder data structure representing an exchange ticker.
-    """
-    def __init__(self, symbol: str):
-        self.symbol = symbol
-
-    def __repr__(self):
-        return f"ExchangeTicker(symbol='{self.symbol}')"
-
-
-class ExchangePosition:
-    """
-    A placeholder data structure representing an exchange position.
-    """
-    def __init__(
-        self,
-        symbol: str,
-        size: float,
-        entryPrice: float,
-        markPrice: float,
-        pnl: float,
-        pnlPercentage: float
-    ):
-        self.symbol = symbol
-        self.size = size
-        self.entryPrice = entryPrice
-        self.markPrice = markPrice
-        self.pnl = pnl
-        self.pnlPercentage = pnlPercentage
-
-    def __repr__(self):
-        return (
-            f"ExchangePosition(symbol='{self.symbol}', size={self.size}, "
-            f"entryPrice={self.entryPrice}, markPrice={self.markPrice}, "
-            f"pnl={self.pnl}, pnlPercentage={self.pnlPercentage})"
-        )
-
-
-class ExchangeOrderRequest:
-    """
-    A placeholder data structure for representing an exchange order request.
-    """
-    def __init__(
-        self,
-        symbol: str,
-        side: str,
-        qty: float,
-        orderType: str,
-        price: Optional[float] = None,
-        timeInForce: str = "GTC",
-        orderLinkId: Optional[str] = None,
-        stopLoss: Optional[float] = None,
-        takeProfit: Optional[float] = None,
-        tradingType: str = "PERP"  # Default to PERP trading
-    ):
-        self.symbol = symbol
-        self.side = side
-        self.qty = qty
-        self.orderType = orderType
-        self.price = price
-        self.timeInForce = timeInForce
-        self.orderLinkId = orderLinkId
-        self.stopLoss = stopLoss
-        self.takeProfit = takeProfit
-        self.tradingType = tradingType
-
-    def __repr__(self):
-        return (
-            f"ExchangeOrderRequest(symbol='{self.symbol}', side='{self.side}', qty={self.qty}, "
-            f"orderType='{self.orderType}', price={self.price}, timeInForce='{self.timeInForce}', "
-            f"orderLinkId='{self.orderLinkId}', stopLoss={self.stopLoss}, takeProfit={self.takeProfit})"
-        )
-
-
-class ExchangeOrderResponse:
-    """
-    A placeholder data structure for representing the response to placing an order.
-    """
-    def __init__(self, rawResponse: str):
-        try:
-            # Parse the JSON response
-            self.rawResponse = json.loads(rawResponse)
-        except json.JSONDecodeError:
-            # Fallback to raw string if parsing fails
-            self.rawResponse = {"data": rawResponse}
-
-    def __repr__(self):
-        return f"ExchangeOrderResponse(rawResponse={self.rawResponse})"
-
-
-class ExchangeBalance:
-    """
-    A data structure representing account balance information.
-    """
-    def __init__(
-        self,
-        asset: str,
-        balance: float,
-        available: float,
-        locked: float
-    ):
-        self.asset = asset
-        self.balance = balance
-        self.available = available
-        self.locked = locked
-
-    def __repr__(self):
-        return (
-            f"ExchangeBalance(asset='{self.asset}', balance={self.balance}, "
-            f"available={self.available}, locked={self.locked})"
-        )
-
-
-class ExchangeOrder:
-    """
-    A data structure representing an open order.
-    """
-    def __init__(
-        self,
-        orderId: str,
-        symbol: str,
-        side: str,
-        orderType: str,
-        qty: float,
-        price: Optional[float],
-        status: str,
-        timeInForce: str,
-        createTime: int,
-        clientId: Optional[str] = None,
-        stopPrice: Optional[float] = None,
-        executedQty: float = 0.0
-    ):
-        self.orderId = orderId
-        self.symbol = symbol
-        self.side = side
-        self.orderType = orderType
-        self.qty = qty
-        self.price = price
-        self.status = status
-        self.timeInForce = timeInForce
-        self.createTime = createTime
-        self.clientId = clientId
-        self.stopPrice = stopPrice
-        self.executedQty = executedQty
-
-    def __repr__(self):
-        return (
-            f"ExchangeOrder(orderId='{self.orderId}', symbol='{self.symbol}', "
-            f"side='{self.side}', orderType='{self.orderType}', qty={self.qty}, "
-            f"price={self.price}, status='{self.status}')"
-        )
-
-
-class SymbolPrecisionManager:
-    """
-    Manages symbol precision data from BitUnix API to ensure accurate order formatting
-    """
-    _instance = None
-    CACHE_FILE = "bitunix_precision_cache.json"
-    
-    def __init__(self):
-        self.precision_cache: Dict[str, Dict[str, Any]] = {}
-        self.last_update: Optional[datetime] = None
-        self.cache_duration_hours = 24
-        # Load cached data on initialization
-        self._load_cache()
-        
-    @classmethod
-    def get_instance(cls):
-        if cls._instance is None:
-            cls._instance = cls()
-        return cls._instance
-    
-    def get_symbol_info(self, symbol: str) -> Dict[str, Any]:
-        """Get symbol info including precision data"""
-        if self._needs_refresh():
-            self._fetch_all_symbols()
-        
-        # Return cached data or sensible defaults
-        return self.precision_cache.get(symbol, {
-            "basePrecision": 4,
-            "quotePrecision": 2,
-            "minTradeVolume": "0.0001"
-        })
-    
-    def get_price_precision(self, symbol: str) -> int:
-        """Get price precision (decimal places) for a symbol"""
-        symbol_info = self.get_symbol_info(symbol)
-        return symbol_info.get("quotePrecision", 2)
-    
-    def get_quantity_precision(self, symbol: str) -> int:
-        """Get quantity precision (decimal places) for a symbol"""
-        symbol_info = self.get_symbol_info(symbol)
-        return symbol_info.get("basePrecision", 4)
-    
-    def get_min_trade_volume(self, symbol: str) -> float:
-        """Get minimum trade volume for a symbol"""
-        symbol_info = self.get_symbol_info(symbol)
-        return float(symbol_info.get("minTradeVolume", "0.0001"))
-    
-    def has_symbol(self, symbol: str) -> bool:
-        """Check if a symbol is supported"""
-        if self._needs_refresh():
-            self._fetch_all_symbols()
-        return symbol in self.precision_cache
-    
-    def _needs_refresh(self) -> bool:
-        """Check if cache needs refreshing - only on first init when cache is empty"""
-        # Only fetch fresh data if we have no cached data at all
-        return len(self.precision_cache) == 0
-    
-    def _fetch_all_symbols(self):
-        """Fetch all symbol precision data from BitUnix API"""
-        try:
-            print("DEBUG: Fetching symbol precision data from BitUnix API...")
-            url = "https://fapi.bitunix.com/api/v1/futures/market/trading_pairs"
-            
-            response = requests.get(url, timeout=10)
-            response.raise_for_status()
-            
-            data = response.json()
-            if data.get("code") == 0:
-                symbols_data = data.get("data", [])
-                
-                # Clear cache and update with fresh data
-                self.precision_cache.clear()
-                
-                for symbol_info in symbols_data:
-                    symbol = symbol_info.get("symbol")
-                    if symbol:
-                        self.precision_cache[symbol] = {
-                            "basePrecision": symbol_info.get("basePrecision", 4),
-                            "quotePrecision": symbol_info.get("quotePrecision", 2),
-                            "minTradeVolume": symbol_info.get("minTradeVolume", "0.0001"),
-                            "maxLimitOrderVolume": symbol_info.get("maxLimitOrderVolume", "100000"),
-                            "symbolStatus": symbol_info.get("symbolStatus", "OPEN")
-                        }
-                
-                self.last_update = datetime.now()
-                print(f"DEBUG: Cached precision data for {len(self.precision_cache)} symbols")
-                
-                # Log XRP specifically if found
-                if "XRPUSDT" in self.precision_cache:
-                    xrp_info = self.precision_cache["XRPUSDT"]
-                    print(f"DEBUG: XRPUSDT precision - Price: {xrp_info['quotePrecision']} decimals, Quantity: {xrp_info['basePrecision']} decimals, Min volume: {xrp_info['minTradeVolume']}")
-                
-                # Save to cache file
-                self._save_cache()
-            else:
-                print(f"WARNING: BitUnix API returned error code: {data.get('code')} - {data.get('msg')}")
-                
-        except Exception as e:
-            print(f"WARNING: Failed to fetch symbol precision data: {e}")
-            print("DEBUG: Using fallback precision defaults")
-    
-    def _load_cache(self):
-        """Load cached precision data from file"""
-        try:
-            if os.path.exists(self.CACHE_FILE):
-                with open(self.CACHE_FILE, 'r') as f:
-                    cache_data = json.load(f)
-                    self.precision_cache = cache_data.get('precision_cache', {})
-                    # Convert timestamp string back to datetime
-                    if cache_data.get('last_update'):
-                        self.last_update = datetime.fromisoformat(cache_data['last_update'])
-                    print(f"DEBUG: Loaded precision cache with {len(self.precision_cache)} symbols from {self.CACHE_FILE}")
-            else:
-                print(f"DEBUG: No cache file found at {self.CACHE_FILE}, will fetch fresh data")
-        except Exception as e:
-            print(f"WARNING: Failed to load precision cache: {e}")
-            self.precision_cache = {}
-            self.last_update = None
-    
-    def _save_cache(self):
-        """Save precision data to cache file"""
-        try:
-            cache_data = {
-                'precision_cache': self.precision_cache,
-                'last_update': self.last_update.isoformat() if self.last_update else None,
-                'version': '1.0'
-            }
-            with open(self.CACHE_FILE, 'w') as f:
-                json.dump(cache_data, f, indent=2)
-            print(f"DEBUG: Saved precision cache with {len(self.precision_cache)} symbols to {self.CACHE_FILE}")
-        except Exception as e:
-            print(f"WARNING: Failed to save precision cache: {e}")
-
-
-class APIKeyStorage:
-    """
-    A storage mechanism that retrieves API keys from environment variables.
-    """
-    _shared_instance: Optional['APIKeyStorage'] = None
-
-    def __init__(self):
-        # Load environment variables
-        load_dotenv()
-        
-        # Get API keys from environment variables
-        self._keys = {
-            "BitUnix": {
-                "apiKey": os.getenv("BITUNIX_API_KEY", ""),
-                "secretKey": os.getenv("BITUNIX_SECRET_KEY", "")
-            }
-        }
-
-    @classmethod
-    def shared(cls):
-        if cls._shared_instance is None:
-            cls._shared_instance = cls()
-        return cls._shared_instance
-
-    def getKeys(self, for_exchange: str):
-        # Returns a dictionary with 'apiKey' and 'secretKey'
-        return self._keys.get(for_exchange, {"apiKey": "", "secretKey": ""})
-
-
-# ----------------------------------------------------------------------
-# Python version of BitUnixExchange, mirroring the Swift implementation
-# ----------------------------------------------------------------------
 class BitUnixExchange(ExchangeProtocol):
     """
     A BitUnix-specific implementation of ExchangeProtocol (Python version).
     """
     
     def __init__(self):
-        self.precision_manager = SymbolPrecisionManager.get_instance()
+        self.precision_manager = SymbolPrecisionManager.get_instance("BitUnix")
 
     @property
     def webSocketManager(self) -> ExchangeWebSocketManagerProtocol:

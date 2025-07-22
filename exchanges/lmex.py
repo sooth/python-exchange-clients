@@ -1,19 +1,16 @@
-"""
-This Python module provides an LMEX-specific implementation of an ExchangeProtocol,
-mirroring the functionality found in BitUnix.py but adapted for LMEX exchange.
+"""LMEX Exchange Implementation"""
 
-It includes:
-- LMEX REST API integration for futures trading
-- HMAC-SHA384 authentication as per LMEX requirements
-- Methods to fetch tickers, positions, and place orders via REST API calls
-- WebSocket manager placeholder for future real-time data integration
-
-Dependencies:
-- requests (for HTTP requests)
-- hashlib/hmac (for HMAC-SHA384)
-- json (for JSON parsing)
-- python-dotenv (for environment variables)
-"""
+from .base import (
+    ExchangeProtocol,
+    ExchangeOrderRequest,
+    ExchangeOrderResponse,
+    ExchangeTicker,
+    ExchangePosition,
+    ExchangeBalance,
+    ExchangeOrder
+)
+from .utils.precision import SymbolPrecisionManager
+from .utils.api_keys import APIKeyStorage
 
 import requests
 from typing import Optional, Type, Dict, Any, List
@@ -28,15 +25,14 @@ import os
 from datetime import datetime, timedelta
 import urllib.parse
 
-# ------------------------------------------------------------------------------
-# Mock definitions for the protocols and data structures referenced
-# ------------------------------------------------------------------------------
+# Load environment variables
+load_dotenv()
 
 class ExchangeWebSocketManagerProtocol:
-    """
-    A protocol defining the methods a WebSocket manager should implement.
-    This is a placeholder for the Python version.
-    """
+    """Protocol for WebSocket managers"""
+    def shared(self):
+        raise NotImplementedError
+    
     def subscribeToTicker(self, symbol: str):
         raise NotImplementedError
     
@@ -45,7 +41,6 @@ class ExchangeWebSocketManagerProtocol:
     
     def subscribeToOrders(self, symbols: list[str]):
         raise NotImplementedError
-
 
 class LMEXWebSocketManager(ExchangeWebSocketManagerProtocol):
     """
@@ -72,580 +67,13 @@ class LMEXWebSocketManager(ExchangeWebSocketManagerProtocol):
     def subscribeToOrders(self, symbols: list[str]):
         print(f"DEBUG: Subscribing to orders for symbols {symbols} (WebSocket not actually implemented).")
 
-
-class ExchangeProtocol:
-    """
-    A protocol (or abstract base class) that an Exchange class should implement.
-    """
-    def subscribeToTicker(self, symbol: str):
-        raise NotImplementedError
-    
-    def lastTradePrice(self, symbol: str) -> float:
-        raise NotImplementedError
-
-    def subscribeToOrders(self, symbols: list[str]):
-        raise NotImplementedError
-    
-    def fetchTickers(self, completion):
-        raise NotImplementedError
-    
-    def fetchPositions(self, completion):
-        raise NotImplementedError
-    
-    def placeOrder(self, request, completion):
-        raise NotImplementedError
-    
-    def fetchBalance(self, completion):
-        raise NotImplementedError
-    
-    def createGridBot(self, symbol: str, direction: str, upper_price: float, 
-                     lower_price: float, leverage: float, wallet_mode: str, 
-                     grid_number: int, initial_margin: float, 
-                     cancel_all_on_stop: bool, close_all_on_stop: bool, 
-                     completion):
-        """
-        Create a new LMEX Grid bot using the Bearer token.
-        
-        Args:
-            symbol: Trading symbol (e.g., "BTC-PERP")
-            direction: "LONG" or "SHORT"
-            upper_price: Upper price boundary for the grid
-            lower_price: Lower price boundary for the grid
-            leverage: Leverage to use
-            wallet_mode: "CROSS" or "ISOLATED"
-            grid_number: Number of grid levels
-            initial_margin: Initial margin in USDT
-            cancel_all_on_stop: Whether to cancel all orders when bot stops
-            close_all_on_stop: Whether to close all positions when bot stops
-            completion: Callback function with Result
-        """
-        try:
-            # Get Bearer token from environment
-            bearer_token = os.getenv("LMEX_BEARER_TOKEN", "")
-            if not bearer_token:
-                error = Exception("No LMEX Bearer token configured")
-                completion(error, None)
-                return
-            
-            url = "https://api.lmex.io/taskExecutor/api/v1/tradingBots"
-            
-            # Calculate mid price
-            mid_price = (upper_price + lower_price) / 2.0
-            
-            # Get price precision for the symbol
-            price_precision = self.precision_manager.get_price_precision(symbol)
-            
-            # Format prices with correct precision
-            mid_price_str = f"{mid_price:.{price_precision}f}"
-            upper_price_str = f"{upper_price:.{price_precision}f}"
-            lower_price_str = f"{lower_price:.{price_precision}f}"
-            
-            # Build request body according to LMEX API format
-            body = {
-                "symbol": symbol,
-                "marketType": "FUTURES",
-                "botType": "GRID",
-                "config": {
-                    "tradingDirection": direction.upper(),
-                    "midPrice": mid_price_str,
-                    "upperPrice": upper_price_str,
-                    "lowerPrice": lower_price_str,
-                    "wallet": {
-                        "mode": wallet_mode.upper(),
-                        "leverage": str(leverage)
-                    },
-                    "gridNumber": grid_number,
-                    "initialMargin": str(initial_margin),
-                    "botStopAction": {
-                        "cancelAllOrders": cancel_all_on_stop,
-                        "closeAllPositions": close_all_on_stop
-                    },
-                    "feeType": "MAKER"
-                },
-                "hideCode": True
-            }
-            
-            headers = {
-                "content-type": "application/json",
-                "authorization": f"Bearer {bearer_token}",
-                "accept": "application/json, text/plain, */*",
-                "accept-language": "en",
-                "lang": "en",
-                "web": "true"
-            }
-            
-            response = requests.post(url, json=body, headers=headers)
-            
-            print(f"DEBUG: createGridBot response => {response.text}")
-            
-            # Parse response
-            try:
-                data = response.json()
-                if data.get("success"):
-                    completion(None, data)
-                else:
-                    error_msg = data.get("msg", "Unknown error")
-                    error_code = data.get("code", -1)
-                    error = Exception(f"Failed to create grid bot: {error_msg} (code: {error_code})")
-                    completion(error, None)
-            except json.JSONDecodeError:
-                error = Exception(f"Invalid JSON response: {response.text}")
-                completion(error, None)
-                
-        except Exception as e:
-            completion(e, None)
-    
-    def fetchGridBots(self, completion):
-        """
-        Fetch the list of grid bots from LMEX.
-        
-        Args:
-            completion: Callback function with (error, bots_list)
-        """
-        try:
-            # Try Bearer token first, then fall back to API key/secret
-            bearer_token = os.getenv("LMEX_BEARER_TOKEN", "")
-            api_key = os.getenv("LMEX_API_KEY", "")
-            secret_key = os.getenv("LMEX_SECRET_KEY", "")
-            
-            path = "/taskExecutor/api/v1/tradingBots?marketType=FUTURES&botType=GRID"
-            url = f"https://api.lmex.io{path}"
-            
-            headers = {
-                "accept": "application/json, text/plain, */*",
-                "accept-language": "en"
-            }
-            
-            if bearer_token:
-                # Use Bearer token authentication
-                headers["authorization"] = f"Bearer {bearer_token}"
-            elif api_key and secret_key:
-                # Use standard LMEX API key authentication
-                nonce = str(int(time.time() * 1000))
-                sign_message = path + nonce
-                signature = self._generate_signature(path, nonce, "")
-                
-                headers["request-api"] = api_key
-                headers["request-nonce"] = nonce
-                headers["request-sign"] = signature
-            else:
-                # No credentials available
-                completion(None, [])
-                return
-            
-            response = requests.get(url, headers=headers)
-            
-            print(f"DEBUG: fetchGridBots raw => {response.text}")
-            
-            try:
-                data = response.json()
-                
-                if not data.get("success", False):
-                    error_msg = f"LMEX returned success={data.get('success')}, code={data.get('code')}, msg={data.get('msg', 'no message')}"
-                    error = Exception(f"Failed to retrieve LMEX bots: {error_msg}")
-                    completion(error, None)
-                    return
-                
-                raw_bots = data.get("data", {}).get("tradingBots", [])
-                
-                # Convert raw bot data to simplified format
-                bots = []
-                for row in raw_bots:
-                    direction = row.get("direction", "")
-                    detail = row.get("detail", {})
-                    position = detail.get("position", {})
-                    
-                    bot = {
-                        "tradingBotId": row["tradingBotId"],
-                        "symbol": row["symbol"],
-                        "totalProfit": float(row.get("totalProfit", "0")),
-                        "realizedProfit": float(row.get("realizedProfit", "0")),
-                        "unrealizedProfit": float(row.get("unrealizedProfit", "0")),
-                        "createdAt": row.get("createdAt"),
-                        "totalProfitInUsdt": float(row.get("totalProfitInUsdt", "0")),
-                        "direction": direction,
-                        "entryPrice": position.get("entryPrice", 0.0),
-                        "totalContracts": position.get("totalContracts", 0.0),
-                        "upperPrice": float(detail.get("upperPrice", "0")) if detail.get("upperPrice") else None,
-                        "lowerPrice": float(detail.get("lowerPrice", "0")) if detail.get("lowerPrice") else None
-                    }
-                    bots.append(bot)
-                
-                completion(None, bots)
-                
-            except (json.JSONDecodeError, KeyError) as e:
-                error = Exception(f"Failed to parse grid bots response: {str(e)}")
-                completion(error, None)
-                
-        except Exception as e:
-            completion(e, None)
-        
-    def fetchOrders(self, completion):
-        raise NotImplementedError
-
-
-class ExchangeTicker:
-    """
-    A data structure representing an exchange ticker.
-    """
-    def __init__(self, symbol: str):
-        self.symbol = symbol
-
-    def __repr__(self):
-        return f"ExchangeTicker(symbol='{self.symbol}')"
-
-
-class ExchangePosition:
-    """
-    A data structure representing an exchange position.
-    """
-    def __init__(
-        self,
-        symbol: str,
-        size: float,
-        entryPrice: float,
-        markPrice: float,
-        pnl: float,
-        pnlPercentage: float
-    ):
-        self.symbol = symbol
-        self.size = size
-        self.entryPrice = entryPrice
-        self.markPrice = markPrice
-        self.pnl = pnl
-        self.pnlPercentage = pnlPercentage
-
-    def __repr__(self):
-        return (
-            f"ExchangePosition(symbol='{self.symbol}', size={self.size}, "
-            f"entryPrice={self.entryPrice}, markPrice={self.markPrice}, "
-            f"pnl={self.pnl}, pnlPercentage={self.pnlPercentage})"
-        )
-
-
-class ExchangeOrderRequest:
-    """
-    A data structure for representing an exchange order request.
-    """
-    def __init__(
-        self,
-        symbol: str,
-        side: str,
-        qty: float,
-        orderType: str,
-        price: Optional[float] = None,
-        timeInForce: str = "GTC",
-        orderLinkId: Optional[str] = None,
-        stopLoss: Optional[float] = None,
-        takeProfit: Optional[float] = None
-    ):
-        self.symbol = symbol
-        self.side = side
-        self.qty = qty
-        self.orderType = orderType
-        self.price = price
-        self.timeInForce = timeInForce
-        self.orderLinkId = orderLinkId
-        self.stopLoss = stopLoss
-        self.takeProfit = takeProfit
-
-    def __repr__(self):
-        return (
-            f"ExchangeOrderRequest(symbol='{self.symbol}', side='{self.side}', qty={self.qty}, "
-            f"orderType='{self.orderType}', price={self.price}, timeInForce='{self.timeInForce}', "
-            f"orderLinkId='{self.orderLinkId}', stopLoss={self.stopLoss}, takeProfit={self.takeProfit})"
-        )
-
-
-class ExchangeOrderResponse:
-    """
-    A data structure for representing the response to placing an order.
-    """
-    def __init__(self, rawResponse: str):
-        try:
-            # Parse the JSON response
-            self.rawResponse = json.loads(rawResponse) if isinstance(rawResponse, str) else rawResponse
-        except json.JSONDecodeError:
-            # Fallback to raw string if parsing fails
-            self.rawResponse = {"data": rawResponse}
-
-    def __repr__(self):
-        return f"ExchangeOrderResponse(rawResponse={self.rawResponse})"
-
-
-class ExchangeBalance:
-    """
-    A data structure representing account balance information.
-    """
-    def __init__(
-        self,
-        asset: str,
-        balance: float,
-        available: float,
-        locked: float
-    ):
-        self.asset = asset
-        self.balance = balance
-        self.available = available
-        self.locked = locked
-
-    def __repr__(self):
-        return (
-            f"ExchangeBalance(asset='{self.asset}', balance={self.balance}, "
-            f"available={self.available}, locked={self.locked})"
-        )
-
-
-class ExchangeOrder:
-    """
-    A data structure representing an open order.
-    """
-    def __init__(
-        self,
-        orderId: str,
-        symbol: str,
-        side: str,
-        orderType: str,
-        qty: float,
-        price: Optional[float],
-        status: str,
-        timeInForce: str,
-        createTime: int,
-        clientId: Optional[str] = None,
-        stopPrice: Optional[float] = None,
-        executedQty: float = 0.0
-    ):
-        self.orderId = orderId
-        self.symbol = symbol
-        self.side = side
-        self.orderType = orderType
-        self.qty = qty
-        self.price = price
-        self.status = status
-        self.timeInForce = timeInForce
-        self.createTime = createTime
-        self.clientId = clientId
-        self.stopPrice = stopPrice
-        self.executedQty = executedQty
-
-    def __repr__(self):
-        return (
-            f"ExchangeOrder(orderId='{self.orderId}', symbol='{self.symbol}', "
-            f"side='{self.side}', orderType='{self.orderType}', qty={self.qty}, "
-            f"price={self.price}, status='{self.status}')"
-        )
-
-
-class SymbolPrecisionManager:
-    """
-    Manages symbol precision data from LMEX API to ensure accurate order formatting
-    """
-    _instance = None
-    CACHE_FILE = "lmex_precision_cache.json"
-    
-    def __init__(self):
-        self.precision_cache: Dict[str, Dict[str, Any]] = {}
-        self.last_update: Optional[datetime] = None
-        self.cache_duration_hours = 24
-        # Load cached data on initialization
-        self._load_cache()
-        
-    @classmethod
-    def get_instance(cls):
-        if cls._instance is None:
-            cls._instance = cls()
-        return cls._instance
-    
-    def get_symbol_info(self, symbol: str) -> Dict[str, Any]:
-        """Get symbol info including precision data"""
-        if self._needs_refresh():
-            self._fetch_all_symbols()
-        
-        # Return cached data or sensible defaults
-        return self.precision_cache.get(symbol, {
-            "price_decimal": 2,
-            "qty_decimal": 4,
-            "min_qty": 0.0001,
-            "tick_size": 0.01,
-            "step_size": 0.0001
-        })
-    
-    def get_price_precision(self, symbol: str) -> int:
-        """Get price precision (decimal places) for a symbol"""
-        symbol_info = self.get_symbol_info(symbol)
-        return symbol_info.get("price_decimal", 2)
-    
-    def get_quantity_precision(self, symbol: str) -> int:
-        """Get quantity precision (decimal places) for a symbol"""
-        symbol_info = self.get_symbol_info(symbol)
-        return symbol_info.get("qty_decimal", 4)
-    
-    def get_min_quantity(self, symbol: str) -> float:
-        """Get minimum trade quantity for a symbol"""
-        symbol_info = self.get_symbol_info(symbol)
-        return float(symbol_info.get("min_qty", 0.0001))
-    
-    def has_symbol(self, symbol: str) -> bool:
-        """Check if a symbol is supported"""
-        if self._needs_refresh():
-            self._fetch_all_symbols()
-        return symbol in self.precision_cache
-    
-    def get_contract_size(self, symbol: str) -> float:
-        """Get contract size for a symbol"""
-        symbol_info = self.get_symbol_info(symbol)
-        contract_size = symbol_info.get("contract_size")
-        
-        if contract_size is None:
-            raise ValueError(f"Contract size not found for {symbol}. Please ensure fetchTickers() has been called to populate symbol data.")
-        
-        return float(contract_size)
-    
-    def _needs_refresh(self) -> bool:
-        """Check if cache needs refreshing - only on first init when cache is empty"""
-        # Only fetch fresh data if we have no cached data at all
-        return len(self.precision_cache) == 0
-    
-    def _fetch_all_symbols(self):
-        """Fetch all symbol precision data from LMEX API"""
-        try:
-            print("DEBUG: Fetching symbol precision data from LMEX API...")
-            # First try to get ticker data which has actual prices
-            # We'll use this to infer precision
-            exchange = LMEXExchange()
-            tickers_received = threading.Event()
-            ticker_data = None
-            
-            def ticker_callback(result):
-                nonlocal ticker_data
-                status, data = result
-                if status == "success":
-                    ticker_data = data
-                tickers_received.set()
-            
-            exchange.fetchTickers(ticker_callback)
-            
-            if tickers_received.wait(timeout=10) and ticker_data:
-                # Clear cache and update with fresh data
-                self.precision_cache.clear()
-                
-                for ticker in ticker_data:
-                    symbol = ticker.symbol
-                    last_price = ticker.lastPrice
-                    
-                    # Detect decimal precision from actual price
-                    price_decimals = self._detect_decimal_places(last_price)
-                    
-                    # Store precision data
-                    self.precision_cache[symbol] = {
-                        "price_decimal": price_decimals,
-                        "qty_decimal": 0,  # LMEX uses integer contracts
-                        "min_qty": 1,      # Min 1 contract
-                        "tick_size": 10 ** (-price_decimals) if price_decimals > 0 else 1,
-                        "step_size": 1,    # Step size is 1 contract
-                        "max_leverage": 100,
-                        "maintenance_margin_rate": 0.005
-                    }
-                
-                self.last_update = datetime.now()
-                print(f"DEBUG: Cached precision data for {len(self.precision_cache)} symbols")
-                
-                # Show some examples
-                examples = list(self.precision_cache.items())[:5]
-                for symbol, info in examples:
-                    print(f"  {symbol}: {info['price_decimal']} decimals")
-                
-                # Save to cache file
-                self._save_cache()
-                
-        except Exception as e:
-            print(f"WARNING: Failed to fetch symbol precision data: {e}")
-            print("DEBUG: Using fallback precision defaults")
-    
-    def _detect_decimal_places(self, price: float) -> int:
-        """Detect the number of decimal places in a price"""
-        if price == 0:
-            return 2  # Default
-        
-        # Convert to string and analyze
-        price_str = f"{price:.10f}".rstrip('0')
-        if '.' in price_str:
-            decimal_part = price_str.split('.')[1]
-            return len(decimal_part) if decimal_part else 0
-        return 0
-    
-    def _load_cache(self):
-        """Load cached precision data from file"""
-        try:
-            if os.path.exists(self.CACHE_FILE):
-                with open(self.CACHE_FILE, 'r') as f:
-                    cache_data = json.load(f)
-                    self.precision_cache = cache_data.get('precision_cache', {})
-                    # Convert timestamp string back to datetime
-                    if cache_data.get('last_update'):
-                        self.last_update = datetime.fromisoformat(cache_data['last_update'])
-                    print(f"DEBUG: Loaded precision cache with {len(self.precision_cache)} symbols from {self.CACHE_FILE}")
-            else:
-                print(f"DEBUG: No cache file found at {self.CACHE_FILE}, will fetch fresh data")
-        except Exception as e:
-            print(f"WARNING: Failed to load precision cache: {e}")
-            self.precision_cache = {}
-            self.last_update = None
-    
-    def _save_cache(self):
-        """Save precision data to cache file"""
-        try:
-            cache_data = {
-                'precision_cache': self.precision_cache,
-                'last_update': self.last_update.isoformat() if self.last_update else None,
-                'version': '1.0'
-            }
-            with open(self.CACHE_FILE, 'w') as f:
-                json.dump(cache_data, f, indent=2)
-            print(f"DEBUG: Saved precision cache with {len(self.precision_cache)} symbols to {self.CACHE_FILE}")
-        except Exception as e:
-            print(f"WARNING: Failed to save precision cache: {e}")
-
-
-class APIKeyStorage:
-    """
-    A storage mechanism that retrieves API keys from environment variables.
-    """
-    _shared_instance: Optional['APIKeyStorage'] = None
-
-    def __init__(self):
-        # Load environment variables
-        load_dotenv()
-        
-        # Get API keys from environment variables
-        self._keys = {
-            "LMEX": {
-                "apiKey": os.getenv("LMEX_API_KEY", ""),
-                "secretKey": os.getenv("LMEX_SECRET_KEY", "")
-            }
-        }
-
-    @classmethod
-    def shared(cls):
-        if cls._shared_instance is None:
-            cls._shared_instance = cls()
-        return cls._shared_instance
-
-    def getKeys(self, for_exchange: str):
-        # Returns a dictionary with 'apiKey' and 'secretKey'
-        return self._keys.get(for_exchange, {"apiKey": "", "secretKey": ""})
-
-
-# ----------------------------------------------------------------------
-# Python version of LMEXExchange, mirroring BitUnixExchange implementation
-# ----------------------------------------------------------------------
 class LMEXExchange(ExchangeProtocol):
     """
     An LMEX-specific implementation of ExchangeProtocol (Python version).
     """
     
     def __init__(self):
-        self.precision_manager = SymbolPrecisionManager.get_instance()
+        self.precision_manager = SymbolPrecisionManager.get_instance("LMEX")
         self.base_url = "https://api.lmex.io/futures"
 
     @property
@@ -1203,7 +631,6 @@ class LMEXExchange(ExchangeProtocol):
             print(f"DEBUG: LMEXExchange fetchOrders error: {str(e)}")
             completion(("failure", e))
 
-
     def fetchHistoryOrders(self, symbol: str = None, startTime: int = None, endTime: int = None, limit: int = 50, completion=None):
         """
         Fetch order history to determine how positions were closed.
@@ -1660,3 +1087,185 @@ class LMEXExchange(ExchangeProtocol):
             print(f"DEBUG: LMEXExchange cancelOrder error: {str(e)}")
             if completion:
                 completion(("failure", e))
+    
+    def createGridBot(self, symbol: str, direction: str, upper_price: float, 
+                     lower_price: float, leverage: float, wallet_mode: str, 
+                     grid_number: int, initial_margin: float, 
+                     cancel_all_on_stop: bool, close_all_on_stop: bool, 
+                     completion):
+        """
+        Create a new LMEX Grid bot using the Bearer token.
+        
+        Args:
+            symbol: Trading symbol (e.g., "BTC-PERP")
+            direction: "LONG" or "SHORT"
+            upper_price: Upper price boundary for the grid
+            lower_price: Lower price boundary for the grid
+            leverage: Leverage to use
+            wallet_mode: "CROSS" or "ISOLATED"
+            grid_number: Number of grid levels
+            initial_margin: Initial margin in USDT
+            cancel_all_on_stop: Whether to cancel all orders when bot stops
+            close_all_on_stop: Whether to close all positions when bot stops
+            completion: Callback function with Result
+        """
+        try:
+            # Get Bearer token from environment
+            bearer_token = os.getenv("LMEX_BEARER_TOKEN", "")
+            if not bearer_token:
+                error = Exception("No LMEX Bearer token configured")
+                completion(error, None)
+                return
+            
+            url = "https://api.lmex.io/taskExecutor/api/v1/tradingBots"
+            
+            # Calculate mid price
+            mid_price = (upper_price + lower_price) / 2.0
+            
+            # Get price precision for the symbol
+            price_precision = self.precision_manager.get_price_precision(symbol)
+            
+            # Format prices with correct precision
+            mid_price_str = f"{mid_price:.{price_precision}f}"
+            upper_price_str = f"{upper_price:.{price_precision}f}"
+            lower_price_str = f"{lower_price:.{price_precision}f}"
+            
+            # Build request body according to LMEX API format
+            body = {
+                "symbol": symbol,
+                "marketType": "FUTURES",
+                "botType": "GRID",
+                "config": {
+                    "tradingDirection": direction.upper(),
+                    "midPrice": mid_price_str,
+                    "upperPrice": upper_price_str,
+                    "lowerPrice": lower_price_str,
+                    "wallet": {
+                        "mode": wallet_mode.upper(),
+                        "leverage": str(leverage)
+                    },
+                    "gridNumber": grid_number,
+                    "initialMargin": str(initial_margin),
+                    "botStopAction": {
+                        "cancelAllOrders": cancel_all_on_stop,
+                        "closeAllPositions": close_all_on_stop
+                    },
+                    "feeType": "MAKER"
+                },
+                "hideCode": True
+            }
+            
+            headers = {
+                "content-type": "application/json",
+                "authorization": f"Bearer {bearer_token}",
+                "accept": "application/json, text/plain, */*",
+                "accept-language": "en",
+                "lang": "en",
+                "web": "true"
+            }
+            
+            response = requests.post(url, json=body, headers=headers)
+            
+            print(f"DEBUG: createGridBot response => {response.text}")
+            
+            # Parse response
+            try:
+                data = response.json()
+                if data.get("success"):
+                    completion(None, data)
+                else:
+                    error_msg = data.get("msg", "Unknown error")
+                    error_code = data.get("code", -1)
+                    error = Exception(f"Failed to create grid bot: {error_msg} (code: {error_code})")
+                    completion(error, None)
+            except json.JSONDecodeError:
+                error = Exception(f"Invalid JSON response: {response.text}")
+                completion(error, None)
+                
+        except Exception as e:
+            completion(e, None)
+    
+    def fetchGridBots(self, completion):
+        """
+        Fetch the list of grid bots from LMEX.
+        
+        Args:
+            completion: Callback function with (error, bots_list)
+        """
+        try:
+            # Try Bearer token first, then fall back to API key/secret
+            bearer_token = os.getenv("LMEX_BEARER_TOKEN", "")
+            api_key = os.getenv("LMEX_API_KEY", "")
+            secret_key = os.getenv("LMEX_SECRET_KEY", "")
+            
+            path = "/taskExecutor/api/v1/tradingBots?marketType=FUTURES&botType=GRID"
+            url = f"https://api.lmex.io{path}"
+            
+            headers = {
+                "accept": "application/json, text/plain, */*",
+                "accept-language": "en"
+            }
+            
+            if bearer_token:
+                # Use Bearer token authentication
+                headers["authorization"] = f"Bearer {bearer_token}"
+            elif api_key and secret_key:
+                # Use standard LMEX API key authentication
+                nonce = str(int(time.time() * 1000))
+                sign_message = path + nonce
+                signature = self._generate_signature(path, nonce, "")
+                
+                headers["request-api"] = api_key
+                headers["request-nonce"] = nonce
+                headers["request-sign"] = signature
+            else:
+                # No credentials available
+                completion(None, [])
+                return
+            
+            response = requests.get(url, headers=headers)
+            
+            print(f"DEBUG: fetchGridBots raw => {response.text}")
+            
+            try:
+                data = response.json()
+                
+                if not data.get("success", False):
+                    error_msg = f"LMEX returned success={data.get('success')}, code={data.get('code')}, msg={data.get('msg', 'no message')}"
+                    error = Exception(f"Failed to retrieve LMEX bots: {error_msg}")
+                    completion(error, None)
+                    return
+                
+                raw_bots = data.get("data", {}).get("tradingBots", [])
+                
+                # Convert raw bot data to simplified format
+                bots = []
+                for row in raw_bots:
+                    direction = row.get("direction", "")
+                    detail = row.get("detail", {})
+                    position = detail.get("position", {})
+                    
+                    bot = {
+                        "tradingBotId": row["tradingBotId"],
+                        "symbol": row["symbol"],
+                        "totalProfit": float(row.get("totalProfit", "0")),
+                        "realizedProfit": float(row.get("realizedProfit", "0")),
+                        "unrealizedProfit": float(row.get("unrealizedProfit", "0")),
+                        "createdAt": row.get("createdAt"),
+                        "totalProfitInUsdt": float(row.get("totalProfitInUsdt", "0")),
+                        "direction": direction,
+                        "entryPrice": position.get("entryPrice", 0.0),
+                        "totalContracts": position.get("totalContracts", 0.0),
+                        "upperPrice": float(detail.get("upperPrice", "0")) if detail.get("upperPrice") else None,
+                        "lowerPrice": float(detail.get("lowerPrice", "0")) if detail.get("lowerPrice") else None
+                    }
+                    bots.append(bot)
+                
+                completion(None, bots)
+                
+            except (json.JSONDecodeError, KeyError) as e:
+                error = Exception(f"Failed to parse grid bots response: {str(e)}")
+                completion(error, None)
+                
+        except Exception as e:
+            completion(e, None)

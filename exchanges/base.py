@@ -2,25 +2,141 @@
 Exchange Interface - Abstract base class for all exchange implementations
 
 This module defines the unified interface that all exchange adapters must implement.
-It provides a consistent API for the Discord bot to interact with different exchanges.
+It provides a consistent API for interacting with different exchanges.
 """
 
 from abc import ABC, abstractmethod
 from typing import Optional, List, Dict, Any, Callable, Tuple
 from dataclasses import dataclass
 import time
-import logging
-from exchange_logging import ExchangeLogger
 
-# Import shared data structures from BitUnix (they're identical in both exchanges)
-from BitUnix import (
-    ExchangeOrderRequest,
-    ExchangeOrderResponse,
-    ExchangeTicker,
-    ExchangePosition,
-    ExchangeBalance,
-    ExchangeOrder
-)
+
+# Data structures
+@dataclass
+class ExchangeOrderRequest:
+    """Unified order request structure"""
+    symbol: str
+    side: str  # "BUY" or "SELL" 
+    orderType: str  # "LIMIT" or "MARKET"
+    qty: float
+    price: Optional[float] = None
+    orderLinkId: Optional[str] = None
+    timeInForce: str = "GTC"
+    
+    # BitUnix specific
+    positionIdx: Optional[int] = None  # 0: one-way, 1: buy-side, 2: sell-side
+    closeOnTrigger: Optional[bool] = None
+    reduceOnly: Optional[bool] = None
+    
+    # General
+    tradingType: str = "PERP"  # "PERP" or "SPOT"
+
+
+@dataclass
+class ExchangeOrderResponse:
+    """Unified order response structure"""
+    orderId: str
+    symbol: str
+    side: str
+    orderType: str
+    qty: float
+    price: Optional[float]
+    status: str
+    timeInForce: str
+    createTime: int
+    clientId: Optional[str] = None
+    rawResponse: Optional[Dict] = None
+    
+    def __init__(self, raw_response: Dict):
+        """Initialize from exchange response"""
+        self.rawResponse = raw_response
+        # Subclasses should override to extract fields
+
+
+class ExchangeTicker:
+    """Unified ticker structure"""
+    def __init__(self, symbol: str):
+        self.symbol = symbol
+        self.lastPrice: float = 0.0
+        self.bidPrice: float = 0.0
+        self.askPrice: float = 0.0
+        self.volume: float = 0.0
+        self.price: float = 0.0  # Alias for lastPrice
+
+
+@dataclass
+class ExchangePosition:
+    """Unified position structure"""
+    symbol: str
+    size: float  # Positive for long, negative for short
+    entryPrice: float
+    markPrice: float
+    pnl: float
+    pnlPercentage: float
+    positionIdx: Optional[int] = None
+    side: Optional[str] = None
+
+
+@dataclass
+class ExchangeBalance:
+    """Unified balance structure"""
+    asset: str
+    balance: float
+    available: float
+    locked: float
+
+
+@dataclass
+class ExchangeOrder:
+    """Unified order structure"""
+    orderId: str
+    symbol: str
+    side: str
+    orderType: str
+    qty: float
+    price: Optional[float]
+    status: str
+    timeInForce: str
+    createTime: int
+    clientId: Optional[str] = None
+    executedQty: Optional[float] = None
+
+
+# Protocol/Interface definition
+class ExchangeProtocol(ABC):
+    """
+    Abstract base class defining the interface for all exchange implementations.
+    """
+    
+    @abstractmethod
+    def fetchTickers(self, completion: Callable[[Tuple[str, Any]], None]):
+        """Fetch all tickers"""
+        pass
+    
+    @abstractmethod
+    def placeOrder(self, request: ExchangeOrderRequest, completion: Callable[[Tuple[str, Any]], None]):
+        """Place an order"""
+        pass
+    
+    @abstractmethod
+    def fetchBalance(self, completion: Callable[[Tuple[str, Any]], None]):
+        """Fetch account balance"""
+        pass
+    
+    @abstractmethod
+    def fetchPositions(self, completion: Callable[[Tuple[str, Any]], None]):
+        """Fetch open positions"""
+        pass
+    
+    @abstractmethod
+    def fetchOrders(self, completion: Callable[[Tuple[str, Any]], None]):
+        """Fetch open orders"""
+        pass
+    
+    @abstractmethod
+    def cancelOrder(self, orderID: str = None, clOrderID: str = None, symbol: str = None, completion=None):
+        """Cancel an order"""
+        pass
 
 
 # Standard position side constants
@@ -45,15 +161,6 @@ class ExchangeInterface(ABC):
     where completion is a callable that receives a tuple of (status, data).
     Status is either "success" or "failure", and data is the result or exception.
     """
-    
-    def __init__(self):
-        """Initialize the exchange interface with logging"""
-        self.logger = None
-    
-    def _init_logger(self):
-        """Initialize logger for the exchange (called by subclasses)"""
-        if not self.logger:
-            self.logger = ExchangeLogger.get_logger(self.get_name())
     
     @abstractmethod
     def get_name(self) -> str:
@@ -98,132 +205,53 @@ class ExchangeInterface(ABC):
     @abstractmethod
     def fetchTickers(self, completion: Callable[[Tuple[str, Any]], None]):
         """
-        Fetch all available tickers from the exchange.
+        Fetch ticker information for all symbols.
         
         Args:
-            completion: Callback with (status, data) where:
-                - success: data is List[ExchangeTicker]
-                - failure: data is Exception
+            completion: Callback function that receives (status, data)
+                       status: "success" or "failure"
+                       data: List[ExchangeTicker] on success, Exception on failure
         """
         pass
     
     @abstractmethod
-    def subscribeToTicker(self, symbol: str):
-        """Subscribe to real-time ticker updates for a symbol."""
-        pass
-    
-    @abstractmethod
-    def lastTradePrice(self, symbol: str) -> float:
-        """Get the last trade price for a symbol."""
-        pass
-    
-    # Account Methods
-    @abstractmethod
-    def fetchBalance(self, completion: Callable[[Tuple[str, Any]], None]):
+    def fetchSymbolInfo(self, symbol: str, completion: Callable[[Tuple[str, Any]], None]):
         """
-        Fetch account balances.
+        Fetch detailed information for a specific symbol.
         
         Args:
-            completion: Callback with (status, data) where:
-                - success: data is List[ExchangeBalance]
-                - failure: data is Exception
+            symbol: The trading symbol
+            completion: Callback function that receives (status, data)
         """
         pass
     
-    @abstractmethod
-    def fetchAccountEquity(self, completion: Callable[[Tuple[str, Any]], None]):
-        """
-        Fetch total account equity value.
-        
-        Args:
-            completion: Callback with (status, data) where:
-                - success: data is float (total equity in USDT)
-                - failure: data is Exception
-        """
-        pass
-    
-    @abstractmethod
-    def fetchAccountFeeInfo(self, completion: Callable[[Tuple[str, Any]], None]):
-        """
-        Fetch account fee information including VIP level.
-        
-        Args:
-            completion: Callback with (status, data) where:
-                - success: data is dict with keys:
-                    - vipLevel: int
-                    - makerFee: float (as decimal, e.g., 0.0002 for 0.02%)
-                    - takerFee: float
-                    - source: str (e.g., 'trade_analysis', 'default')
-                - failure: data is Exception
-        """
-        pass
-    
-    # Position Methods
-    @abstractmethod
-    def fetchPositions(self, completion: Callable[[Tuple[str, Any]], None]):
-        """
-        Fetch all open positions.
-        
-        Args:
-            completion: Callback with (status, data) where:
-                - success: data is List[ExchangePosition]
-                - failure: data is Exception
-        """
-        pass
-    
-    @abstractmethod
-    def fetchPositionTiers(self, symbol: str, completion: Callable[[Tuple[str, Any]], None]):
-        """
-        Fetch position tier/risk limit information for a symbol.
-        
-        Args:
-            symbol: Trading symbol
-            completion: Callback with (status, data) where:
-                - success: data is list of tier information
-                - failure: data is Exception
-        """
-        pass
-    
-    @abstractmethod
-    def fetchAccountRiskLimit(self, symbol: str, completion: Callable[[Tuple[str, Any]], None]):
-        """
-        Fetch account's current risk limit/tier for a symbol.
-        
-        Args:
-            symbol: Trading symbol
-            completion: Callback with (status, data) where:
-                - success: data is dict with risk limit info
-                - failure: data is Exception
-        """
-        pass
-    
-    # Order Methods
+    # Trading Methods
     @abstractmethod
     def placeOrder(self, request: ExchangeOrderRequest, completion: Callable[[Tuple[str, Any]], None]):
         """
-        Place a new order.
+        Place an order on the exchange.
         
         Args:
-            request: Order details
-            completion: Callback with (status, data) where:
-                - success: data is ExchangeOrderResponse
-                - failure: data is Exception
+            request: ExchangeOrderRequest with order details
+            completion: Callback function that receives (status, data)
+                       data: ExchangeOrderResponse on success
         """
         pass
     
     @abstractmethod
-    def cancelOrder(self, orderID: str = None, clOrderID: str = None, symbol: str = None, 
-                   completion: Callable[[Tuple[str, Any]], None] = None):
+    def cancelOrder(self, 
+                   orderID: Optional[str] = None,
+                   clOrderID: Optional[str] = None,
+                   symbol: Optional[str] = None,
+                   completion: Optional[Callable[[Tuple[str, Any]], None]] = None):
         """
-        Cancel an existing order.
+        Cancel an order by orderID or clOrderID.
         
         Args:
-            orderID: Exchange-assigned order ID
+            orderID: Server-assigned order ID
             clOrderID: Client-assigned order ID
-            symbol: Trading symbol (required for some exchanges)
-            completion: Callback with (status, data) where:
-                - success: data is cancel confirmation
-                - failure: data is Exception
+            symbol: Trading symbol (required by some exchanges)
+            completion: Callback function that receives (status, data)
         """
         pass
     
@@ -233,158 +261,41 @@ class ExchangeInterface(ABC):
         Fetch all open orders.
         
         Args:
-            completion: Callback with (status, data) where:
-                - success: data is List[ExchangeOrder]
-                - failure: data is Exception
+            completion: Callback function that receives (status, data)
+                       data: List[ExchangeOrder] on success
         """
         pass
     
+    # Account Methods
     @abstractmethod
-    def fetchHistoryOrders(self, start_time: int = None, end_time: int = None, 
-                          symbol: str = None, limit: int = 50,
-                          completion: Callable[[Tuple[str, Any]], None] = None):
+    def fetchBalance(self, completion: Callable[[Tuple[str, Any]], None]):
         """
-        Fetch order history.
+        Fetch account balance information.
         
         Args:
-            start_time: Start timestamp in milliseconds
-            end_time: End timestamp in milliseconds
-            symbol: Filter by symbol (optional)
-            limit: Maximum number of orders to return
-            completion: Callback with (status, data) where:
-                - success: data is list of historical orders
-                - failure: data is Exception
+            completion: Callback function that receives (status, data)
+                       data: List[ExchangeBalance] on success
         """
         pass
     
     @abstractmethod
-    def fetchHistoryTrades(self, start_time: int = None, end_time: int = None,
-                          symbol: str = None, orderId: str = None, limit: int = 50,
-                          completion: Callable[[Tuple[str, Any]], None] = None):
+    def fetchPositions(self, completion: Callable[[Tuple[str, Any]], None]):
         """
-        Fetch trade history.
+        Fetch all open positions.
         
         Args:
-            start_time: Start timestamp in milliseconds
-            end_time: End timestamp in milliseconds
-            symbol: Filter by symbol (optional)
-            orderId: Filter by order ID (optional)
-            limit: Maximum number of trades to return
-            completion: Callback with (status, data) where:
-                - success: data is list of historical trades
-                - failure: data is Exception
+            completion: Callback function that receives (status, data)
+                       data: List[ExchangePosition] on success
         """
         pass
     
-    # Leverage Methods
     @abstractmethod
-    def fetchLeverageAndMarginMode(self, symbol: str, marginCoin: str = "USDT",
-                                  completion: Callable[[Tuple[str, Any]], None] = None):
+    def fetchAccountEquity(self, completion: Callable[[Tuple[str, Any]], None]):
         """
-        Fetch current leverage and margin mode settings.
+        Fetch total account equity value.
         
         Args:
-            symbol: Trading symbol
-            marginCoin: Margin currency (default: USDT)
-            completion: Callback with (status, data) where:
-                - success: data is dict with leverage and margin mode
-                - failure: data is Exception
+            completion: Callback function that receives (status, data)
+                       data: float (total equity in USD) on success
         """
-        pass
-    
-    @abstractmethod
-    def setLeverage(self, symbol: str, leverage: int, marginCoin: str = "USDT",
-                   completion: Callable[[Tuple[str, Any]], None] = None):
-        """
-        Set leverage for a symbol.
-        
-        Args:
-            symbol: Trading symbol
-            leverage: Leverage multiplier (e.g., 10 for 10x)
-            marginCoin: Margin currency (default: USDT)
-            completion: Callback with (status, data) where:
-                - success: data is confirmation
-                - failure: data is Exception
-        """
-        pass
-    
-    # Utility Methods
-    @abstractmethod
-    def get_min_trade_volume(self, symbol: str) -> float:
-        """Get minimum trade volume for a symbol."""
-        pass
-    
-    @abstractmethod
-    def get_price_precision(self, symbol: str) -> int:
-        """Get price decimal precision for a symbol."""
-        pass
-    
-    @abstractmethod
-    def get_quantity_precision(self, symbol: str) -> int:
-        """Get quantity decimal precision for a symbol."""
-        pass
-    
-    # Price Management Methods
-    @abstractmethod
-    def getCurrentPrice(self, symbol: str) -> float:
-        """
-        Get current market price for symbol in USD/USDT.
-        
-        Args:
-            symbol: Trading symbol
-            
-        Returns:
-            Current price in USD/USDT
-        """
-        pass
-    
-    @abstractmethod
-    def validateAndAdjustPrice(self, symbol: str, price: float, side: str) -> float:
-        """
-        Validate and adjust price to meet exchange requirements.
-        
-        Args:
-            symbol: Trading symbol
-            price: Proposed price
-            side: Order side (BUY/SELL, LONG/SHORT)
-            
-        Returns:
-            Adjusted price that meets exchange requirements
-        """
-        pass
-    
-    # Quantity Management Methods
-    @abstractmethod
-    def normalizeQuantity(self, symbol: str, qty: float, price: float) -> float:
-        """
-        Convert standard BTC quantity to exchange-specific unit.
-        
-        Args:
-            symbol: Trading symbol
-            qty: Quantity in standard units (e.g., BTC amount)
-            price: Order price (needed for contract calculation)
-            
-        Returns:
-            Quantity in exchange-specific units
-        """
-        pass
-    
-    @abstractmethod
-    def getMinimumOrderSize(self, symbol: str, price: float) -> float:
-        """
-        Get minimum order size in standard units (e.g., BTC).
-        
-        Args:
-            symbol: Trading symbol
-            price: Order price (needed for value calculation)
-            
-        Returns:
-            Minimum order size in standard units
-        """
-        pass
-    
-    # WebSocket Methods
-    @abstractmethod
-    def subscribeToOrders(self, symbols: List[str]):
-        """Subscribe to real-time order updates for multiple symbols."""
         pass
