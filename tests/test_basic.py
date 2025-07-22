@@ -1,6 +1,5 @@
 """Basic tests for the exchange library"""
 
-import pytest
 from unittest.mock import Mock, patch
 from exchanges.lmex import LMEXExchange
 from exchanges.bitunix import BitUnixExchange
@@ -168,4 +167,4 @@ class TestExchangeOrderRequest:
 
 
 if __name__ == "__main__":
-    pytest.main([__file__])
+    print("Run with pytest or use run_tests.py")

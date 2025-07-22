@@ -69,6 +69,7 @@ class BitUnixExchange(ExchangeProtocol):
     
     def __init__(self):
         self.precision_manager = SymbolPrecisionManager.get_instance("BitUnix")
+        self.base_url = "https://api.bitunix.com"
 
     @property
     def webSocketManager(self) -> ExchangeWebSocketManagerProtocol:

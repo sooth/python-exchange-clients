@@ -21,8 +21,7 @@ from .base import (
     TradingType,
 )
 
-# Import adapters
-from .adapters import LMEXAdapter, BitUnixAdapter
+# Adapters are optional and can be imported separately if needed
 
 __all__ = [
     # Version info
@@ -45,7 +44,4 @@ __all__ = [
     "PositionSide",
     "TradingType",
     
-    # Adapters
-    "LMEXAdapter",
-    "BitUnixAdapter",
 ]
