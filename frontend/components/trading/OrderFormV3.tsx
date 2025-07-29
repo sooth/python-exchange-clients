@@ -74,33 +74,109 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
     }
   }, [orderType, currentPrice])
 
-  // Calculate TP/SL prices based on percentages
+  // Handle TP percentage change -> update price
+  const handleTakeProfitPercentChange = (value: string) => {
+    setTakeProfitPercent(value)
+    if (effectiveEntryPrice > 0 && value) {
+      const percent = parseFloat(value) / 100
+      const price = side === 'buy' 
+        ? effectiveEntryPrice * (1 + percent)
+        : effectiveEntryPrice * (1 - percent)
+      setTakeProfitPrice(price.toFixed(2))
+    }
+  }
+
+  // Handle TP price change -> update percentage
+  const handleTakeProfitPriceChange = (value: string) => {
+    setTakeProfitPrice(value)
+    if (effectiveEntryPrice > 0 && value) {
+      const price = parseFloat(value)
+      let percent = 0
+      if (side === 'buy') {
+        percent = ((price - effectiveEntryPrice) / effectiveEntryPrice) * 100
+      } else {
+        percent = ((effectiveEntryPrice - price) / effectiveEntryPrice) * 100
+      }
+      setTakeProfitPercent(Math.abs(percent).toFixed(1))
+    }
+  }
+
+  // Handle SL percentage change -> update price
+  const handleStopLossPercentChange = (value: string) => {
+    setStopLossPercent(value)
+    if (effectiveEntryPrice > 0 && value) {
+      const percent = parseFloat(value) / 100
+      const price = side === 'buy' 
+        ? effectiveEntryPrice * (1 - percent)
+        : effectiveEntryPrice * (1 + percent)
+      setStopLossPrice(price.toFixed(2))
+    }
+  }
+
+  // Handle SL price change -> update percentage
+  const handleStopLossPriceChange = (value: string) => {
+    setStopLossPrice(value)
+    if (effectiveEntryPrice > 0 && value) {
+      const price = parseFloat(value)
+      let percent = 0
+      if (side === 'buy') {
+        percent = ((effectiveEntryPrice - price) / effectiveEntryPrice) * 100
+      } else {
+        percent = ((price - effectiveEntryPrice) / effectiveEntryPrice) * 100
+      }
+      setStopLossPercent(Math.abs(percent).toFixed(1))
+    }
+  }
+
+  // Initialize TP/SL when entry price or side changes
   useEffect(() => {
     if (effectiveEntryPrice > 0) {
-      const tpPercent = parseFloat(takeProfitPercent || '0') / 100
-      const slPercent = parseFloat(stopLossPercent || '0') / 100
-
-      if (side === 'buy') {
-        const tpPrice = effectiveEntryPrice * (1 + tpPercent)
-        const slPrice = effectiveEntryPrice * (1 - slPercent)
-        setTakeProfitPrice(tpPrice.toFixed(2))
-        setStopLossPrice(slPrice.toFixed(2))
-      } else {
-        const tpPrice = effectiveEntryPrice * (1 - tpPercent)
-        const slPrice = effectiveEntryPrice * (1 + slPercent)
-        setTakeProfitPrice(tpPrice.toFixed(2))
-        setStopLossPrice(slPrice.toFixed(2))
+      // Only update if fields are empty (initial load)
+      if (!takeProfitPrice) {
+        handleTakeProfitPercentChange(takeProfitPercent)
+      }
+      if (!stopLossPrice) {
+        handleStopLossPercentChange(stopLossPercent)
       }
     }
-  }, [effectiveEntryPrice, takeProfitPercent, stopLossPercent, side])
+  }, [effectiveEntryPrice, side])
 
-  // Calculate amount in USD
-  useEffect(() => {
-    if (effectiveEntryPrice > 0 && amount) {
-      const usdValue = parseFloat(amount) * effectiveEntryPrice
+  // Handle amount change -> update USD
+  const handleAmountChange = (value: string) => {
+    setAmount(value)
+    if (effectiveEntryPrice > 0 && value) {
+      const assetAmount = parseFloat(value)
+      const usdValue = assetAmount * effectiveEntryPrice
       setAmountInUSD(usdValue.toFixed(2))
     }
-  }, [effectiveEntryPrice, amount])
+  }
+
+  // Handle USD amount change -> update asset amount
+  const handleAmountInUSDChange = (value: string) => {
+    setAmountInUSD(value)
+    if (effectiveEntryPrice > 0 && value) {
+      const usdValue = parseFloat(value)
+      const assetAmount = usdValue / effectiveEntryPrice
+      setAmount(assetAmount.toFixed(4))
+    }
+  }
+
+  // Initialize amount when entry price changes
+  useEffect(() => {
+    if (effectiveEntryPrice > 0) {
+      // If we have an amount but no USD value, calculate USD
+      if (amount && !amountInUSD) {
+        const usdValue = parseFloat(amount) * effectiveEntryPrice
+        setAmountInUSD(usdValue.toFixed(2))
+      }
+      // If we have USD but no amount, calculate amount
+      else if (amountInUSD && !amount) {
+        const usdValue = parseFloat(amountInUSD)
+        const assetAmount = usdValue / effectiveEntryPrice
+        setAmount(assetAmount.toFixed(4))
+      }
+    }
+  }, [effectiveEntryPrice])
 
   // PnL Calculations
   const calculations = useMemo(() => {
@@ -246,15 +322,9 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
         {/* Entry price */}
         <div>
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-gray-400">Entry price *</span>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-gray-500">Type</span>
-              <span className="text-[10px] text-gray-500">Place</span>
-              <span className="text-[10px] text-gray-500">Reduce</span>
-            </div>
+            <span className="text-xs text-gray-400">Market entry</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500 w-12">MKT</span>
             <input
               type="number"
               value={entryPrice}
@@ -263,23 +333,21 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
               className="flex-1 px-3 py-1.5 bg-[#2a2d3a] rounded text-white text-sm disabled:opacity-50"
               step="0.01"
             />
-            <button
-              type="button"
-              className="px-2 py-1 bg-[#2a2d3a] text-xs text-gray-300 rounded flex items-center gap-1"
-              onClick={() => setOrderType(orderType === 'Market' ? 'Limit' : 'Market')}
-            >
-              USD
+            <span className="px-2 py-1 bg-[#2a2d3a] text-xs text-gray-300 rounded">USD</span>
+            <span className="text-xs text-gray-500">≈</span>
+            <div className="relative w-[120px]">
               <select
                 value={orderType}
                 onChange={(e) => setOrderType(e.target.value as 'Market' | 'Limit')}
-                className="bg-transparent outline-none text-xs"
+                className="w-full px-2 py-1.5 pr-8 bg-[#2a2d3a] rounded text-center text-white text-sm appearance-none cursor-pointer"
               >
                 <option value="Market">Market</option>
                 <option value="Limit">Limit</option>
               </select>
-            </button>
-            <CustomCheckbox checked={true} onChange={() => {}} disabled />
-            <div className="w-4 h-4" /> {/* Spacer for reduce column */}
+              <svg className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
         </div>
 
@@ -287,13 +355,13 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
         <div>
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs text-gray-400">Take profit exit</span>
-            <span className="text-[10px] text-gray-500">% Gain</span>
+            <span className="text-[10px] text-gray-500">Reduce</span>
           </div>
           <div className="flex items-center gap-2">
             <input
               type="number"
               value={takeProfitPrice}
-              onChange={(e) => setTakeProfitPrice(e.target.value)}
+              onChange={(e) => handleTakeProfitPriceChange(e.target.value)}
               className="flex-1 px-3 py-1.5 bg-[#2a2d3a] rounded text-white text-sm"
               step="0.01"
               disabled={!placeTakeProfit}
@@ -303,16 +371,12 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
             <input
               type="number"
               value={takeProfitPercent}
-              onChange={(e) => setTakeProfitPercent(e.target.value)}
+              onChange={(e) => handleTakeProfitPercentChange(e.target.value)}
               className="w-16 px-2 py-1.5 bg-[#2a2d3a] rounded text-right text-white text-sm"
               step="0.1"
               disabled={!placeTakeProfit}
             />
             <span className="text-xs text-gray-500">%</span>
-            <CustomCheckbox
-              checked={placeTakeProfit}
-              onChange={setPlaceTakeProfit}
-            />
             <CustomCheckbox
               checked={takeProfitReduce}
               onChange={setTakeProfitReduce}
@@ -325,13 +389,13 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
         <div>
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs text-gray-400">Stop loss</span>
-            <span className="text-[10px] text-gray-500">% Loss</span>
+            <span className="text-[10px] text-gray-500">Reduce</span>
           </div>
           <div className="flex items-center gap-2">
             <input
               type="number"
               value={stopLossPrice}
-              onChange={(e) => setStopLossPrice(e.target.value)}
+              onChange={(e) => handleStopLossPriceChange(e.target.value)}
               className="flex-1 px-3 py-1.5 bg-[#2a2d3a] rounded text-white text-sm"
               step="0.01"
               disabled={!placeStopLoss}
@@ -341,16 +405,12 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
             <input
               type="number"
               value={stopLossPercent}
-              onChange={(e) => setStopLossPercent(e.target.value)}
+              onChange={(e) => handleStopLossPercentChange(e.target.value)}
               className="w-16 px-2 py-1.5 bg-[#2a2d3a] rounded text-right text-white text-sm"
               step="0.1"
               disabled={!placeStopLoss}
             />
             <span className="text-xs text-gray-500">%</span>
-            <CustomCheckbox
-              checked={placeStopLoss}
-              onChange={setPlaceStopLoss}
-            />
             <CustomCheckbox
               checked={stopLossReduce}
               onChange={setStopLossReduce}
@@ -363,38 +423,32 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
         <div>
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs text-gray-400">Amount</span>
-            <span className="text-xs text-gray-400">Amount</span>
           </div>
           <div className="flex items-center gap-2">
             <input
               type="number"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => handleAmountChange(e.target.value)}
               className="flex-1 px-3 py-1.5 bg-[#2a2d3a] rounded text-white text-sm"
               step="0.001"
             />
-            <span className="px-2 py-1 bg-[#2a2d3a] text-xs text-gray-300 rounded">BTC</span>
+            <span className="px-2 py-1 bg-[#2a2d3a] text-xs text-gray-300 rounded">{baseAsset}</span>
             <span className="text-xs text-gray-500">≈</span>
             <input
               type="number"
               value={amountInUSD}
-              onChange={(e) => {
-                const usdValue = parseFloat(e.target.value || '0')
-                if (effectiveEntryPrice > 0) {
-                  setAmount((usdValue / effectiveEntryPrice).toFixed(4))
-                }
-              }}
-              className="flex-1 px-3 py-1.5 bg-[#2a2d3a] rounded text-white text-sm"
+              onChange={(e) => handleAmountInUSDChange(e.target.value)}
+              className="w-24 px-2 py-1.5 bg-[#2a2d3a] rounded text-right text-white text-sm"
               step="0.01"
             />
-            <span className="px-2 py-1 bg-[#2a2d3a] text-xs text-gray-300 rounded">USD</span>
+            <span className="px-2 py-1 bg-[#2a2d3a] text-xs text-gray-300 rounded mr-2">USD</span>
           </div>
         </div>
 
         {/* PnL calculations */}
         <div className="grid grid-cols-3 gap-2 p-3 bg-[#2a2d3a] rounded">
           <div className="text-center">
-            <div className="text-base font-medium text-white">
+            <div className="text-base font-medium text-[#00d395]">
               {calculations.exitPnL >= 0 ? '+' : ''}{calculations.exitPnL.toFixed(2)} USD
             </div>
             <div className="text-[10px] text-gray-400">Exit PnL</div>
