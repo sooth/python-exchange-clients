@@ -1,0 +1,260 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import grid layout styles */
+@import '../styles/grid-layout.css';
+
+@layer base {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-rgb: 11, 14, 17;
+  }
+
+  * {
+    @apply border-border-primary;
+  }
+
+  html {
+    @apply bg-background-primary;
+  }
+
+  body {
+    @apply bg-background-primary text-text-primary;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-background-secondary;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-background-hover rounded-sm;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-border-primary;
+  }
+
+  /* Thin scrollbar utilities */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .scrollbar-thumb-border-primary::-webkit-scrollbar-thumb {
+    @apply bg-border-primary;
+  }
+
+  .scrollbar-track-background-secondary::-webkit-scrollbar-track {
+    @apply bg-background-secondary;
+  }
+
+  /* Remove input arrows */
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn {
+    @apply px-3 py-1.5 text-sm font-medium transition-all duration-150 focus:outline-none;
+  }
+
+  .btn-primary {
+    @apply btn bg-accent-primary hover:bg-accent-hover text-background-primary;
+  }
+
+  .btn-success {
+    @apply btn bg-success hover:brightness-110 text-background-primary;
+  }
+
+  .btn-error {
+    @apply btn bg-error hover:brightness-110 text-white;
+  }
+
+  .btn-secondary {
+    @apply btn bg-background-tertiary hover:bg-background-hover text-text-primary border border-border-primary;
+  }
+
+  /* Inputs */
+  .input {
+    @apply w-full px-2 py-1.5 text-sm bg-background-secondary border border-border-primary 
+           focus:outline-none focus:border-accent-primary text-text-primary placeholder-text-muted;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-background-tertiary border border-border-secondary;
+  }
+
+  /* Tables */
+  .table-header {
+    @apply text-xs font-normal text-text-secondary uppercase;
+  }
+
+  /* Market list items */
+  .market-item {
+    @apply px-2 py-1 hover:bg-background-hover cursor-pointer transition-colors duration-100;
+  }
+
+  .market-item-active {
+    @apply bg-background-hover;
+  }
+
+  /* Order book styles */
+  .orderbook-bid {
+    @apply relative;
+  }
+
+  .orderbook-bid::before {
+    content: '';
+    @apply absolute inset-0 bg-success opacity-10;
+  }
+
+  .orderbook-ask {
+    @apply relative;
+  }
+
+  .orderbook-ask::before {
+    content: '';
+    @apply absolute inset-0 bg-error opacity-10;
+  }
+
+  /* Price display styles */
+  .price-up {
+    @apply text-success;
+  }
+
+  .price-down {
+    @apply text-error;
+  }
+
+  .price-neutral {
+    @apply text-text-secondary;
+  }
+
+  /* Tab styles */
+  .tab {
+    @apply px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary 
+           cursor-pointer transition-colors duration-150;
+  }
+
+  .tab-active {
+    @apply text-text-primary border-b-2 border-accent-primary;
+  }
+
+  /* Form group */
+  .form-group {
+    @apply space-y-1;
+  }
+
+  .form-label {
+    @apply text-xs text-text-secondary;
+  }
+
+  /* Trading form specific */
+  .trade-input {
+    @apply input text-right font-mono;
+  }
+
+  /* Dropdown */
+  .dropdown {
+    @apply relative inline-block;
+  }
+
+  .dropdown-menu {
+    @apply absolute z-50 mt-1 bg-background-tertiary border border-border-primary shadow-lg;
+  }
+
+  .dropdown-item {
+    @apply px-3 py-2 text-sm hover:bg-background-hover cursor-pointer;
+  }
+}
+
+@layer utilities {
+  /* Text utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Animation utilities */
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-flash {
+    animation: flash 0.5s ease-in-out;
+  }
+
+  @keyframes flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* Number formatting */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Hover brightness */
+  .hover-bright:hover {
+    filter: brightness(1.1);
+  }
+
+  /* Drag and Drop Styles */
+  .drag-handle {
+    cursor: grab;
+    opacity: 0;
+    transition: opacity 0.2s;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .drag-handle:hover {
+    opacity: 1;
+  }
+
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+
+  /* Show drag handles on panel hover */
+  [data-panel]:hover .drag-handle {
+    opacity: 0.7;
+  }
+
+  /* Dragging states */
+  .dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+  }
+
+  .drag-overlay {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    cursor: grabbing;
+  }
+
+  /* Drop zone indicators */
+  .drop-indicator {
+    background-color: rgba(0, 211, 149, 0.1);
+    border: 2px dashed rgb(0, 211, 149);
+    transition: all 0.2s;
+  }
+}

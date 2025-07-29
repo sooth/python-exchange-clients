@@ -10,6 +10,36 @@ A unified Python library for interacting with multiple cryptocurrency exchanges 
 - **WebSocket Support**: Real-time data streaming (where supported)
 - **Grid Bot Support**: Create and manage grid trading bots on LMEX
 - **Type Safety**: Full type hints for better IDE support
+- **Local Trading Platform**: Web-based trading interface for local use only
+
+## Unified Trading Platform
+
+This project includes a complete web-based trading platform designed for **local use only**. The platform provides:
+
+- **Backend API**: FastAPI server with REST endpoints and WebSocket support
+- **Frontend**: Next.js trading interface with real-time market data
+- **No Authentication**: Designed for single-user local deployment
+- **Real-time Updates**: Live market data and position tracking
+- **Exchange Integration**: Direct integration with exchange APIs
+
+### Starting the Trading Platform
+
+1. Start the backend server:
+```bash
+cd backend
+uvicorn main:app --reload --port 8001
+```
+
+2. Start the frontend:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+3. Access the platform at `http://localhost:3000`
+
+**Important**: This platform is designed for local use only and has no authentication or security features. Do not expose it to the internet.
 
 ## Installation
 
@@ -256,14 +286,22 @@ def callback(status, result):
 
 ## Environment Variables
 
-The library uses the following environment variables:
+The library and trading platform use the following environment variables:
 
+### Exchange API Keys
 - `LMEX_API_KEY`: Your LMEX API key
 - `LMEX_SECRET_KEY`: Your LMEX secret key
 - `LMEX_BEARER_TOKEN`: Optional LMEX bearer token for grid bot features
 - `BITUNIX_API_KEY`: Your BitUnix API key
 - `BITUNIX_SECRET_KEY`: Your BitUnix secret key
 - `BITUNIX_PASSPHRASE`: Your BitUnix passphrase
+
+### Trading Platform Configuration
+- `DATABASE_URL`: Database connection string (default: `sqlite:///./trading.db`)
+- `REDIS_URL`: Redis connection string (default: `redis://localhost:6379`)
+- `LOG_LEVEL`: Logging level (default: `INFO`)
+
+The backend will automatically load API keys from the environment or `.env` file.
 
 ## Testing
 

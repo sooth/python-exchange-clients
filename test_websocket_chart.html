@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LMEX WebSocket Chart Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: #fff; }
+        .status { margin: 10px 0; padding: 10px; background: #333; border-radius: 5px; }
+        .connected { background: #1a4d1a; }
+        .trade { margin: 5px 0; padding: 5px; background: #2a2a2a; }
+        .candle { margin: 5px 0; padding: 10px; background: #2a3a4a; border-radius: 5px; }
+        #log { height: 400px; overflow-y: auto; background: #111; padding: 10px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>LMEX WebSocket Chart Test</h1>
+    
+    <div id="status" class="status">Disconnected</div>
+    
+    <button onclick="connect()">Connect</button>
+    <button onclick="disconnect()">Disconnect</button>
+    <button onclick="subscribe()">Subscribe to BTC-PERP</button>
+    
+    <h2>Candles</h2>
+    <div id="candles"></div>
+    
+    <h2>Log</h2>
+    <div id="log"></div>
+
+    <script>
+        let ws = null;
+        let aggregators = new Map();
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function updateStatus(connected) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = connected ? 'Connected' : 'Disconnected';
+            statusDiv.className = connected ? 'status connected' : 'status';
+        }
+        
+        function connect() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                log('Already connected');
+                return;
+            }
+            
+            ws = new WebSocket('wss://ws.lmex.io/ws/futures');
+            
+            ws.onopen = () => {
+                log('WebSocket connected');
+                updateStatus(true);
+            };
+            
+            ws.onmessage = (event) => {
+                try {
+                    const message = JSON.parse(event.data);
+                    
+                    if (message.event === 'subscribe' && message.success) {
+                        log(`Subscribed to: ${message.args}`);
+                    } else if (message.topic && message.data) {
+                        processTrades(message.data);
+                    }
+                } catch (error) {
+                    log(`Error parsing message: ${error}`);
+                }
+            };
+            
+            ws.onerror = (error) => {
+                log(`WebSocket error: ${error}`);
+            };
+            
+            ws.onclose = () => {
+                log('WebSocket disconnected');
+                updateStatus(false);
+            };
+        }
+        
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+        
+        function subscribe() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                log('Not connected');
+                return;
+            }
+            
+            const message = {
+                op: 'subscribe',
+                args: ['tradeHistoryApiV2:BTC-PERP']
+            };
+            
+            ws.send(JSON.stringify(message));
+            log(`Sent subscription: ${JSON.stringify(message)}`);
+            
+            // Initialize aggregators for different timeframes
+            ['1m', '5m', '15m'].forEach(timeframe => {
+                aggregators.set(timeframe, {
+                    timeframe,
+                    currentCandle: null,
+                    trades: []
+                });
+            });
+        }
+        
+        function processTrades(trades) {
+            log(`Received ${trades.length} trades`);
+            
+            trades.forEach(trade => {
+                // Process for each timeframe
+                aggregators.forEach((aggregator, timeframe) => {
+                    aggregateTrade(aggregator, trade);
+                });
+            });
+            
+            updateCandleDisplay();
+        }
+        
+        function getTimeframePeriod(timeframe) {
+            const match = timeframe.match(/^(\d+)([mhd])$/);
+            if (!match) return 60;
+            
+            const value = parseInt(match[1]);
+            const unit = match[2];
+            
+            switch (unit) {
+                case 'm': return value * 60;
+                case 'h': return value * 3600;
+                case 'd': return value * 86400;
+                default: return 60;
+            }
+        }
+        
+        function aggregateTrade(aggregator, trade) {
+            const candlePeriod = getTimeframePeriod(aggregator.timeframe);
+            const candleTime = Math.floor(trade.timestamp / 1000 / candlePeriod) * candlePeriod;
+            
+            if (!aggregator.currentCandle || aggregator.currentCandle.timestamp !== candleTime) {
+                // Start new candle
+                aggregator.currentCandle = {
+                    timestamp: candleTime,
+                    open: trade.price,
+                    high: trade.price,
+                    low: trade.price,
+                    close: trade.price,
+                    volume: trade.size,
+                    trades: 1
+                };
+            } else {
+                // Update existing candle
+                aggregator.currentCandle.high = Math.max(aggregator.currentCandle.high, trade.price);
+                aggregator.currentCandle.low = Math.min(aggregator.currentCandle.low, trade.price);
+                aggregator.currentCandle.close = trade.price;
+                aggregator.currentCandle.volume += trade.size;
+                aggregator.currentCandle.trades++;
+            }
+        }
+        
+        function updateCandleDisplay() {
+            const candlesDiv = document.getElementById('candles');
+            candlesDiv.innerHTML = '';
+            
+            aggregators.forEach((aggregator, timeframe) => {
+                if (aggregator.currentCandle) {
+                    const candle = aggregator.currentCandle;
+                    const div = document.createElement('div');
+                    div.className = 'candle';
+                    div.innerHTML = `
+                        <strong>${timeframe} Candle</strong><br>
+                        Time: ${new Date(candle.timestamp * 1000).toLocaleTimeString()}<br>
+                        Open: ${candle.open.toFixed(1)}<br>
+                        High: ${candle.high.toFixed(1)}<br>
+                        Low: ${candle.low.toFixed(1)}<br>
+                        Close: ${candle.close.toFixed(1)}<br>
+                        Volume: ${candle.volume.toFixed(0)}<br>
+                        Trades: ${candle.trades}
+                    `;
+                    candlesDiv.appendChild(div);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

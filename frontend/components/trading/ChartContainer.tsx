@@ -1,0 +1,603 @@
+'use client'
+
+import { useEffect, useRef, useState, useCallback } from 'react'
+import { createChart, ColorType, IChartApi, ISeriesApi, UTCTimestamp } from 'lightweight-charts'
+import { marketApi } from '@/lib/api'
+import { useMarket } from '@/contexts/MarketContext'
+import { getChartWebSocket } from '@/lib/websocket/lmexChartWebSocket'
+import { getOrderbookWebSocket, type BestBidAsk } from '@/lib/websocket/lmexOrderbookWebSocket'
+import { Candle } from '@/types/market'
+import type { CandleResponse } from '@/types/candle'
+
+interface ChartContainerProps {
+  symbol: string
+}
+
+export function ChartContainer({ symbol }: ChartContainerProps) {
+  const chartContainerRef = useRef<HTMLDivElement>(null)
+  const chartRef = useRef<IChartApi | null>(null)
+  const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null)
+  const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null)
+  const [selectedTimeframe, setSelectedTimeframe] = useState('1h')
+  const [isLoading, setIsLoading] = useState(true)
+  const [isConnected, setIsConnected] = useState(false)
+  const { selectedExchange } = useMarket()
+  const wsRef = useRef<ReturnType<typeof getChartWebSocket> | null>(null)
+  const orderbookWsRef = useRef<ReturnType<typeof getOrderbookWebSocket> | null>(null)
+  const candleMapRef = useRef<Map<number, any>>(new Map())
+  const selectedTimeframeRef = useRef(selectedTimeframe)
+  const lastCandleRef = useRef<{ time: number; candle: any & { volume?: number } } | null>(null)
+
+  // Update ref when timeframe changes
+  useEffect(() => {
+    selectedTimeframeRef.current = selectedTimeframe
+  }, [selectedTimeframe])
+
+  // WebSocket candle update handler
+  const handleCandleUpdate = useCallback((candle: Candle, timeframe: string) => {
+    if (timeframe !== selectedTimeframeRef.current) return
+    if (!candleSeriesRef.current || !volumeSeriesRef.current) return
+
+    const chartCandle = {
+      time: candle.timestamp as UTCTimestamp,
+      open: candle.open,
+      high: candle.high,
+      low: candle.low,
+      close: candle.close,
+    }
+
+    const volumeBar = {
+      time: candle.timestamp as UTCTimestamp,
+      value: candle.volume,
+      color: candle.close >= candle.open ? '#00d39533' : '#dd585833',
+    }
+
+    candleSeriesRef.current.update(chartCandle)
+    volumeSeriesRef.current.update(volumeBar)
+  }, []) // Empty deps - uses ref for selectedTimeframe
+
+  useEffect(() => {
+    if (!chartContainerRef.current) return
+
+    let chart: IChartApi | null = null
+    
+    // Create chart
+    chart = createChart(chartContainerRef.current, {
+      layout: {
+        background: { type: ColorType.Solid, color: '#1a1d29' },
+        textColor: '#8b8b8b',
+      },
+      grid: {
+        vertLines: { color: '#2a2d3a' },
+        horzLines: { color: '#2a2d3a' },
+      },
+      crosshair: {
+        mode: 1,
+        vertLine: {
+          color: '#2a2d3a',
+          labelBackgroundColor: '#2a2d3a',
+        },
+        horzLine: {
+          color: '#2a2d3a',
+          labelBackgroundColor: '#2a2d3a',
+        },
+      },
+      rightPriceScale: {
+        borderColor: '#2a2d3a',
+      },
+      timeScale: {
+        borderColor: '#2a2d3a',
+        timeVisible: true,
+        secondsVisible: false,
+      },
+    })
+
+    // Add candlestick series
+    const candleSeries = chart.addCandlestickSeries({
+      upColor: '#00d395',
+      downColor: '#f6465d',
+      borderVisible: false,
+      wickUpColor: '#00d395',
+      wickDownColor: '#f6465d',
+    })
+
+    // Add volume series
+    const volumeSeries = chart.addHistogramSeries({
+      color: '#26a69a',
+      priceFormat: {
+        type: 'volume',
+      },
+      priceScaleId: '',
+    })
+
+    chart.priceScale('').applyOptions({
+      scaleMargins: {
+        top: 0.8,
+        bottom: 0,
+      },
+    })
+
+    // Store refs
+    chartRef.current = chart
+    candleSeriesRef.current = candleSeries
+    volumeSeriesRef.current = volumeSeries
+
+    // Handle resize with ResizeObserver for panel resizing
+    const handleResize = () => {
+      if (chartContainerRef.current && chart) {
+        try {
+          chart.applyOptions({
+            width: chartContainerRef.current.clientWidth,
+            height: chartContainerRef.current.clientHeight,
+          })
+        } catch (error) {
+          console.error('Error resizing chart:', error)
+        }
+      }
+    }
+
+    // Use ResizeObserver to handle panel resizing
+    const resizeObserver = new ResizeObserver((entries) => {
+      // Only resize if chart still exists
+      if (chart && chartContainerRef.current) {
+        handleResize()
+      }
+    })
+    if (chartContainerRef.current) {
+      resizeObserver.observe(chartContainerRef.current)
+    }
+
+    // Also handle window resize
+    window.addEventListener('resize', handleResize)
+    handleResize()
+
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener('resize', handleResize)
+      
+      // Clean up the chart immediately
+      if (chart) {
+        try {
+          chart.remove()
+          chart = null
+        } catch (e) {
+          console.error('Error removing chart:', e)
+        }
+      }
+      chartRef.current = null
+      candleSeriesRef.current = null
+      volumeSeriesRef.current = null
+    }
+  }, [])
+
+  // Fetch and update chart data
+  useEffect(() => {
+    const fetchChartData = async () => {
+      if (!candleSeriesRef.current || !volumeSeriesRef.current) return
+
+      setIsLoading(true)
+      try {
+        const candles: CandleResponse[] = await marketApi.getCandles(symbol, selectedTimeframe, selectedExchange, 200)
+        
+        // Transform data for lightweight-charts
+        const chartData = candles.map((candle: CandleResponse) => {
+          // Parse timestamp - backend sends "2025-07-28T16:00:00" format without timezone
+          // Treat as UTC by appending 'Z'
+          const timestamp = candle.timestamp.endsWith('Z') ? candle.timestamp : `${candle.timestamp}Z`
+          const time = Math.floor(new Date(timestamp).getTime() / 1000) as UTCTimestamp
+          
+          // Convert string prices to numbers
+          return {
+            time,
+            open: parseFloat(String(candle.open)),
+            high: parseFloat(String(candle.high)),
+            low: parseFloat(String(candle.low)),
+            close: parseFloat(String(candle.close)),
+          }
+        })
+
+        const volumeData = candles.map((candle: CandleResponse) => {
+          // Parse timestamp - backend sends "2025-07-28T16:00:00" format without timezone
+          // Treat as UTC by appending 'Z'
+          const timestamp = candle.timestamp.endsWith('Z') ? candle.timestamp : `${candle.timestamp}Z`
+          const time = Math.floor(new Date(timestamp).getTime() / 1000) as UTCTimestamp
+          
+          // Convert string values to numbers
+          const open = parseFloat(String(candle.open))
+          const close = parseFloat(String(candle.close))
+          
+          return {
+            time,
+            value: parseFloat(String(candle.volume)),
+            color: close >= open ? '#00d39533' : '#dd585833',
+          }
+        })
+
+        // Update chart
+        candleSeriesRef.current.setData(chartData)
+        volumeSeriesRef.current.setData(volumeData)
+
+        // Store candles in map for reference
+        candleMapRef.current.clear()
+        chartData.forEach(candle => {
+          candleMapRef.current.set(candle.time, candle)
+        })
+
+        // Store the last candle for price updates
+        if (chartData.length > 0) {
+          const lastCandle = chartData[chartData.length - 1]
+          lastCandleRef.current = { time: lastCandle.time, candle: lastCandle }
+        }
+
+        // Fit content
+        if (chartRef.current) {
+          chartRef.current.timeScale().fitContent()
+        }
+      } catch (error) {
+        console.error('Failed to fetch chart data:', error)
+        // Fall back to sample data if real data fails
+        const sampleData = generateSampleData()
+        candleSeriesRef.current.setData(sampleData)
+        volumeSeriesRef.current.setData(
+          sampleData.map(d => ({
+            time: d.time,
+            value: d.volume,
+            color: d.close >= d.open ? '#00d39533' : '#dd585833',
+          }))
+        )
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchChartData()
+    
+    // Don't use interval refresh when WebSocket is active
+  }, [symbol, selectedTimeframe, selectedExchange])
+
+  // WebSocket connection for real-time updates
+  useEffect(() => {
+    // Only connect WebSocket for LMEX exchange
+    if (selectedExchange !== 'lmex') {
+      // Clean up if switching away from LMEX
+      if (wsRef.current) {
+        wsRef.current.disconnect()
+        wsRef.current = null
+      }
+      return
+    }
+
+    // Get or create WebSocket instance
+    if (!wsRef.current) {
+      wsRef.current = getChartWebSocket(true) // true for futures
+    }
+
+    const ws = wsRef.current
+
+    // Connect with the stable callback
+    ws.connect(
+      handleCandleUpdate,
+      (error) => {
+        console.error('WebSocket error:', error)
+      },
+      (connected) => {
+        setIsConnected(connected)
+      }
+    )
+
+    // Subscribe to trades for all timeframes
+    ws.subscribeToTrades(symbol, ['1m', '5m', '15m', '1h', '4h', '1d'])
+
+    return () => {
+      // Unsubscribe when symbol changes or component unmounts
+      ws.unsubscribeFromTrades(symbol)
+    }
+  }, [symbol, selectedExchange, handleCandleUpdate])
+
+  // Rate-limited price update handler
+  const priceUpdateQueueRef = useRef<BestBidAsk | null>(null)
+  const priceUpdateTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const lastUpdateTimeRef = useRef<number>(0)
+
+  // Process queued price update (rate-limited to 250ms)
+  const processPriceUpdate = useCallback(() => {
+    const bidAsk = priceUpdateQueueRef.current
+    if (!bidAsk) return
+
+    console.log('[ChartContainer] Processing price update:', bidAsk)
+    
+    if (!candleSeriesRef.current || !lastCandleRef.current) {
+      console.log('[ChartContainer] Missing refs, skipping update')
+      return
+    }
+
+    // Use mid price as the last price
+    let price = (bidAsk.bid + bidAsk.ask) / 2
+    
+    if (price <= 0 || isNaN(price)) {
+      // Fallback to bid or ask if mid price invalid
+      price = bidAsk.bid > 0 ? bidAsk.bid : bidAsk.ask > 0 ? bidAsk.ask : 0
+      if (price <= 0) {
+        console.log('[ChartContainer] No valid price available')
+        return
+      }
+    }
+
+    // Get current time and timeframe period
+    const now = Math.floor(Date.now() / 1000)
+    const timeframePeriod = getTimeframePeriod(selectedTimeframeRef.current)
+    const currentCandleTime = Math.floor(now / timeframePeriod) * timeframePeriod as UTCTimestamp
+
+    try {
+      // Check if we're still in the same candle period
+      if (lastCandleRef.current.time === currentCandleTime) {
+        // Update the current candle with new price
+        const updatedCandle = {
+          ...lastCandleRef.current.candle,
+          close: price,
+          high: Math.max(lastCandleRef.current.candle.high, price),
+          low: Math.min(lastCandleRef.current.candle.low, price),
+        }
+        
+        candleSeriesRef.current.update(updatedCandle)
+        lastCandleRef.current.candle = updatedCandle
+        
+        // Update volume bar color based on price direction
+        if (volumeSeriesRef.current) {
+          const volumeBar = {
+            time: currentCandleTime as UTCTimestamp,
+            value: lastCandleRef.current.candle.volume || 0,
+            color: price >= lastCandleRef.current.candle.open ? '#00d39533' : '#dd585833',
+          }
+          volumeSeriesRef.current.update(volumeBar)
+        }
+      } else {
+        // Start a new candle
+        const newCandle = {
+          time: currentCandleTime,
+          open: price,
+          high: price,
+          low: price,
+          close: price,
+          volume: 0, // Price updates don't include volume
+        }
+        
+        candleSeriesRef.current.update(newCandle)
+        lastCandleRef.current = { time: currentCandleTime, candle: newCandle }
+        
+        // Add new volume bar
+        if (volumeSeriesRef.current) {
+          const volumeBar = {
+            time: currentCandleTime as UTCTimestamp,
+            value: 0,
+            color: '#00d39533', // Default to green for new candle
+          }
+          volumeSeriesRef.current.update(volumeBar)
+        }
+      }
+
+      lastUpdateTimeRef.current = Date.now()
+      priceUpdateQueueRef.current = null
+    } catch (error) {
+      console.error('[ChartContainer] Error updating chart:', error)
+      // Don't clear queue on error - retry on next tick
+    }
+  }, [])
+
+  // Queue price update with rate limiting
+  const queuePriceUpdate = useCallback((bidAsk: BestBidAsk) => {
+    if (bidAsk.symbol !== symbol) return
+
+    // Store the latest price
+    priceUpdateQueueRef.current = bidAsk
+
+    // Clear any existing timer
+    if (priceUpdateTimerRef.current) {
+      clearTimeout(priceUpdateTimerRef.current)
+    }
+
+    // Calculate time since last update
+    const timeSinceLastUpdate = Date.now() - lastUpdateTimeRef.current
+    const delay = Math.max(0, 250 - timeSinceLastUpdate)
+
+    // Schedule update
+    priceUpdateTimerRef.current = setTimeout(processPriceUpdate, delay)
+  }, [symbol, processPriceUpdate])
+
+  // Subscribe to orderbook price updates using singleton
+  useEffect(() => {
+    console.log('[ChartContainer] Price update effect running, exchange:', selectedExchange, 'symbol:', symbol)
+    
+    // Only connect for LMEX exchange
+    if (selectedExchange !== 'lmex') {
+      console.log('[ChartContainer] Not LMEX exchange, skipping price updates')
+      return
+    }
+
+    // Use the singleton orderbook WebSocket
+    const ws = getOrderbookWebSocket(true)
+    console.log('[ChartContainer] Using singleton orderbook WebSocket for chart')
+
+    // Error recovery timer
+    let errorRecoveryTimer: NodeJS.Timeout | null = null
+    let healthCheckTimer: NodeJS.Timeout | null = null
+    let isSubscribed = false
+    let lastHealthCheckTime = Date.now()
+
+    // Health check to ensure updates are still flowing
+    const startHealthCheck = () => {
+      healthCheckTimer = setInterval(() => {
+        const timeSinceLastUpdate = Date.now() - lastUpdateTimeRef.current
+        
+        if (timeSinceLastUpdate > 10000 && isSubscribed) {
+          console.warn('[ChartContainer] No price updates for 10 seconds, checking connection')
+          
+          // Try to get current price from WebSocket
+          const currentPrice = ws.getLastPrice(symbol)
+          if (currentPrice !== undefined) {
+            console.log('[ChartContainer] Got price from WebSocket cache:', currentPrice)
+            // Queue an update with the cached price
+            const bidAsk = ws.getBestBidAsk(symbol)
+            if (bidAsk) {
+              queuePriceUpdate(bidAsk)
+            }
+          }
+          
+          // If still no updates after 30 seconds, try resubscribing
+          if (timeSinceLastUpdate > 30000) {
+            console.error('[ChartContainer] No updates for 30 seconds, attempting recovery')
+            ws.unsubscribeFromBestBidAsk(symbol)
+            setTimeout(() => {
+              if (isSubscribed) {
+                ws.subscribeToBestBidAsk(symbol)
+              }
+            }, 1000)
+          }
+        }
+      }, 5000) // Check every 5 seconds
+    }
+
+    const handleConnectionChange = (connected: boolean) => {
+      console.log('[ChartContainer] Orderbook WebSocket connection status:', connected)
+      
+      if (connected && isSubscribed) {
+        // Resubscribe on reconnection
+        console.log('[ChartContainer] Resubscribing after reconnection')
+        ws.subscribeToBestBidAsk(symbol)
+        lastHealthCheckTime = Date.now()
+      }
+    }
+
+    const handleError = (error: Error) => {
+      console.error('[ChartContainer] Orderbook WebSocket error:', error)
+      
+      // Schedule recovery attempt
+      if (!errorRecoveryTimer) {
+        errorRecoveryTimer = setTimeout(() => {
+          console.log('[ChartContainer] Attempting error recovery')
+          errorRecoveryTimer = null
+          
+          // Try to resubscribe
+          if (isSubscribed) {
+            ws.subscribeToBestBidAsk(symbol)
+          }
+        }, 5000)
+      }
+    }
+
+    // Wrap the price update handler to track health
+    const handlePriceUpdate = (bidAsk: BestBidAsk) => {
+      lastHealthCheckTime = Date.now()
+      queuePriceUpdate(bidAsk)
+    }
+
+    // Connect and subscribe with error recovery
+    ws.connect(handlePriceUpdate, handleError, handleConnectionChange)
+
+    console.log('[ChartContainer] Subscribing to bid/ask for symbol:', symbol)
+    ws.subscribeToBestBidAsk(symbol)
+    isSubscribed = true
+    
+    // Start health monitoring
+    startHealthCheck()
+
+    return () => {
+      console.log('[ChartContainer] Cleaning up orderbook WebSocket subscription')
+      isSubscribed = false
+      
+      // Clear all timers
+      if (priceUpdateTimerRef.current) {
+        clearTimeout(priceUpdateTimerRef.current)
+        priceUpdateTimerRef.current = null
+      }
+      
+      if (errorRecoveryTimer) {
+        clearTimeout(errorRecoveryTimer)
+      }
+      
+      if (healthCheckTimer) {
+        clearInterval(healthCheckTimer)
+      }
+      
+      ws.unsubscribeFromBestBidAsk(symbol)
+      // Don't disconnect - let singleton manage its own lifecycle
+    }
+  }, [symbol, selectedExchange, queuePriceUpdate])
+
+  // Helper function to get timeframe period in seconds
+  const getTimeframePeriod = (timeframe: string): number => {
+    const match = timeframe.match(/^(\d+)([mhd])$/)
+    if (!match) return 60 // Default to 1 minute
+
+    const value = parseInt(match[1])
+    const unit = match[2]
+
+    switch (unit) {
+      case 'm': return value * 60
+      case 'h': return value * 3600
+      case 'd': return value * 86400
+      default: return 60
+    }
+  }
+
+  return (
+    <div className="h-full w-full relative bg-[#1a1d29]">
+      <div className="absolute top-2 left-2 z-10 flex items-center space-x-2">
+        <div className="flex space-x-1">
+          {['1m', '5m', '15m', '1h', '4h', '1d'].map((tf) => (
+            <button
+              key={tf}
+              onClick={() => setSelectedTimeframe(tf)}
+              className={`px-2 py-1 text-xs transition-colors ${
+                selectedTimeframe === tf
+                  ? 'text-white bg-[#2a2d3a]'
+                  : 'text-gray-400 hover:text-white hover:bg-[#2a2d3a]'
+              }`}
+            >
+              {tf}
+            </button>
+          ))}
+        </div>
+        {isLoading && (
+          <div className="text-xs text-gray-400 animate-pulse">Loading...</div>
+        )}
+        {!isLoading && isConnected && selectedExchange === 'lmex' && (
+          <div className="flex items-center space-x-1 text-xs text-green-500">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span>Live</span>
+          </div>
+        )}
+      </div>
+      <div ref={chartContainerRef} className="h-full w-full" />
+    </div>
+  )
+}
+
+// Generate sample candlestick data
+function generateSampleData() {
+  const data = []
+  const now = Math.floor(Date.now() / 1000)
+  let price = 40000 + Math.random() * 5000
+
+  for (let i = 100; i >= 0; i--) {
+    const time = now - i * 3600 // 1 hour intervals
+    const open = price
+    const change = (Math.random() - 0.5) * 1000
+    price = price + change
+    const close = price
+    const high = Math.max(open, close) + Math.random() * 200
+    const low = Math.min(open, close) - Math.random() * 200
+    const volume = 1000000 + Math.random() * 5000000
+
+    data.push({
+      time: time as UTCTimestamp,
+      open,
+      high,
+      low,
+      close,
+      volume,
+    })
+  }
+
+  return data
+}

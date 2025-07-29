@@ -1,0 +1,1142 @@
+openapi: 3.0.1
+info:
+  title: Wallet/Convert/Transfer API documentation
+  version: 1.0.0
+  description: |
+    ## Overview
+    ### Generating API Key
+    You will need to create an API key on the platform before you can use authenticated APIs. To create API keys, you can follow the steps below:
+
+    - Login with your username / email and password into the website
+    - Click on `Account` on the top right hand corner
+    - Select the API tab
+    - Click on `New API` button to create an API key and passphrase. (Note: the passphrase will only appear once)
+    - Use your API key and passphrase to construct a signature.
+
+    ## Authentication
+    - API Key (request-api)
+      - Parameter Name: `request-api`, in: header. API key is obtained from platform as a string
+    - API Key (request-nonce)
+        - Parameter Name: `request-nonce`, in: header. Representation of current timestamp (epoch milliseconds) in long format
+    - API Key (request-sign)
+      - Parameter Name: `request-sign`, in: header. A composite signature produced based on the following algorithm: Signature=HMAC.Sha384 (secretKey, (path + request-nonce + body)) (note: body = '' when no data):
+
+    **Example 1: Get Wallet History**
+    - Endpoint to get wallet history is `/api/v3.2/user/wallet_history`
+    - Assume we have the values as follows (notice: the query parameters are **excluded** from encrypted text):
+      - request-nonce: `1677667565908`
+      - request-api: `49e9d289fb926ed26aaa971ed4edabc93b675d2b316a7b22d76567a3c5c9f0a6`
+      - secret: `848db84ac252b6726e5f6e7a711d9c96d9fd77d020151b45839a5b59c37203bx`
+      - path: `/api/v3.2/user/wallet_history`
+      - body: (empty)
+      - encrypted text:`/api/v3.2/user/wallet_history1677667565908`
+    - Generated signature will be:
+      - request-sign: `89b7f88f958dd09fb72cfc0b5bbfb57bddf44b643cc320007a9b8d185d7b8a7e006285fc38918f11f2e3973c74344486`
+    - cURL example:
+      ```
+      curl --location --request GET 'https://api.lmex.io/spot/api/v3.2/user/wallet_history?currency=USD' \
+      --header 'request-api: 49e9d289fb926ed26aaa971ed4edabc93b675d2b316a7b22d76567a3c5c9f0a6' \
+      --header 'request-nonce: 1677667565908' \
+      --header 'request-sign: 89b7f88f958dd09fb72cfc0b5bbfb57bddf44b643cc320007a9b8d185d7b8a7e006285fc38918f11f2e3973c74344486'
+      ```
+
+    **Example 2: Create Wallet Address**
+    - Endpoint to create wallet address is `/api/v3.2/user/wallet/address`
+    - Assume we have the values as follows (notice: the parameters in the request are **case-sensitive**):
+      - request-nonce: `1677665989700`
+      - request-api: `49e9d289fb926ed26aaa971ed4edabc93b675d2b316a7b22d76567a3c5c9f0a6`
+      - secret: `848db84ac252b6726e5f6e7a711d9c96d9fd77d020151b45839a5b59c37203bx`
+      - path: `/api/v3.2/user/wallet/address`
+      - body: `{"currency":"ETH","network":"ETHEREUM"}`
+      - encrypted text:`/api/v3.2/user/wallet/address1677665989700{"currency":"ETH","network":"ETHEREUM"}`
+    - Generated signature will be:
+      - request-sign: `3698051fc6b76218630732359109a22c99118063c12e5853d2c4009ddba9af57a5e0dd593869c520289e5bf69f305087`
+    - cURL example:
+      ```
+      curl --location --request POST 'https://api.lmex.io/spot/api/v3.2/user/wallet/address' \
+      --header 'request-api: 49e9d289fb926ed26aaa971ed4edabc93b675d2b316a7b22d76567a3c5c9f0a6' \
+      --header 'request-nonce: 1677665989700' \
+      --header 'request-sign: 3698051fc6b76218630732359109a22c99118063c12e5853d2c4009ddba9af57a5e0dd593869c520289e5bf69f305087' \
+      --header 'Content-Type: application/json' \
+      --data-raw '{"currency":"ETH","network":"ETHEREUM"}'
+      ```
+
+    ### Rate Limits
+    - The following rate limits are enforced:
+    Rate limits for the API is as follows:
+
+    ### Wallet operation
+    - Per User: `5 requests/second`
+
+    ### API Status Codes
+    Each API will return one of the following HTTP status:
+
+    Code | Description
+    :---|:---
+    200| API request was successful, refer to the specific API response for expected payload
+    400| Bad Request. Server will not process this request. This is usually due to invalid parameters sent in request
+    401| Unauthorized request. Server will not process this request as it does not have valid authentication credentials
+    403| Forbidden request. Credentials were provided but they were insufficient to perform the request
+    404| Not found. Indicates that the server understood the request but could not find a correct representation for the target resource
+    405| Method not allowed. Indicates that the request method is not known to the requested server
+    408| Request timeout. Indicates that the server did not complete the request. The API timeouts are set at 30secs
+    429| Too many requests. Indicates that the client has exceeded the rates limits set by the server. Refer to Rate Limits for more details
+    500| Internal server error. Indicates that the server encountered an unexpected condition resulting in not being able to fulfill the request
+
+    #### API Enum
+    When connecting up the the API, you will come across number codes that represents different states or status types in platform. The following section provides a list of codes that you are expecting to see.
+
+    Code | Description
+    :---|:---
+    -1| MARKET_UNAVAILABLE = Futures market is unavailable
+    2| ORDER_INSERTED = Order is inserted successfully
+    4| ORDER_FULLY_TRANSACTED = Order is fully transacted
+    5| ORDER_PARTIALLY_TRANSACTED = Order is partially transacted
+    6| ORDER_CANCELLED = Order is cancelled successfully
+    8| INSUFFICIENT_BALANCE = Insufficient balance in account
+    9| TRIGGER_INSERTED = Trigger Order is inserted successfully
+    10| TRIGGER_ACTIVATED = Trigger Order is activated successfully
+    12| ERROR_UPDATE_RISK_LIMIT = Error in updating risk limit
+    15| ORDER_REJECTED = Order is rejected
+    16| ORDER_NOTFOUND = Order is not found with the order ID or clOrderID provided
+    28| TRANSFER_UNSUCCESSFUL = Transfer funds between spot and futures is unsuccessful
+    27| TRANSFER_SUCCESSFUL = Transfer funds between futures and spot is successful
+    41| ERROR_INVALID_RISK_LIMIT = Invalid risk limit was specified
+    64| STATUS_LIQUIDATION = Account is undergoing liquidation
+    101| FUTURES_ORDER_PRICE_OUTSIDE_LIQUIDATION_PRICE = Futures order is outside of liquidation price
+    1003| ORDER_LIQUIDATION = Order is undergoing liquidation
+    1004| ORDER_ADL = Order is undergoing ADL
+    3505| Invalid protocol
+    3506| Invalid withdraw amount
+    3507| Invalid withdraw address
+    3508| Withdraw failed
+    
+    ### Error Code
+    When the request encounter exception ,it will return one of the following error code.
+
+    Code | Description
+    :--|:--
+    -7016|COIN_FUNCTION_SWITCH_IS_OFF = This coin function is disabled
+    -4083|FINANCE_GET_FEES_INFO_FAILED = Failed to get fees info
+    -2023|UNKNOWN_CURRENCY = Unknown currency
+    -18|COMM_PRM_ERROR = Invalid parameters
+    3500|GET_USER_BALANCE_ERROR = Error on getting user balance
+    3503|GET_WALLET_ADDR_ERROR = Error on getting wallet address
+    3505|INVALID_PROTOCOL = Invalid protocol
+    3506|CRYPTO_WITHDRAW_INVALID_AMOUNT = Invalid withdrawal amount
+    3508|CRYPTO_WITHDRAW_FAILED = Error on performing withdrawals
+    3515|WALLET_CRYPTO_WITHDRAW_ERROR = Error on performing crypto withdrawal
+    3516|WALLET_CRYPTO_UPDATE_ERROR = Error on updating crypto wallet
+    3518|WALLET_GET_CRYPTO_ADDRESS_ERROR = Error on getting crypto address
+    3523|WALLET_FULL_NODE_NOT_AVAIL = Address creation is not supported in this environment
+    3528|WALLET_ADDRESS_HAS_NOT_BEEN_USED = Wallet address is generated but haven't been used
+    10007|USER_LOGIN_INFO = Failure of landing information
+    10053|USER_NOT_ACTIVE = User is not activated
+    10071|USER_TRANSFER_PARAM_ERROR = Incorrect transfer parameter
+    40007|FINANCE_INSUFFICIENT_WALLET_BALANCE = Insufficient wallet balance
+    40040|FINANCE_USER_CANT_WITHDRAW = Current user status cannot be cashed out
+    40052|FINANCE_CONVERT_RATE_UNAVAILABLE = Conversion rate is zero
+servers:
+  - url: "https://api.lmex.io/spot"
+tags:
+  - name: Public Endpoints
+  - name: Wallet Endpoints
+paths:
+  /api/v3.2/availableCurrencyNetworks:
+    get:
+      summary: Query available crypto network list for currency
+      tags:
+        - Public Endpoints
+      operationId: Query-available-crypto-network-list-for-currency
+      description: |
+        Get available crypto network list for currency.
+      parameters:
+        - schema:
+            type: string
+            example: BTC
+            default: BTC
+          in: query
+          name: currency
+          required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/availableCurrencyNetworks'
+    parameters: []
+  /api/v3.2/exchangeRate:
+    get:
+      summary: Query exchange rate between assets
+      tags:
+        - Public Endpoints
+      operationId: get-api-v3.2-exchangeRate
+      responses:
+        '200':
+          $ref: '#/components/responses/exchangeRate'
+      description: |
+        Get the exchange rate between assets.
+      parameters:
+        - schema:
+            type: string
+            example: BTC
+            default: BTC
+          in: query
+          name: srcCurrency
+          required: true
+        - schema:
+            type: string
+            example: USD
+            default: USD
+          in: query
+          name: targetCurrency
+          required: true
+    parameters: []
+  /api/v3.2/user/wallet:
+    get:
+      summary: Query Wallet Balance
+      tags:
+        - Wallet Endpoints
+      operationId: get-api-v3.2-walletBalance
+      responses:
+        '200':
+          $ref: '#/components/responses/queryWalletBalance'
+      description: |
+        Query user's wallet balance. Requires Read permissions on the API key.
+
+        **Note**: the wallet currency for markets with prefixes `B_`, `M_`, `K_` will be the one without the prefix \
+        **e.g.** the wallet currency for market `M_PIT` will be `PIT`
+
+        Requires permission: `Read`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+  /api/v3.2/user/wallet_history:
+    parameters: []
+    get:
+      summary: Query Wallet History
+      tags:
+        - Wallet Endpoints
+      operationId: get-api-v3.2-walletHistory
+      description: |
+        Get user's wallet history records on the spot wallet
+        
+        **Note**: the wallet currency for markets with prefixes `B_`, `M_`, `K_` will be the one without the prefix \
+        **e.g.** the wallet currency for market `M_PIT` will be `PIT`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+        - schema:
+            type: string
+            example: BTC
+          in: query
+          name: currency
+          description: 'Currency, if not specified will return all currencies'
+        - schema:
+            type: number
+          in: query
+          name: startTime
+          description: Starting time (eg. 1624987283000)
+        - schema:
+            type: number
+          in: query
+          name: endTime
+          description: Ending time (eg. 1624987283000)
+        - schema:
+            type: integer
+          in: query
+          name: count
+          description: Number of records to return
+        - schema:
+            type: boolean
+          in: query
+          name: useNewSymbolNaming
+          description: 'True to return futures market name in the new format, default to False'
+      responses:
+        '200':
+          $ref: '#/components/responses/walletHistory'
+  /api/v3.2/user/wallet/address:
+    parameters:
+      - $ref: '#/components/parameters/request-api'
+      - $ref: '#/components/parameters/request-nonce'
+      - $ref: '#/components/parameters/request-sign'
+    post:
+      summary: Create Wallet Address
+      tags:
+        - Wallet Endpoints
+      operationId: post-api-v3.2-user-wallet-address
+      description: |
+        Creates a wallet address.
+        If the address created has not been used before, a 400 error will return with the existing unused address.
+        Requires permission: `Wallet`
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency:
+                  type: string
+                  default: BTC
+                  description: Currency to get address
+                network:
+                  type: string
+                  description: protocol to get address
+                  default: LIQUID
+              required:
+                - currency
+                - network
+            examples:
+              Request:
+                value:
+                  currency: BTC
+                  network: LIQUID
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+        description: ''
+      responses:
+        '200':
+          $ref: '#/components/responses/createWalletAddress'
+    get:
+      summary: Get Wallet Address
+      operationId: get-api-v3.2-user-wallet-address
+      responses:
+        '200':
+          $ref: '#/components/responses/getWalletAddress'
+      description: |
+        Gets a wallet address.
+        Requires permission: `Wallet`
+      parameters:
+        - schema:
+            type: string
+            default: BTC
+          in: query
+          name: currency
+          description: Currency to get address
+          required: true
+        - schema:
+            type: string
+            default: LIQUID
+          in: query
+          name: network
+          description: protocol to get address
+          required: true
+      tags:
+        - Wallet Endpoints
+    delete:
+      summary: Delete Wallet Address
+      operationId: delete-api-v3.2-user-wallet-address
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Fail
+      description: |
+        Delete a wallet address.
+        If the address has been delete, a 400 error will return.
+        Requires permission: `Wallet`
+      parameters:
+        - schema:
+            type: string
+            default: BTC
+          in: query
+          name: currency
+          description: Currency to get address
+          required: true
+        - schema:
+            type: string
+            default: LIQUID
+          in: query
+          name: network
+          description: protocol to get address
+          required: true
+        - schema:
+            type: string
+            default: 0xdisadhfksad7sa5d
+          in: query
+          name: address
+          required: true
+      tags:
+        - Wallet Endpoints
+
+  /api/v3.2/user/wallet/withdraw:
+    parameters:
+      - $ref: '#/components/parameters/request-api'
+      - $ref: '#/components/parameters/request-nonce'
+      - $ref: '#/components/parameters/request-sign'
+    post:
+      summary: Withdraw Funds
+      tags:
+        - Wallet Endpoints
+      operationId: post-api-v3.2-user-wallet-withdraw
+      description: |
+        Performs a wallet withdrawal.
+        Requires permission: `Withdraw`
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                currency:
+                  type: string
+                  minLength: 1
+                  description: |
+                    Currency-Network pair <br>
+                    Currency list can be retrieved from [Available currency list for action] <br>
+                    Network list can be retrieved from [Available network list for currency]
+                address:
+                  type: string
+                  minLength: 1
+                  description: |
+                    Blockchain address
+                tag:
+                  type: string
+                  minLength: 1
+                  description: |
+                    Tag, used only by some blockchain (eg. XRP)
+                  example: XRP
+                amount:
+                  type: string
+                  minLength: 1
+                  description: 'Amount to withdraw (Max decimal supported is `8` for all currencies). Will return Invalid withdraw amount (code: 3506) if exceeds'
+                  example: '3506'
+                includeWithdrawFee:
+                  type: boolean
+                  description: 'If true or the field does not exist, the fee is included in amount. Otherwise, the fee is extra added and the deducted amount can be larger than the amount claimed'
+              required:
+                - currency
+                - address
+                - tag
+                - amount
+            examples:
+              Request:
+                value:
+                  currency: ETH-Ethereum
+                  address: <Address>
+                  tag: Tag
+                  amount: '1'
+      responses:
+        '200':
+          $ref: '#/components/responses/withdrawFunds'
+  /api/v3.2/availableCurrencies:
+    parameters:
+      - $ref: '#/components/parameters/request-api'
+      - $ref: '#/components/parameters/request-nonce'
+      - $ref: '#/components/parameters/request-sign'
+    get:
+      summary: Query available currency list for wallet action
+      tags:
+        - Wallet Endpoints
+      operationId: get-api-v3.2-availableCurrencies
+      description: |
+        Get available currency list for wallet action.
+      parameters:
+        - schema:
+            type: string
+            example: CONVERT
+            enum:
+              - CONVERT
+              - WITHDRAW
+              - SEND
+            default: CONVERT
+          in: query
+          name: action
+          required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/availableCurrencyList'
+
+  /api/v3.2/user/wallet/convert:
+    parameters:
+      - $ref: '#/components/parameters/request-api'
+      - $ref: '#/components/parameters/request-nonce'
+      - $ref: '#/components/parameters/request-sign'
+    post:
+      summary: Convert funds
+      tags:
+        - Wallet Endpoints
+      operationId: post-api-v3.2-user-wallet-convert
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                amount:
+                  type: string
+                  minLength: 1
+                  description: amount of currency to convert
+                fromAsset:
+                  type: string
+                  minLength: 1
+                  description: source currency to be converted
+                toAsset:
+                  type: string
+                  minLength: 1
+                  description: destination currency
+              required:
+                - amount
+                - fromAsset
+                - toAsset
+            examples:
+              Request:
+                value:
+                  amount: '1'
+                  fromAsset: USD
+                  toAsset: BTC
+        description: ''
+      description: |
+        Performs a currency conversion from wallet.
+        To get supported currency list please check Available currency list for action
+        Requires permission: `Wallet`
+      responses:
+        '200':
+          $ref: '#/components/responses/convertFunds'
+
+  /api/v3.2/user/wallet/transfer:
+    parameters:
+      - $ref: '#/components/parameters/request-api'
+      - $ref: '#/components/parameters/request-nonce'
+      - $ref: '#/components/parameters/request-sign'
+    post:
+      summary: Transfer funds
+      tags:
+        - Wallet Endpoints
+      operationId: post-api-v3.2-user-wallet-transfer
+      description: |
+        Performs a internal currency transfer to other user from wallet.
+        To get supported currency list please check Available currency list for action'
+        Requires permission: `Transfer`
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                amount:
+                  type: string
+                  minLength: 1
+                  description: |
+                    amount of currency to transfer
+                asset:
+                  type: string
+                  minLength: 1
+                  description: |
+                    currency to be transferred
+                toUser:
+                  type: string
+                  minLength: 1
+                  description: |
+                    receiver account
+                toUserMail:
+                  type: string
+                  minLength: 1
+                  description: |
+                    receiver email
+                useNewSymbolNaming:
+                  type: boolean
+                  description: 'True to return futures market name in the new format, default to False'
+              required:
+                - amount
+                - asset
+                - toUser
+                - toUserMail
+            examples:
+              Request:
+                value:
+                  amount: 1
+                  asset: USD
+                  toUser: testUser
+                  toUserMail: testUser@gmail.com
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+        description: ''
+      responses:
+        '200':
+          $ref: '#/components/responses/transfer'
+
+  /api/v3.2/subaccount/wallet/history:
+    parameters:
+      - $ref: '#/components/parameters/request-api'
+      - $ref: '#/components/parameters/request-nonce'
+      - $ref: '#/components/parameters/request-sign'
+      - name: startTime
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1669651200000
+      - name: endTime
+        in: query
+        schema:
+          type: integer
+          format: int64
+        example: 1669651200000
+      - name: page
+        in: query
+        schema:
+          type: integer
+        example: 1
+      - name: pageSize
+        in: query
+        schema:
+          type: integer
+        example: 10
+    get:
+      summary: Subaccount transfer history
+      description: Query transfer history for subaccounts
+      tags:
+        - Subaccount Endpoints
+      operationId: get-api-v3.2-subaccount-wallet-history
+      responses:
+        '200':
+          $ref: '#/components/responses/subaccount-wallet-history'
+  
+  /api/v3.2/crypto/networks:
+    get:
+      tags:
+        - Public Endpoints
+      summary: Get crypto networks
+      description: |
+        Get crypto network information with fee. API will respond all crypto/network if `crypto` parameter is not set.
+      parameters:
+        - in: query
+          name: crypto
+          schema:
+            type: string
+            example: "USDT"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CryptoNetworkResponse"
+              examples:
+                Common:
+                  $ref: "#/components/examples/crypto-network-response"
+components:
+  schemas:
+    CryptoNetworkResponse:
+      type: array
+      items:
+        type: object
+        required:
+          - crypto
+          - network
+          - depositEnable
+          - withdrawEnable
+        properties:
+          crypto:
+            type: string
+            description: Crypto
+          network:
+            type: string
+            description: Network
+          depositEnable:
+            type: boolean
+            description: Allow to deposit
+          withdrawEnable:
+            type: boolean
+            description: Allow to withdraw
+          depositAmtMin:
+            type: string
+            description: Minimum amount of deposit
+          depositFeeMin:
+            type: string
+            description: Minimum fees of deposit
+          depositFeeRate:
+            type: string
+            description: Fee rate of deposit
+          depositExtFees:
+            type: string
+            description: Extra fees of deposit
+          depositExtFeeRate:
+            type: string
+            description: Extra fee rate of deposit
+          withdrawAmtMin:
+            type: string
+            description: Minimum amount of withdrawal
+          withdrawFeeMin:
+            type: string
+            description: Minimum fees of withdraw
+          withdrawFeeRate:
+            type: string
+            description: Fee rate of withdrawal
+          withdrawExtFees:
+            type: string
+            description: Extra fees of withdraw
+          withdrawExtFeeRate:
+            type: string
+            description: Extra fee rate of withdraw
+  examples:
+    crypto-network-response:
+      value:
+        - crypto: USDT
+          network: ERC20
+          depositEnable: true
+          withdrawEnable: true
+          depositAmtMin: "0"
+          depositFeeMin: "0"
+          depositFeeRate: "0"
+          depositExtFees: "0"
+          depositExtFeeRate: "0"
+          withdrawAmtMin: "36.41"
+          withdrawFeeMin: "6.41"
+          withdrawFeeRate: "0"
+          withdrawExtFees: "0"
+          withdrawExtFeeRate: "0"
+
+
+  parameters:
+    request-api:
+      name: request-api
+      in: header
+      required: true
+      schema:
+        type: string
+      description: The API key you apply
+    request-nonce:
+      name: request-nonce
+      in: header
+      required: true
+      schema:
+        type: string
+      description: Current Timestamp in millisecond
+    request-sign:
+      name: request-sign
+      in: header
+      required: true
+      schema:
+        type: string
+      description: The signature you sign
+  responses:
+    availableCurrencyNetworks:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            description: name of $network
+            items:
+              type: string
+            required:
+              - network
+          examples:
+            General:
+              value:
+                - Bitcoin
+                - Liquid
+    exchangeRate:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: Return code
+              msg:
+                type: string
+                description: Return message
+              time:
+                type: number
+                description: Unix timestamp
+              data:
+                type: number
+                description: Exchange rate between assets
+              success:
+                type: boolean
+                description: True or False
+            required:
+              - code
+              - msg
+              - time
+              - data
+              - success
+          examples:
+            General:
+              value:
+                code: 1
+                msg: Success
+                time: 1643085970137
+                data: 36051.55950285
+                success: true
+    transfer:
+      description: ''
+      content:
+        application/json:
+          schema:
+            description: ''
+            type: object
+            properties:
+              asset:
+                type: string
+                minLength: 1
+                description: currency to be transferred
+              toUser:
+                type: string
+                minLength: 1
+                description: receiver account
+              toUserMail:
+                type: string
+                minLength: 1
+                description: receiver email
+              amount:
+                type: string
+                minLength: 1
+                description: amount of currency to transfer
+            required:
+              - asset
+              - toUser
+              - toUserMail
+              - amount
+          examples:
+            General:
+              value:
+                asset: USD
+                toUser: testUser
+                toUserMail: testUser@gmail.com
+                amount: '1'
+    queryWalletBalance:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            description: ''
+            minItems: 1
+            uniqueItems: true
+            items:
+              type: object
+              properties:
+                currency:
+                  type: string
+                  minLength: 1
+                  description: Currency
+                total:
+                  type: number
+                  description: Total balance
+                available:
+                  type: number
+                  description: Available balance
+              required:
+                - available
+                - currency
+                - total
+          examples:
+            General:
+              value:
+                - currency: USD
+                  total: 4598.5595258
+                  available: 4598.5595158
+    walletHistory:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            description: ''
+            minItems: 1
+            uniqueItems: true
+            items:
+              type: object
+              properties:
+                username:
+                  type: string
+                  minLength: 1
+                orderId:
+                  type: number
+                  description: Internal wallet order ID
+                wallet:
+                  type: string
+                  minLength: 1
+                  description: Wallet type. For spot will return `@SPOT`
+                currency:
+                  type: string
+                  minLength: 1
+                  description: Currency
+                type:
+                  type: number
+                  description: |
+                    - `Deposit`: Deposits into account
+                    - `Withdraw`: Withdrawals from account
+                    - `Transfer_In`: The internal transfer where funds are transferred in
+                    - `Transfer_Out`: The internal transfer where funds are transferred out
+                    - `ReferralEarning`: Referral Earnings
+                amount:
+                  type: number
+                  description: Amount in the record
+                fees:
+                  type: number
+                  description: Fees charged if any
+                description:
+                  type: string
+                  minLength: 1
+                  description: Description of the transaction
+                timestamp:
+                  type: number
+                status:
+                  type: number
+                  description: |
+                    - `1`: PENDING <br>
+                    - `2`: PROCESSING <br>
+                    - `10`: COMPLETED <br>
+                    - `16`: CANCELLED
+                txId:
+                  type: string
+                  minLength: 1
+                toAddress:
+                  type: string
+                  description: To Address (New Entry)
+                currencyNetwork:
+                  type: string
+                  minLength: 1
+                sourceCurrency:
+                  type: string
+                  description: source currency (New Entry)
+                sourceAmount:
+                  type: integer
+                  description: source amount (New Entry)
+                targetCurrency:
+                  type: integer
+                  description: Target Currency (New Entry)
+                targetAmount:
+                  type: integer
+                  description: Target Amount (New Entry)
+                rate:
+                  type: integer
+                  description: rate (New Entry)
+              required:
+                - amount
+                - currency
+                - description
+                - fees
+                - orderId
+                - status
+                - timestamp
+                - type
+                - username
+                - wallet
+                - txId
+                - currencyNetwork
+          examples:
+            General:
+              value:
+                - username: testUser
+                  orderId: <Order ID>
+                  wallet: SPOT@
+                  currency: USD
+                  type: Transfer_Out
+                  amount: 1
+                  fees: 0
+                  description: ''
+                  timestamp: 1665642961059
+                  status: Completed
+                  txId: <Blockchain Transaction ID>
+                  toAddress: ''
+                  currencyNetwork: <Blockchain currency network>
+                  sourceCurrency: ''
+                  sourceAmount: 0
+                  targetCurrency: USD
+                  targetAmount: 1
+                  rate: 1
+    createWalletAddress:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            description: ''
+            minItems: 1
+            uniqueItems: true
+            items:
+              type: object
+              properties:
+                address:
+                  type: string
+                  minLength: 1
+                  description: Blockchain address
+                created:
+                  type: number
+                  description: Created timestamp
+              required:
+                - address
+                - created
+          examples:
+            General:
+              value:
+                - address: <Address>
+                  created: 0
+    getWalletAddress:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            description: ''
+            minItems: 1
+            uniqueItems: true
+            items:
+              type: object
+              properties:
+                address:
+                  type: string
+                  minLength: 1
+                  description: Blockchain address
+                created:
+                  type: number
+                  description: Created timestamp
+              required:
+                - address
+                - created
+          examples:
+            General:
+              value:
+                - address: <Address>
+                  created: 0
+    withdrawFunds:
+      description: ''
+      content:
+        application/json:
+          schema:
+            description: ''
+            type: object
+            properties:
+              withdraw_id:
+                type: string
+                minLength: 1
+                description: Internal withdrawal ID. References the `orderID` field in wallet_history API. As withdrawal will not be processed immediately. User can query the `wallet history` API to check on the status of the withdrawal
+            required:
+              - withdraw_id
+          examples:
+            General:
+              value:
+                withdraw_id: string
+    availableCurrencyList:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            description: Name of currency
+            items:
+              type: string
+          examples:
+            General:
+              value:
+                - USD
+                - JPY
+                - GBP
+                - HKD
+                - SGD
+    convertFunds:
+      description: ''
+      content:
+        application/json:
+          schema:
+            description: ''
+            type: object
+            properties:
+              amount:
+                type: number
+                description: |
+                  amount of source currency to be converted
+              settlementAmount:
+                type: number
+                description: |
+                  amount of converted destination currency
+              amountCurrency:
+                type: string
+                minLength: 1
+                description: |
+                  source currency
+              settlementCurrency:
+                type: string
+                minLength: 1
+                description: |
+                  destination currency
+              rate:
+                type: number
+                description: |
+                  exchange rate
+            required:
+              - amount
+              - settlementAmount
+              - amountCurrency
+              - settlementCurrency
+              - rate
+          examples:
+            General:
+              value:
+                amount: 0
+                settlementAmount: 0
+                amountCurrency: string
+                settlementCurrency: string
+                rate: 0
+    subaccount-wallet-history:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 1
+              msg:
+                type: string
+                example: Success
+              time:
+                type: integer
+                example: 1653964265608
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties: 
+                  totalRows: 
+                    type: integer
+                    example: 2
+                  pageSize: 
+                    type: integer
+                    example: 10
+                  currentPage: 
+                    type: integer
+                    example: 1
+                  totalPages: 
+                    type: integer
+                    example: 1
+                  data: 
+                    type: array
+                    items: 
+                      type: object
+                      properties: 
+                        timestamp: 
+                          type: integer
+                          format: int64
+                          example: 1711707874850
+                        fromUser: 
+                          type: string
+                          example: uuooxxsub00002
+                        receiver: 
+                          type: string
+                          example: uuooxx
+                        currency: 
+                          type: string
+                          example: USDT
+                        amount: 
+                          type: integer
+                          format: int32
+                          example: 11
+        

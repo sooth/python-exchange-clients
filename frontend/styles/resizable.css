@@ -1,0 +1,207 @@
+/* React Resizable Panels Base Styles */
+.panel-group {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+/* Resize Handle Styles */
+[data-panel-resize-handle-enabled] {
+  cursor: col-resize;
+  position: relative;
+  outline: none;
+  /* Add subtle background */
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.02), transparent);
+}
+
+[data-panel-group-direction="vertical"] > [data-panel-resize-handle-enabled] {
+  cursor: row-resize;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.02), transparent);
+}
+
+/* Resize handle hit area */
+[data-panel-resize-handle-enabled]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Increase hit area for easier grabbing */
+  margin: -6px;
+}
+
+/* Visual indicator on hover/drag */
+[data-panel-resize-handle-enabled][data-resize-handle-state="hover"] {
+  background: linear-gradient(to right, transparent, rgba(0, 211, 149, 0.08), transparent);
+  box-shadow: 0 0 8px rgba(0, 211, 149, 0.15);
+}
+
+[data-panel-resize-handle-enabled][data-resize-handle-state="drag"] {
+  background: linear-gradient(to right, transparent, rgba(0, 211, 149, 0.15), transparent);
+  box-shadow: 0 0 12px rgba(0, 211, 149, 0.25);
+}
+
+[data-panel-group-direction="vertical"] > [data-panel-resize-handle-enabled][data-resize-handle-state="hover"] {
+  background: linear-gradient(to bottom, transparent, rgba(0, 211, 149, 0.08), transparent);
+}
+
+[data-panel-group-direction="vertical"] > [data-panel-resize-handle-enabled][data-resize-handle-state="drag"] {
+  background: linear-gradient(to bottom, transparent, rgba(0, 211, 149, 0.15), transparent);
+}
+
+/* Add pulsing animation on first load to draw attention */
+@keyframes pulse-resize-handle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+[data-panel-resize-handle-enabled] {
+  animation: pulse-resize-handle 2s ease-in-out 0.5s 3;
+}
+
+/* Prevent text selection during resize */
+[data-resize-handle-state="drag"] * {
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: col-resize !important;
+}
+
+[data-panel-group-direction="vertical"] [data-resize-handle-state="drag"] * {
+  cursor: row-resize !important;
+}
+
+/* Panel transitions */
+[data-panel] {
+  transition: flex 200ms ease-out;
+}
+
+[data-resize-handle-state="drag"] + [data-panel],
+[data-panel] + [data-resize-handle-state="drag"] + [data-panel] {
+  transition: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  /* Adjust minimum sizes for tablets */
+  [data-panel] {
+    min-width: 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Stack panels vertically on mobile */
+  [data-panel-group-id="main-layout"] {
+    flex-direction: column !important;
+  }
+  
+  /* Hide resize handles on mobile */
+  [data-panel-resize-handle-enabled] {
+    display: none !important;
+  }
+  
+  /* Reset panel sizes on mobile */
+  [data-panel] {
+    flex: 1 1 auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    overflow: auto !important;
+  }
+  
+  /* Market list panel */
+  [data-panel-id="market-list"] {
+    max-height: 200px !important;
+    flex: 0 0 auto !important;
+  }
+  
+  /* Trading view takes remaining space */
+  [data-panel-id="trading-view"] {
+    flex: 1 1 auto !important;
+  }
+}
+
+/* Font size adjustments based on panel width */
+[data-panel] {
+  container-type: inline-size;
+}
+
+/* Large panels */
+@container (min-width: 600px) {
+  .text-xs {
+    font-size: 0.75rem;
+  }
+  .text-sm {
+    font-size: 0.875rem;
+  }
+  .text-base {
+    font-size: 1rem;
+  }
+}
+
+/* Medium panels */
+@container (max-width: 400px) {
+  .text-xs {
+    font-size: 0.675rem;
+  }
+  .text-sm {
+    font-size: 0.8125rem;
+  }
+  .text-base {
+    font-size: 0.875rem;
+  }
+  
+  /* Reduce padding in constrained space */
+  .px-3 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .py-2 {
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+  }
+}
+
+/* Small panels */
+@container (max-width: 300px) {
+  .text-xs {
+    font-size: 0.625rem;
+  }
+  .text-sm {
+    font-size: 0.75rem;
+  }
+  .text-base {
+    font-size: 0.8125rem;
+  }
+  
+  /* Further reduce padding */
+  .px-2 {
+    padding-left: 0.375rem;
+    padding-right: 0.375rem;
+  }
+  .py-1 {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+}
+
+/* Very small panels */
+@container (max-width: 200px) {
+  /* Hide less important elements in very small panels */
+  .hide-on-small {
+    display: none;
+  }
+  
+  /* Ultra compact text */
+  .text-xs {
+    font-size: 0.5625rem;
+  }
+  .text-sm {
+    font-size: 0.625rem;
+  }
+  
+  /* Minimal padding */
+  .p-4 {
+    padding: 0.5rem;
+  }
+}

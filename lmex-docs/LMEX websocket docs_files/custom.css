@@ -1,0 +1,53 @@
+@import url(https://d2refp30laz1gf.cloudfront.net/font/DINPro/stylesheet.css);
+body {
+  font-family: "DINPro";
+  margin: 0;
+  padding: 0;
+}
+.api-content {
+  width: 100% !important;
+  height: calc(100vh - 60px) !important;
+  display: none;
+}
+.navbar {
+  background-color: #4b4b4b;
+  padding: 1em;
+  display: flex;
+}
+.navbar .navbar-brand {
+  width: 330px;
+  padding-left: 1em;
+}
+.navbar .navbar-brand .logo {
+  height: 24px;
+}
+.navbar .navbar-menu {
+  flex-grow: 1;
+}
+.navbar .navbar-menu ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+.navbar .navbar-menu ul li {
+  list-style-type: none;
+  padding-right: 2em;
+}
+.navbar .navbar-menu ul li a {
+  color: #ddd;
+  text-decoration: none;
+}
+.navbar .navbar-menu ul li a.active {
+  color: #FBAF0B;
+  font-weight: bold;
+}
+.navbar .navbar-info {
+  color: #ddd;
+}
+.style-redoc .api-content > iframe {
+  width: 100vw;
+  height: calc(100vh - 64px);
+}
+.style-redoc .navbar {
+  background-color: #263238;
+}

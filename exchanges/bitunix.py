@@ -7,18 +7,31 @@ from .base import (
     ExchangeTicker,
     ExchangePosition,
     ExchangeBalance,
-    ExchangeOrder
+    ExchangeOrder,
+    ExchangeInterface,
+    PositionSide,
+    TradingType,
+    WebSocketState,
+    WebSocketMessage,
+    WebSocketSubscription,
+    WebSocketChannels
 )
 from .utils.precision import SymbolPrecisionManager
 from .utils.api_keys import APIKeyStorage
+from .websocket_manager import BaseWebSocketManager, ReconnectConfig
 
 import requests
-from typing import Optional, Type, Dict, Any
+from typing import Optional, Type, Dict, Any, List, Callable, Tuple, Set
 import json
 import hashlib
 import time
+import uuid
+import hmac
+import urllib.parse
+import logging
 from dotenv import load_dotenv
 import os
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -37,32 +50,516 @@ class ExchangeWebSocketManagerProtocol:
     def subscribeToOrders(self, symbols: list[str]):
         raise NotImplementedError
 
-class BitUnixWebSocketManager(ExchangeWebSocketManagerProtocol):
-    """
-    A mock or placeholder to match the Swift code's usage of BitUnixWebSocketManager.shared.
-    In actual usage, you would implement real WebSocket functionalities here.
-    """
-    _shared_instance: Optional['BitUnixWebSocketManager'] = None
+logger = logging.getLogger(__name__)
 
+
+class BitUnixWebSocketManager(BaseWebSocketManager):
+    """
+    BitUnix WebSocket manager implementation.
+    
+    Supports both public and private channels:
+    - Public: ticker, depth_books, kline, trade, market_price
+    - Private: balance, order, position, tpsl
+    """
+    
+    PUBLIC_URL = "wss://fapi.bitunix.com/public/"
+    PRIVATE_URL = "wss://fapi.bitunix.com/private/"
+    
+    def __init__(self, 
+                 api_key: Optional[str] = None,
+                 api_secret: Optional[str] = None,
+                 on_message: Optional[Callable[[WebSocketMessage], None]] = None,
+                 on_error: Optional[Callable[[Exception], None]] = None,
+                 on_state_change: Optional[Callable[[WebSocketState], None]] = None):
+        """
+        Initialize BitUnix WebSocket manager.
+        
+        Args:
+            api_key: API key for private channels
+            api_secret: API secret for private channels
+            on_message: Callback for processed messages
+            on_error: Callback for errors
+            on_state_change: Callback for connection state changes
+        """
+        super().__init__(
+            exchange_name="BitUnix",
+            on_message=on_message,
+            on_error=on_error,
+            on_state_change=on_state_change
+        )
+        
+        self.api_key = api_key
+        self.api_secret = api_secret
+        self._is_private = bool(api_key and api_secret)
+        self._authenticated = False
+        
+        # Cache for latest values
+        self._ticker_cache: Dict[str, Dict[str, Any]] = {}
+        self._order_cache: Dict[str, Dict[str, Any]] = {}
+        self._position_cache: Dict[str, Dict[str, Any]] = {}
+        self._balance_cache: Dict[str, Any] = {}
+        
+        # Track active subscriptions to prevent duplicates
+        self._active_subscriptions: Set[str] = set()
+    
+    def connect_public(self) -> bool:
+        """Connect to public WebSocket channels"""
+        return self.connect(self.PUBLIC_URL)
+    
+    def connect_private(self) -> bool:
+        """Connect to private WebSocket channels"""
+        if not self._is_private:
+            logger.error("BitUnix: Cannot connect to private channels without API credentials")
+            return False
+        return self.connect(self.PRIVATE_URL, on_open=self._authenticate)
+    
+    def subscribe_ticker(self, symbol: str) -> bool:
+        """Subscribe to ticker updates for a symbol"""
+        return self.subscribe([{
+            "symbol": symbol,
+            "ch": "ticker"
+        }])
+    
+    def subscribe_orderbook(self, symbol: str, depth: int = 20) -> bool:
+        """Subscribe to order book updates"""
+        return self.subscribe([{
+            "symbol": symbol,
+            "ch": "depth_books",
+            "depth": depth
+        }])
+    
+    def subscribe_trades(self, symbol: str) -> bool:
+        """Subscribe to trade updates"""
+        return self.subscribe([{
+            "symbol": symbol,
+            "ch": "trade"
+        }])
+    
+    def subscribe_orders(self) -> bool:
+        """Subscribe to order updates (private channel)"""
+        if not self._is_private:
+            logger.error("BitUnix: Cannot subscribe to orders without API credentials")
+            return False
+        return self.subscribe([{"ch": "order"}])
+    
+    def subscribe_positions(self) -> bool:
+        """Subscribe to position updates (private channel)"""
+        if not self._is_private:
+            logger.error("BitUnix: Cannot subscribe to positions without API credentials")
+            return False
+        return self.subscribe([{"ch": "position"}])
+    
+    def subscribe_balance(self) -> bool:
+        """Subscribe to balance updates (private channel)"""
+        if not self._is_private:
+            logger.error("BitUnix: Cannot subscribe to balance without API credentials")
+            return False
+        return self.subscribe([{"ch": "balance"}])
+    
+    def get_cached_ticker(self, symbol: str) -> Optional[Dict[str, Any]]:
+        """Get cached ticker data for a symbol"""
+        return self._ticker_cache.get(symbol)
+    
+    def get_cached_order(self, order_id: str) -> Optional[Dict[str, Any]]:
+        """Get cached order data"""
+        return self._order_cache.get(order_id)
+    
+    def get_cached_position(self, symbol: str) -> Optional[Dict[str, Any]]:
+        """Get cached position data"""
+        return self._position_cache.get(symbol)
+    
+    def get_cached_balance(self) -> Optional[Dict[str, Any]]:
+        """Get cached balance data"""
+        return self._balance_cache
+    
+    def disconnect(self):
+        """Disconnect from WebSocket and clear active subscriptions"""
+        # Clear active subscriptions
+        self._active_subscriptions.clear()
+        # Call parent disconnect
+        super().disconnect()
+    
+    def _authenticate(self, ws):
+        """Authenticate for private channels"""
+        if not self.api_key or not self.api_secret:
+            return
+        
+        # Generate authentication parameters
+        timestamp = int(time.time() * 1000)
+        nonce = self._generate_nonce()
+        
+        # Create signature
+        sign = self._create_signature(timestamp, nonce)
+        
+        # Send login request
+        login_request = {
+            "op": "login",
+            "args": [{
+                "apiKey": self.api_key,
+                "timestamp": timestamp,
+                "nonce": nonce,
+                "sign": sign
+            }]
+        }
+        
+        self.send(login_request)
+        logger.info("BitUnix: Sent authentication request")
+    
+    def _generate_nonce(self) -> str:
+        """Generate a 32-character random nonce"""
+        import random
+        import string
+        return ''.join(random.choices(string.ascii_letters + string.digits, k=32))
+    
+    def _create_signature(self, timestamp: int, nonce: str) -> str:
+        """Create authentication signature"""
+        # Step 1: Create first digest
+        first_message = f"{nonce}{timestamp}{self.api_key}"
+        first_digest = hashlib.sha256(first_message.encode()).hexdigest()
+        
+        # Step 2: Create final signature
+        final_message = f"{first_digest}{self.api_secret}"
+        final_signature = hashlib.sha256(final_message.encode()).hexdigest()
+        
+        return final_signature
+    
+    def _send_subscription_request(self, channels: List[Dict[str, Any]], subscribe: bool) -> bool:
+        """Send subscription/unsubscription request"""
+        op = "subscribe" if subscribe else "unsubscribe"
+        
+        # Filter out duplicate subscriptions
+        if subscribe:
+            filtered_channels = []
+            for channel in channels:
+                # Create a unique key for this subscription
+                sub_key = f"{channel.get('symbol', '')}-{channel.get('ch', '')}"
+                if sub_key not in self._active_subscriptions:
+                    filtered_channels.append(channel)
+                    self._active_subscriptions.add(sub_key)
+                else:
+                    logger.debug(f"BitUnix: Skipping duplicate subscription for {sub_key}")
+            
+            if not filtered_channels:
+                logger.debug(f"BitUnix: All {len(channels)} channels already subscribed")
+                return True
+            channels = filtered_channels
+        else:
+            # Remove from active subscriptions when unsubscribing
+            for channel in channels:
+                sub_key = f"{channel.get('symbol', '')}-{channel.get('ch', '')}"
+                self._active_subscriptions.discard(sub_key)
+        
+        request = {
+            "op": op,
+            "args": channels
+        }
+        
+        logger.info(f"BitUnix: Sending {op} request for {len(channels)} channels: {channels}")
+        return self.send(request)
+    
+    def _send_heartbeat(self):
+        """Send ping to keep connection alive"""
+        self.send({"op": "ping"})
+    
+    def _parse_timestamp(self, ts_value: Any) -> int:
+        """Parse timestamp from various formats to milliseconds"""
+        if ts_value is None:
+            return int(time.time() * 1000)
+        
+        # If already an integer, return it
+        if isinstance(ts_value, int):
+            return ts_value
+        
+        # If it's a float, convert to int milliseconds
+        if isinstance(ts_value, float):
+            return int(ts_value * 1000) if ts_value < 1e10 else int(ts_value)
+        
+        # If it's a string, try to parse it
+        if isinstance(ts_value, str):
+            try:
+                # Try parsing as integer first
+                return int(ts_value)
+            except ValueError:
+                try:
+                    # Try parsing as float
+                    return int(float(ts_value) * 1000)
+                except ValueError:
+                    try:
+                        # Try parsing as ISO format datetime
+                        # Handle both with and without 'Z' suffix
+                        if ts_value.endswith('Z'):
+                            ts_value = ts_value[:-1] + '+00:00'
+                        dt = datetime.fromisoformat(ts_value)
+                        return int(dt.timestamp() * 1000)
+                    except ValueError:
+                        logger.warning(f"BitUnix: Unable to parse timestamp: {ts_value}")
+                        return int(time.time() * 1000)
+        
+        # Default case
+        return int(time.time() * 1000)
+    
+    def _process_message(self, message: Dict[str, Any]):
+        """Process raw message from WebSocket"""
+        # Handle different message types
+        if "op" in message:
+            self._handle_operation_response(message)
+        elif "ch" in message:
+            self._handle_channel_message(message)
+        elif "channel" in message:
+            # Alternative format
+            self._handle_channel_message(message)
+        else:
+            logger.debug(f"BitUnix: Unhandled message format: {message}")
+    
+    def _handle_operation_response(self, message: Dict[str, Any]):
+        """Handle operation responses (login, subscribe, etc.)"""
+        op = message.get("op")
+        
+        if op == "login":
+            # Check both possible response formats
+            is_success = False
+            if message.get("code") == 0:
+                is_success = True
+            elif message.get("data", {}).get("result") is True:
+                is_success = True
+            
+            if is_success:
+                logger.info("BitUnix: Authentication successful")
+                self._authenticated = True
+                self._set_state(WebSocketState.AUTHENTICATED)
+                
+                # Subscribe to pending private channels
+                with self._lock:
+                    if self._pending_subscriptions:
+                        private_subs = [s for s in self._pending_subscriptions if s.get("ch") in ["order", "position", "balance", "tpsl"]]
+                        if private_subs:
+                            self._send_subscription_request(private_subs, True)
+                            for sub in private_subs:
+                                self._pending_subscriptions.remove(sub)
+            else:
+                logger.error(f"BitUnix: Authentication failed: {message}")
+                self._authenticated = False
+        
+        elif op == "subscribe":
+            # Check both possible response formats
+            is_success = False
+            if message.get("code") == 0:
+                is_success = True
+            elif message.get("data", {}).get("result") is True:
+                is_success = True
+            elif "result" in message and message["result"] is True:
+                is_success = True
+                
+            if is_success:
+                logger.info(f"BitUnix: Subscription successful")
+            else:
+                logger.error(f"BitUnix: Subscription failed: {message}")
+        
+        elif op == "pong":
+            logger.debug("BitUnix: Received pong")
+        
+        elif op == "connect":
+            # Handle connect response
+            if message.get("data", {}).get("result") is True:
+                logger.info("BitUnix: Connection acknowledged")
+    
+    def _handle_channel_message(self, message: Dict[str, Any]):
+        """Handle channel data messages"""
+        channel = message.get("ch")
+        symbol = message.get("symbol")
+        data = message.get("data")
+        timestamp = self._parse_timestamp(message.get("ts"))
+        
+        if not channel or data is None:
+            return
+        
+        # Process based on channel type
+        if channel == "ticker":
+            self._process_ticker(symbol, data, timestamp)
+        elif channel == "depth_books":
+            self._process_orderbook(symbol, data, timestamp)
+        elif channel == "trade":
+            self._process_trades(symbol, data, timestamp)
+        elif channel == "order":
+            self._process_order(data, timestamp)
+        elif channel == "position":
+            self._process_position(data, timestamp)
+        elif channel == "balance":
+            self._process_balance(data, timestamp)
+        elif channel == "tpsl":
+            self._process_tpsl(data, timestamp)
+    
+    def _process_ticker(self, symbol: str, data: Dict[str, Any], timestamp: int):
+        """Process ticker data"""
+        # Cache ticker data
+        self._ticker_cache[symbol] = data
+        
+        # Create unified ticker
+        ticker = ExchangeTicker(symbol)
+        ticker.lastPrice = float(data.get("la", 0))
+        ticker.bidPrice = float(data.get("b1", 0)) if "b1" in data else ticker.lastPrice
+        ticker.askPrice = float(data.get("a1", 0)) if "a1" in data else ticker.lastPrice
+        ticker.volume = float(data.get("b", 0))
+        ticker.price = ticker.lastPrice
+        
+        # Send unified message
+        unified_msg = self._create_unified_message(WebSocketChannels.TICKER, symbol, ticker)
+        if self.on_message:
+            self.on_message(unified_msg)
+    
+    def _process_orderbook(self, symbol: str, data: Dict[str, Any], timestamp: int):
+        """Process order book data"""
+        # Create orderbook structure
+        orderbook = {
+            "symbol": symbol,
+            "bids": [[float(p), float(q)] for p, q in data.get("b", [])],
+            "asks": [[float(p), float(q)] for p, q in data.get("a", [])],
+            "timestamp": timestamp
+        }
+        
+        # Send unified message
+        unified_msg = self._create_unified_message(WebSocketChannels.ORDERBOOK, symbol, orderbook)
+        if self.on_message:
+            self.on_message(unified_msg)
+    
+    def _process_trades(self, symbol: str, data: List[Dict[str, Any]], timestamp: int):
+        """Process trade data"""
+        trades = []
+        for trade in data:
+            trades.append({
+                "symbol": symbol,
+                "price": float(trade.get("p", 0)),
+                "quantity": float(trade.get("q", 0)),
+                "side": trade.get("S", "BUY"),
+                "timestamp": self._parse_timestamp(trade.get("t")) if trade.get("t") else timestamp
+            })
+        
+        # Send unified message
+        unified_msg = self._create_unified_message(WebSocketChannels.TRADES, symbol, trades)
+        if self.on_message:
+            self.on_message(unified_msg)
+    
+    def _process_order(self, data: Dict[str, Any], timestamp: int):
+        """Process order update"""
+        order_id = data.get("oi")
+        if order_id:
+            self._order_cache[order_id] = data
+        
+        # Create unified order
+        order = ExchangeOrder(
+            orderId=order_id,
+            symbol=data.get("s", ""),
+            side=data.get("S", ""),
+            orderType=data.get("o", ""),
+            qty=float(data.get("q", 0)),
+            price=float(data.get("p", 0)) if data.get("p") else None,
+            status=self._map_order_status(data.get("X", "")),
+            timeInForce=data.get("f", "GTC"),
+            createTime=self._parse_timestamp(data.get("ct")) if data.get("ct") else timestamp,
+            clientId=data.get("coi"),
+            executedQty=float(data.get("eq", 0))
+        )
+        
+        # Send unified message
+        unified_msg = self._create_unified_message(WebSocketChannels.ORDERS, order.symbol, order)
+        if self.on_message:
+            self.on_message(unified_msg)
+    
+    def _process_position(self, data: Dict[str, Any], timestamp: int):
+        """Process position update"""
+        symbol = data.get("s", "")
+        if symbol:
+            self._position_cache[symbol] = data
+        
+        # Create unified position
+        size = float(data.get("pa", 0))
+        side = data.get("S", "")
+        if side == "SELL":
+            size = -size
+        
+        position = ExchangePosition(
+            symbol=symbol,
+            size=size,
+            entryPrice=float(data.get("ep", 0)),
+            markPrice=float(data.get("mp", 0)),
+            pnl=float(data.get("up", 0)),
+            pnlPercentage=float(data.get("upp", 0)),
+            side=side
+        )
+        
+        # Send unified message
+        unified_msg = self._create_unified_message(WebSocketChannels.POSITIONS, symbol, position)
+        if self.on_message:
+            self.on_message(unified_msg)
+    
+    def _process_balance(self, data: List[Dict[str, Any]], timestamp: int):
+        """Process balance update"""
+        self._balance_cache = {item["a"]: item for item in data}
+        
+        # Create unified balances
+        balances = []
+        for item in data:
+            balance = ExchangeBalance(
+                asset=item.get("a", ""),
+                balance=float(item.get("wb", 0)),
+                available=float(item.get("ab", 0)),
+                locked=float(item.get("wb", 0)) - float(item.get("ab", 0))
+            )
+            balances.append(balance)
+        
+        # Send unified message
+        unified_msg = self._create_unified_message(WebSocketChannels.BALANCE, None, balances)
+        if self.on_message:
+            self.on_message(unified_msg)
+    
+    def _process_tpsl(self, data: Dict[str, Any], timestamp: int):
+        """Process take profit/stop loss update"""
+        # Send as raw data for now
+        unified_msg = self._create_unified_message("tpsl", data.get("s"), data)
+        if self.on_message:
+            self.on_message(unified_msg)
+    
+    def _map_order_status(self, status: str) -> str:
+        """Map BitUnix order status to unified status"""
+        status_map = {
+            "NEW": "NEW",
+            "FILLED": "FILLED",
+            "PARTIALLY_FILLED": "PARTIALLY_FILLED",
+            "CANCELED": "CANCELED",
+            "REJECTED": "REJECTED"
+        }
+        return status_map.get(status, status)
+    
+    # Singleton pattern support for backward compatibility
+    _shared_instance: Optional['BitUnixWebSocketManager'] = None
+    
     @classmethod
     def shared(cls):
+        """Get shared instance (singleton pattern)"""
         if cls._shared_instance is None:
             cls._shared_instance = cls()
         return cls._shared_instance
-
+    
     def subscribeToTicker(self, symbol: str):
-        print(f"DEBUG: Subscribing to ticker for {symbol} (WebSocket not actually implemented).")
-
+        """Legacy method for backward compatibility"""
+        if not self.is_connected():
+            self.connect_public()
+        self.subscribe_ticker(symbol)
+    
     def lastTradePrice(self, symbol: str) -> float:
-        """Get the last trade price for a symbol - no caching."""
-        # BitUnixWebSocketManager doesn't have real WebSocket implementation
-        # Always return 0 to indicate no cached price
-        return 0.0
-
+        """Get the last trade price for a symbol from cache"""
+        ticker = self._ticker_cache.get(symbol, {})
+        return float(ticker.get("la", 0))
+    
     def subscribeToOrders(self, symbols: list[str]):
-        print(f"DEBUG: Subscribing to orders for symbols {symbols} (WebSocket not actually implemented).")
+        """Legacy method for backward compatibility"""
+        if not self.is_connected():
+            logger.warning("BitUnix: Cannot subscribe to orders without WebSocket connection")
+            return
+        for symbol in symbols:
+            logger.info(f"BitUnix: Subscribing to orders for {symbol}")
 
-class BitUnixExchange(ExchangeProtocol):
+class BitUnixExchange(ExchangeProtocol, ExchangeInterface):
     """
     A BitUnix-specific implementation of ExchangeProtocol (Python version).
     """
@@ -70,6 +567,9 @@ class BitUnixExchange(ExchangeProtocol):
     def __init__(self):
         self.precision_manager = SymbolPrecisionManager.get_instance("BitUnix")
         self.base_url = "https://api.bitunix.com"
+        self._ws_manager: Optional[BitUnixWebSocketManager] = None
+        self._api_key: Optional[str] = None
+        self._api_secret: Optional[str] = None
 
     @property
     def webSocketManager(self) -> ExchangeWebSocketManagerProtocol:
@@ -176,6 +676,40 @@ class BitUnixExchange(ExchangeProtocol):
                 
         except Exception as e:
             completion(("failure", e))
+    
+    def fetchSymbolInfo(self, symbol: str, completion):
+        """
+        Fetch detailed information for a specific symbol.
+        
+        Args:
+            symbol: The trading symbol
+            completion: Callback function that receives (status, data)
+        """
+        def ticker_callback(status_data):
+            status, data = status_data
+            if status == "success":
+                # Find the specific symbol
+                for ticker in data:
+                    if ticker.symbol == symbol:
+                        # Return ticker info as symbol info
+                        symbol_info = {
+                            "symbol": ticker.symbol,
+                            "lastPrice": ticker.lastPrice,
+                            "bidPrice": ticker.bidPrice,
+                            "askPrice": ticker.askPrice,
+                            "volume": ticker.volume,
+                            "price": ticker.price
+                        }
+                        completion(("success", symbol_info))
+                        return
+                
+                # Symbol not found
+                completion(("failure", Exception(f"Symbol {symbol} not found")))
+            else:
+                completion(("failure", data))
+        
+        # Use fetchTickers to get symbol info
+        self.fetchTickers(ticker_callback)
     
     def fetchTickers(self, completion):
         """
@@ -327,7 +861,8 @@ class BitUnixExchange(ExchangeProtocol):
                         entryPrice=entryPrice,
                         markPrice=markPrice,
                         pnl=unrealizedPNL,
-                        pnlPercentage=pnlPercentage
+                        pnlPercentage=pnlPercentage,
+                        raw_response=item  # Include raw data
                     )
                 )
 
@@ -387,8 +922,18 @@ class BitUnixExchange(ExchangeProtocol):
             payload["price"] = f"{request.price:.{price_precision}f}"
         
         # Additional params in Swift code
+        # For BitUnix, tradeSide and reduceOnly are independent
+        # tradeSide: "OPEN" for new positions, "CLOSE" for closing
+        # reduceOnly: additional safety to prevent increasing position
+        
+        # Always use OPEN for grid orders (they open and close naturally)
         payload["tradeSide"] = "OPEN"
-        payload["reduceOnly"] = "false"
+        
+        # Set reduceOnly based on request
+        if hasattr(request, 'reduceOnly') and request.reduceOnly:
+            payload["reduceOnly"] = "true"
+        else:
+            payload["reduceOnly"] = "false"
         payload["effect"] = request.timeInForce.upper()
         # Only include clientId if orderLinkId is not None
         if request.orderLinkId is not None:
@@ -437,7 +982,24 @@ class BitUnixExchange(ExchangeProtocol):
                 error_msg = json_data.get('msg', 'Unknown error')
                 raise Exception(f"API Error {json_data.get('code')}: {error_msg}")
 
-            orderResponse = ExchangeOrderResponse(rawResponse=responseStr)
+            # Parse the response and create ExchangeOrderResponse
+            response_data = json.loads(responseStr)
+            order_data = response_data.get('data', {})
+            
+            # Create the order response with proper fields
+            orderResponse = ExchangeOrderResponse(
+                orderId=order_data.get('orderId', ''),
+                symbol=request.symbol,
+                side=request.side,
+                orderType=request.orderType,
+                qty=actual_qty,  # Use the adjusted quantity
+                price=request.price,
+                status='NEW',  # BitUnix doesn't return status in place order response
+                timeInForce=request.timeInForce,
+                createTime=int(time.time() * 1000),
+                clientId=order_data.get('clientId'),
+                rawResponse=response_data
+            )
             completion(("success", orderResponse))
         except Exception as e:
             print(f"DEBUG: BitUnixExchange placeOrder error: {str(e)}")
@@ -1008,7 +1570,6 @@ class BitUnixExchange(ExchangeProtocol):
                         timeInForce=timeInForce,
                         createTime=createTime,
                         clientId=clientId,
-                        stopPrice=stopPrice,
                         executedQty=executedQty
                     )
                 )
@@ -1786,9 +2347,324 @@ class BitUnixExchange(ExchangeProtocol):
             print(f"DEBUG: BitUnixExchange fetchPositionTiers error: {str(e)}")
             completion(("failure", e))
 
+    # WebSocket Interface Methods
+    def get_name(self) -> str:
+        """Get the name of the exchange"""
+        return "BitUnix"
+    
+    def get_symbol_format(self, base_symbol: str) -> str:
+        """Convert a base symbol to exchange-specific format"""
+        # BitUnix uses format like BTCUSDT
+        return base_symbol
+    
+    def translate_side_to_exchange(self, side: str) -> str:
+        """Translate standard side to exchange-specific format"""
+        # BitUnix uses BUY/SELL
+        if side == PositionSide.LONG:
+            return "BUY"
+        elif side == PositionSide.SHORT:
+            return "SELL"
+        return side
+    
+    def translate_side_from_exchange(self, exchange_side: str) -> str:
+        """Translate exchange-specific side to standard format"""
+        if exchange_side == "BUY":
+            return PositionSide.LONG
+        elif exchange_side == "SELL":
+            return PositionSide.SHORT
+        return exchange_side
+    
+    def fetchAccountEquity(self, completion: Callable[[Tuple[str, Any]], None]):
+        """Fetch total account equity value"""
+        def balance_callback(status_data):
+            status, data = status_data
+            if status == "success":
+                # Calculate total equity from balances
+                total_equity = 0.0
+                for balance in data:
+                    if balance.asset == "USDT":
+                        total_equity = balance.balance
+                        break
+                completion(("success", total_equity))
+            else:
+                completion(("failure", data))
+        
+        self.fetchBalance(balance_callback)
+    
+    def connectWebSocket(self, 
+                        on_message: Callable[[WebSocketMessage], None],
+                        on_state_change: Callable[[WebSocketState], None],
+                        on_error: Callable[[Exception], None]) -> bool:
+        """Connect to the exchange WebSocket"""
+        # Always create WebSocket manager first
+        self._ws_manager = BitUnixWebSocketManager(
+            on_message=on_message,
+            on_error=on_error,
+            on_state_change=on_state_change
+        )
+        
+        # For now, always use public WebSocket for market data
+        # Private WebSocket can be added later for order/position updates
+        return self._ws_manager.connect_public()
+    
+    def disconnectWebSocket(self):
+        """Disconnect from the WebSocket"""
+        if self._ws_manager:
+            self._ws_manager.disconnect()
+    
+    def subscribeWebSocket(self, subscriptions: List[WebSocketSubscription]) -> bool:
+        """Subscribe to WebSocket channels"""
+        if not self._ws_manager:
+            return False
+        
+        # Convert to BitUnix format
+        channels = []
+        for sub in subscriptions:
+            if sub.channel == WebSocketChannels.TICKER and sub.symbol:
+                channels.append({
+                    "symbol": sub.symbol,
+                    "ch": "ticker"
+                })
+            elif sub.channel == WebSocketChannels.ORDERBOOK and sub.symbol:
+                depth = sub.params.get("depth", 20) if sub.params else 20
+                channels.append({
+                    "symbol": sub.symbol,
+                    "ch": "depth_books",
+                    "depth": depth
+                })
+            elif sub.channel == WebSocketChannels.TRADES and sub.symbol:
+                channels.append({
+                    "symbol": sub.symbol,
+                    "ch": "trade"
+                })
+            elif sub.channel == WebSocketChannels.ORDERS:
+                channels.append({"ch": "order"})
+            elif sub.channel == WebSocketChannels.POSITIONS:
+                channels.append({"ch": "position"})
+            elif sub.channel == WebSocketChannels.BALANCE:
+                channels.append({"ch": "balance"})
+        
+        return self._ws_manager.subscribe(channels) if channels else False
+    
+    def unsubscribeWebSocket(self, subscriptions: List[WebSocketSubscription]) -> bool:
+        """Unsubscribe from WebSocket channels"""
+        if not self._ws_manager:
+            return False
+        
+        # Convert to BitUnix format (same as subscribe)
+        channels = []
+        for sub in subscriptions:
+            if sub.channel == WebSocketChannels.TICKER and sub.symbol:
+                channels.append({
+                    "symbol": sub.symbol,
+                    "ch": "ticker"
+                })
+            elif sub.channel == WebSocketChannels.ORDERBOOK and sub.symbol:
+                channels.append({
+                    "symbol": sub.symbol,
+                    "ch": "depth_books"
+                })
+            elif sub.channel == WebSocketChannels.TRADES and sub.symbol:
+                channels.append({
+                    "symbol": sub.symbol,
+                    "ch": "trade"
+                })
+            elif sub.channel == WebSocketChannels.ORDERS:
+                channels.append({"ch": "order"})
+            elif sub.channel == WebSocketChannels.POSITIONS:
+                channels.append({"ch": "position"})
+            elif sub.channel == WebSocketChannels.BALANCE:
+                channels.append({"ch": "balance"})
+        
+        return self._ws_manager.unsubscribe(channels) if channels else False
+    
+    def getWebSocketState(self) -> WebSocketState:
+        """Get current WebSocket connection state"""
+        if self._ws_manager:
+            return self._ws_manager.get_state()
+        return WebSocketState.DISCONNECTED
+    
+    def isWebSocketConnected(self) -> bool:
+        """Check if WebSocket is connected and ready"""
+        return self._ws_manager.is_connected() if self._ws_manager else False
+    
     # Helper for double sha256
     def sha256Hex(self, input_str: str) -> str:
         """
         Generates a SHA-256 hex digest of the input string.
         """
         return hashlib.sha256(input_str.encode('utf-8')).hexdigest()
+    
+    def fetchPositionMode(self, completion):
+        """
+        Fetch the current position mode (one-way or hedge mode).
+        Since BitUnix doesn't have a dedicated endpoint, we'll infer from position data.
+        
+        completion: A callback with a Result-like signature:
+                    success -> dict containing position mode info {"positionMode": "ONE_WAY" or "HEDGE"}
+                    failure -> Exception
+        """
+        # Try to get position mode from account info
+        url = "https://fapi.bitunix.com/api/v1/futures/account/get_single_account"
+        keys = APIKeyStorage.shared().getKeys("BitUnix")
+        
+        if not keys or not keys.get("apiKey") or not keys.get("secretKey"):
+            # If no API keys, check from any open position
+            def pos_callback(status_data):
+                status, data = status_data
+                if status == "success" and data:
+                    # Get mode from first position
+                    for pos in data:
+                        if hasattr(pos, 'raw_response') and pos.raw_response:
+                            mode = pos.raw_response.get('positionMode', 'HEDGE')
+                            completion(("success", {"positionMode": mode}))
+                            return
+                # Default to HEDGE if no positions
+                completion(("success", {"positionMode": "HEDGE", "source": "default"}))
+            
+            self.fetchPositions(pos_callback)
+            return
+        
+        apiKey = keys["apiKey"]
+        secretKey = keys["secretKey"]
+        
+        # Generate signature for GET request
+        nonce = str(uuid.uuid4())[:8]
+        timestamp = str(int(time.time() * 1000))
+        queryParams = ""  # No query params
+        body = ""
+        
+        digestInput = f"{nonce}{timestamp}{apiKey}{queryParams}{body}"
+        digest = self.sha256Hex(digestInput)
+        signInput = f"{digest}{secretKey}"
+        sign = self.sha256Hex(signInput)
+        
+        headers = {
+            "api-key": apiKey,
+            "sign": sign,
+            "nonce": nonce,
+            "timestamp": timestamp,
+            "Content-Type": "application/json"
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            responseStr = response.text
+            
+            if response.status_code != 200:
+                # Fallback to checking positions
+                def pos_callback(status_data):
+                    status, data = status_data
+                    if status == "success" and data:
+                        # Get mode from first position
+                        for pos in data:
+                            if hasattr(pos, 'raw_response') and pos.raw_response:
+                                mode = pos.raw_response.get('positionMode', 'HEDGE')
+                                completion(("success", {"positionMode": mode, "source": "position"}))
+                                return
+                    # Default to HEDGE if no positions
+                    completion(("success", {"positionMode": "HEDGE", "source": "default"}))
+                
+                self.fetchPositions(pos_callback)
+                return
+            
+            json_data = json.loads(responseStr)
+            
+            if json_data.get('code', 0) == 0:
+                # Extract position mode from account data
+                data = json_data.get("data", {})
+                position_mode = data.get("positionMode", "HEDGE")
+                completion(("success", {"positionMode": position_mode, "source": "account"}))
+            else:
+                # Fallback to positions
+                def pos_callback(status_data):
+                    status, data = status_data
+                    if status == "success" and data:
+                        for pos in data:
+                            if hasattr(pos, 'raw_response') and pos.raw_response:
+                                mode = pos.raw_response.get('positionMode', 'HEDGE')
+                                completion(("success", {"positionMode": mode, "source": "position"}))
+                                return
+                    completion(("success", {"positionMode": "HEDGE", "source": "default"}))
+                
+                self.fetchPositions(pos_callback)
+                
+        except Exception as e:
+            # Fallback to positions on any error
+            def pos_callback(status_data):
+                status, data = status_data
+                if status == "success" and data:
+                    for pos in data:
+                        if hasattr(pos, 'raw_response') and pos.raw_response:
+                            mode = pos.raw_response.get('positionMode', 'HEDGE')
+                            completion(("success", {"positionMode": mode, "source": "position"}))
+                            return
+                completion(("success", {"positionMode": "HEDGE", "source": "default"}))
+            
+            self.fetchPositions(pos_callback)
+    
+    def setPositionMode(self, mode: str, completion):
+        """
+        Set the position mode (one-way or hedge mode).
+        
+        Args:
+            mode: "ONE_WAY" or "HEDGE"
+            completion: A callback with a Result-like signature
+        """
+        url = "https://fapi.bitunix.com/api/v1/futures/account/change_position_mode"
+        keys = APIKeyStorage.shared().getKeys("BitUnix")
+        
+        if not keys or not keys.get("apiKey") or not keys.get("secretKey"):
+            completion(("failure", Exception("API keys not configured")))
+            return
+        
+        apiKey = keys["apiKey"]
+        secretKey = keys["secretKey"]
+        
+        # BitUnix expects "positionMode" parameter with "ONE_WAY" or "HEDGE" value
+        body = json.dumps({
+            "positionMode": mode.upper()
+        })
+        
+        # Generate signature for POST request
+        nonce = str(uuid.uuid4())[:8]
+        timestamp = str(int(time.time() * 1000))
+        queryParams = ""  # No query params
+        
+        digestInput = f"{nonce}{timestamp}{apiKey}{queryParams}{body}"
+        digest = self.sha256Hex(digestInput)
+        signInput = f"{digest}{secretKey}"
+        sign = self.sha256Hex(signInput)
+        
+        headers = {
+            "api-key": apiKey,
+            "sign": sign,
+            "nonce": nonce,
+            "timestamp": timestamp,
+            "Content-Type": "application/json"
+        }
+        
+        print(f"DEBUG: BitUnixExchange setPositionMode URL: {url}")
+        print(f"DEBUG: BitUnixExchange setPositionMode body: {body}")
+        
+        try:
+            response = requests.post(url, headers=headers, data=body)
+            responseStr = response.text
+            
+            print(f"DEBUG: BitUnixExchange setPositionMode response statusCode: {response.status_code}")
+            print(f"DEBUG: BitUnixExchange setPositionMode raw response: {responseStr}")
+            
+            if response.status_code != 200:
+                raise Exception(f"HTTP {response.status_code}: {responseStr}")
+            
+            json_data = json.loads(responseStr)
+            
+            if json_data.get('code', 0) == 0:
+                completion(("success", {"positionMode": mode, "message": "Position mode changed successfully"}))
+            else:
+                error_msg = json_data.get('msg', 'Unknown error')
+                completion(("failure", Exception(f"API Error {json_data.get('code')}: {error_msg}")))
+                
+        except Exception as e:
+            print(f"DEBUG: BitUnixExchange setPositionMode error: {str(e)}")
+            completion(("failure", e))

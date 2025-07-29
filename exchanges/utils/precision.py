@@ -39,6 +39,15 @@ class SymbolPrecisionManager:
     def get_price_precision(self, symbol: str) -> int:
         """Get price decimal precision for a symbol"""
         info = self.get_symbol_info(symbol)
+        
+        # Check for direct precision field first (BitUnix uses quotePrecision)
+        if "quotePrecision" in info:
+            return int(info["quotePrecision"])
+        
+        # Check for other direct precision fields
+        if "pricePrecision" in info:
+            return int(info["pricePrecision"])
+        
         tick_size = info.get("tick_size", info.get("minPrice", 0.01))
         
         # Convert tick size to precision (e.g., 0.01 -> 2, 0.001 -> 3)
@@ -54,6 +63,14 @@ class SymbolPrecisionManager:
     def get_quantity_precision(self, symbol: str) -> int:
         """Get quantity decimal precision for a symbol"""
         info = self.get_symbol_info(symbol)
+        
+        # Check for direct precision field first (BitUnix uses basePrecision)
+        if "basePrecision" in info:
+            return int(info["basePrecision"])
+        
+        # Check for other direct precision fields
+        if "quantityPrecision" in info:
+            return int(info["quantityPrecision"])
         
         # Try different field names used by exchanges
         min_qty = info.get("min_qty", info.get("minQty", info.get("min_order_size", 1)))
@@ -98,6 +115,15 @@ class SymbolPrecisionManager:
         
         return float(contract_size)
     
+    def get_min_trade_volume(self, symbol: str) -> float:
+        """Get minimum trade volume/quantity for a symbol"""
+        info = self.get_symbol_info(symbol)
+        # Support multiple field names used by different exchanges
+        min_vol = info.get("min_trade_volume", 
+                          info.get("minTradeVolume",  # BitUnix format
+                          info.get("minQty", 0.001)))
+        return float(min_vol)
+    
     def _needs_refresh(self) -> bool:
         """Check if cache needs refreshing - only on first init when cache is empty"""
         # Only fetch fresh data if we have no cached data at all
@@ -115,7 +141,8 @@ class SymbolPrecisionManager:
             if os.path.exists(self.cache_path):
                 with open(self.cache_path, 'r') as f:
                     data = json.load(f)
-                    self.precision_cache = data.get('symbols', {})
+                    # Support both formats: 'symbols' and 'precision_cache' (BitUnix format)
+                    self.precision_cache = data.get('symbols', data.get('precision_cache', {}))
                     
                     # Parse the update timestamp
                     update_str = data.get('last_update')

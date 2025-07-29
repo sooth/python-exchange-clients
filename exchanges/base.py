@@ -27,6 +27,8 @@ class ExchangeOrderRequest:
     positionIdx: Optional[int] = None  # 0: one-way, 1: buy-side, 2: sell-side
     closeOnTrigger: Optional[bool] = None
     reduceOnly: Optional[bool] = None
+    stopLoss: Optional[float] = None
+    takeProfit: Optional[float] = None
     
     # General
     tradingType: str = "PERP"  # "PERP" or "SPOT"
@@ -46,11 +48,6 @@ class ExchangeOrderResponse:
     createTime: int
     clientId: Optional[str] = None
     rawResponse: Optional[Dict] = None
-    
-    def __init__(self, raw_response: Dict):
-        """Initialize from exchange response"""
-        self.rawResponse = raw_response
-        # Subclasses should override to extract fields
 
 
 class ExchangeTicker:
@@ -75,6 +72,7 @@ class ExchangePosition:
     pnlPercentage: float
     positionIdx: Optional[int] = None
     side: Optional[str] = None
+    raw_response: Optional[Dict] = None  # Raw data from exchange
 
 
 @dataclass
@@ -100,6 +98,15 @@ class ExchangeOrder:
     createTime: int
     clientId: Optional[str] = None
     executedQty: Optional[float] = None
+    # Additional fields for TP/SL
+    stopPrice: Optional[float] = None
+    triggerPrice: Optional[float] = None
+    reduceOnly: Optional[bool] = None
+    postOnly: Optional[bool] = None
+    # Store raw order type for debugging
+    rawOrderType: Optional[str] = None
+    # Store raw response for additional fields
+    rawResponse: Optional[dict] = None
 
 
 # Protocol/Interface definition
@@ -139,6 +146,48 @@ class ExchangeProtocol(ABC):
         pass
 
 
+# WebSocket Protocol definition
+class WebSocketProtocol(ABC):
+    """
+    Abstract base class for WebSocket manager implementations.
+    """
+    
+    @abstractmethod
+    def connect(self, url: str, on_open: Callable = None, on_close: Callable = None) -> bool:
+        """Connect to WebSocket endpoint"""
+        pass
+    
+    @abstractmethod
+    def disconnect(self):
+        """Disconnect from WebSocket"""
+        pass
+    
+    @abstractmethod
+    def send(self, message: Dict[str, Any]) -> bool:
+        """Send message to WebSocket"""
+        pass
+    
+    @abstractmethod
+    def subscribe(self, channels: List[Dict[str, Any]]) -> bool:
+        """Subscribe to channels"""
+        pass
+    
+    @abstractmethod
+    def unsubscribe(self, channels: List[Dict[str, Any]]) -> bool:
+        """Unsubscribe from channels"""
+        pass
+    
+    @abstractmethod
+    def is_connected(self) -> bool:
+        """Check if connected"""
+        pass
+    
+    @abstractmethod
+    def get_state(self) -> str:
+        """Get connection state"""
+        pass
+
+
 # Standard position side constants
 class PositionSide:
     """Standard position side constants used across all exchanges"""
@@ -151,6 +200,48 @@ class TradingType:
     """Trading type constants - default is PERP"""
     PERP = "PERP"
     SPOT = "SPOT"
+
+
+# WebSocket channel constants
+class WebSocketChannels:
+    """Standard WebSocket channel names"""
+    TICKER = "ticker"
+    ORDERBOOK = "orderbook"
+    TRADES = "trades"
+    ORDERS = "orders"
+    POSITIONS = "positions"
+    BALANCE = "balance"
+    ACCOUNT = "account"
+
+
+# WebSocket related data structures
+@dataclass
+class WebSocketSubscription:
+    """WebSocket subscription request"""
+    channel: str  # e.g., "ticker", "orderbook", "trades", "orders", "positions"
+    symbol: Optional[str] = None  # Symbol to subscribe to (None for account-wide channels)
+    params: Optional[Dict[str, Any]] = None  # Additional channel-specific parameters
+
+
+@dataclass 
+class WebSocketMessage:
+    """Unified WebSocket message structure"""
+    channel: str
+    symbol: Optional[str]
+    timestamp: int
+    data: Any  # Channel-specific data (ticker, order, position, etc.)
+    raw: Optional[Dict] = None  # Raw message from exchange
+
+
+# WebSocket connection states
+class WebSocketState:
+    """WebSocket connection states"""
+    DISCONNECTED = "disconnected"
+    CONNECTING = "connecting"
+    CONNECTED = "connected"
+    AUTHENTICATED = "authenticated"
+    RECONNECTING = "reconnecting"
+    ERROR = "error"
 
 
 class ExchangeInterface(ABC):
@@ -298,4 +389,92 @@ class ExchangeInterface(ABC):
             completion: Callback function that receives (status, data)
                        data: float (total equity in USD) on success
         """
+        pass
+    
+    # Position Mode Methods (for futures/derivatives)
+    def fetchPositionMode(self, completion: Callable[[Tuple[str, Any]], None]):
+        """
+        Fetch the current position mode (one-way or hedge mode).
+        
+        Args:
+            completion: Callback function that receives (status, data)
+                       data: dict with {"positionMode": "ONE_WAY" or "HEDGE"} on success
+        
+        Note: This is optional - not all exchanges support position modes
+        """
+        # Default implementation - not supported
+        completion(("failure", Exception("Position mode not supported by this exchange")))
+    
+    def setPositionMode(self, mode: str, completion: Callable[[Tuple[str, Any]], None]):
+        """
+        Set the position mode (one-way or hedge mode).
+        
+        Args:
+            mode: "ONE_WAY" or "HEDGE"
+            completion: Callback function that receives (status, data)
+                       data: dict with confirmation on success
+        
+        Note: This is optional - not all exchanges support position modes
+        """
+        # Default implementation - not supported
+        completion(("failure", Exception("Position mode not supported by this exchange")))
+    
+    # WebSocket Methods
+    @abstractmethod
+    def connectWebSocket(self, 
+                        on_message: Callable[[WebSocketMessage], None],
+                        on_state_change: Callable[[WebSocketState], None],
+                        on_error: Callable[[Exception], None]) -> bool:
+        """
+        Connect to the exchange WebSocket.
+        
+        Args:
+            on_message: Callback for incoming messages
+            on_state_change: Callback for connection state changes
+            on_error: Callback for errors
+            
+        Returns:
+            True if connection initiated successfully
+        """
+        pass
+    
+    @abstractmethod
+    def disconnectWebSocket(self):
+        """Disconnect from the WebSocket"""
+        pass
+    
+    @abstractmethod
+    def subscribeWebSocket(self, subscriptions: List[WebSocketSubscription]) -> bool:
+        """
+        Subscribe to WebSocket channels.
+        
+        Args:
+            subscriptions: List of channels to subscribe to
+            
+        Returns:
+            True if subscription request sent successfully
+        """
+        pass
+    
+    @abstractmethod
+    def unsubscribeWebSocket(self, subscriptions: List[WebSocketSubscription]) -> bool:
+        """
+        Unsubscribe from WebSocket channels.
+        
+        Args:
+            subscriptions: List of channels to unsubscribe from
+            
+        Returns:
+            True if unsubscription request sent successfully
+        """
+        pass
+    
+    @abstractmethod
+    def getWebSocketState(self) -> WebSocketState:
+        """Get current WebSocket connection state"""
+        pass
+    
+    @abstractmethod
+    def isWebSocketConnected(self) -> bool:
+        """Check if WebSocket is connected and ready"""
         pass

@@ -188,6 +188,146 @@ class LMEXExchange(ExchangeProtocol):
         }
 
     # MARK: - REST API Calls
+    def fetchOHLCV(self, symbol: str, timeframe: str, limit: int = 300, completion=None):
+        """
+        Fetch OHLCV (candlestick) data from LMEX.
+        
+        Args:
+            symbol: Trading symbol (e.g., 'BTC-PERP')
+            timeframe: Candle timeframe ('1m', '5m', '15m', '30m', '1h', '4h', '1d')
+            limit: Number of candles to fetch (max 300)
+            completion: Callback function that receives (status, data)
+        """
+        try:
+            # Map timeframes to LMEX format (resolution)
+            timeframe_map = {
+                '1m': '1',
+                '5m': '5', 
+                '15m': '15',
+                '30m': '30',
+                '1h': '60',
+                '4h': '240',
+                '1d': '1440'
+            }
+            
+            if timeframe not in timeframe_map:
+                completion(("failure", Exception(f"Invalid timeframe: {timeframe}")))
+                return
+                
+            resolution = timeframe_map[timeframe]
+            
+            # LMEX OHLCV endpoint from documentation
+            path = "/api/v2.2/ohlcv"
+            url = f"{self.base_url}{path}"
+            
+            # Calculate time range for the requested number of candles
+            import time
+            end_time = int(time.time() * 1000)  # Current time in milliseconds
+            
+            # Calculate start time based on timeframe and limit
+            minutes_per_candle = int(resolution)
+            start_time = end_time - (minutes_per_candle * 60 * 1000 * limit)
+            
+            params = {
+                'symbol': symbol,
+                'resolution': resolution,
+                'start': str(start_time),
+                'end': str(end_time)
+            }
+            
+            print(f"DEBUG: LMEXExchange fetchOHLCV request URL: {url}")
+            print(f"DEBUG: LMEXExchange fetchOHLCV params: {params}")
+            
+            response = requests.get(url, params=params)
+            print(f"DEBUG: LMEXExchange fetchOHLCV response statusCode: {response.status_code}")
+            
+            if response.status_code != 200:
+                raise Exception(f"Failed to fetch OHLCV data: {response.status_code} {response.text}")
+            
+            data = response.json()
+            print(f"DEBUG: LMEXExchange fetchOHLCV response sample: {data[:2] if isinstance(data, list) and len(data) > 0 else data}")
+            
+            # Parse the response into standard format
+            # LMEX returns: [timestamp, open, high, low, close, volume]
+            candles = []
+            if isinstance(data, list):
+                for item in data:
+                    if isinstance(item, list) and len(item) >= 6:
+                        candles.append({
+                            'timestamp': int(item[0]),  # LMEX returns timestamp in seconds
+                            'open': float(item[1]),
+                            'high': float(item[2]),
+                            'low': float(item[3]),
+                            'close': float(item[4]),
+                            'volume': float(item[5])
+                        })
+            
+            # Sort by timestamp ascending
+            candles.sort(key=lambda x: x['timestamp'])
+            
+            completion(("success", candles))
+            
+        except Exception as e:
+            print(f"DEBUG: LMEXExchange fetchOHLCV error: {str(e)}")
+            completion(("failure", e))
+
+    def fetchSymbolInfo(self, symbol: str, completion):
+        """
+        Fetch detailed information for a specific symbol.
+        
+        Args:
+            symbol: The trading symbol
+            completion: Callback function that receives (status, data)
+        """
+        try:
+            # First get ticker data for the symbol
+            def on_tickers_result(result):
+                status, data = result
+                if status == "failure":
+                    completion(("failure", data))
+                    return
+                
+                # Find the specific symbol in tickers
+                symbol_info = None
+                for ticker in data:
+                    if ticker.symbol == symbol:
+                        symbol_info = ticker
+                        break
+                
+                if not symbol_info:
+                    completion(("failure", Exception(f"Symbol {symbol} not found")))
+                    return
+                
+                # Get precision info from precision manager
+                price_precision = self.precision_manager.get_price_precision(symbol)
+                quantity_precision = self.precision_manager.get_quantity_precision(symbol)
+                min_qty = self.precision_manager.get_min_quantity(symbol)
+                contract_size = self.precision_manager.get_contract_size(symbol)
+                
+                # Create enhanced symbol info
+                enhanced_info = {
+                    "symbol": symbol_info.symbol,
+                    "bid": symbol_info.bidPrice,
+                    "ask": symbol_info.askPrice,
+                    "last": symbol_info.lastPrice,
+                    "volume": symbol_info.volume,
+                    "change": getattr(symbol_info, 'change', 0.0),  # May not have change attribute
+                    "pricePrecision": price_precision,
+                    "quantityPrecision": quantity_precision,
+                    "minQuantity": min_qty,
+                    "contractSize": contract_size,
+                    "status": "active"  # LMEX doesn't provide status, assume active
+                }
+                
+                completion(("success", enhanced_info))
+            
+            # Fetch all tickers to get the specific symbol
+            self.fetchTickers(on_tickers_result)
+            
+        except Exception as e:
+            print(f"DEBUG: LMEXExchange fetchSymbolInfo error: {str(e)}")
+            completion(("failure", e))
+
     def fetchTickers(self, completion):
         """
         Fetch ticker information from LMEX via REST API.
@@ -612,6 +752,16 @@ class LMEXExchange(ExchangeProtocol):
                 cl_order_id = item.get("clOrderID")
                 cum_qty = float(item.get("filledSize", item.get("cumQty", 0)))
                 
+                # Extract TP/SL specific fields
+                stop_price = float(item.get("stopPx", 0)) if item.get("stopPx") else None
+                trigger_price = float(item.get("triggerPrice", 0)) if item.get("triggerPrice") else None
+                reduce_only = item.get("reduceOnly", False)
+                post_only = item.get("postOnly", False)
+                
+                # Debug log for AVAX orders
+                if "AVAX" in symbol:
+                    print(f"DEBUG: LMEX AVAX order raw data: {json.dumps(item)}")
+                
                 if order_id and symbol:
                     orders.append(
                         ExchangeOrder(
@@ -625,7 +775,13 @@ class LMEXExchange(ExchangeProtocol):
                             timeInForce=time_in_force,
                             createTime=timestamp,
                             clientId=cl_order_id,
-                            executedQty=cum_qty
+                            executedQty=cum_qty,
+                            stopPrice=stop_price,
+                            triggerPrice=trigger_price,
+                            reduceOnly=reduce_only,
+                            postOnly=post_only,
+                            rawOrderType=str(order_type_raw),
+                            rawResponse=item
                         )
                     )
 

@@ -1,0 +1,4820 @@
+openapi: 3.0.1
+info:
+  title: Futures API documentation
+  version: 1.0.0
+  description: |
+    ## Overview
+    ### Generating API Key
+    You will need to create an API key on the platform before you can use authenticated APIs. To create API keys, you can follow the steps below:
+    - Login with your username / email and password into the website
+    - Click on `Account` on the top right hand corner
+    - Select the API tab
+    - Click on `New API` button to create an API key and passphrase. (Note: the passphrase will only appear once)
+    - Use your API key and passphrase to construct a signature.
+
+    ### Authentication
+    - API Key (request-api)
+      - Parameter Name: `request-api`, in: header. API key is obtained from the platform as a string
+    - API Key (request-nonce)
+      - Parameter Name: `request-nonce`, in: header. Representation of current timestamp (epoch milliseconds) in long format
+    - API Key (request-sign)
+      - Parameter Name: `request-sign`, in: header. A composite signature produced based on the following algorithm: Signature=HMAC.Sha384 (secretKey, (path + request-nonce + body)) (note: body = '' when no data):
+
+    **Example 1: Query Position**
+    - Endpoint to query position is `/api/v2.1/user/positions`
+    - Assume we have the values as follows (notice: the query parameters are **excluded** from encrypted text):
+      - request-nonce:`1677668593571`
+      - request-api: `4e9536c79f0fdd72bf04f2430982d3f61d9d76c996f0175bbba470d69d59816x`
+      - secret: `848db84ac252b6726e5f6e7a711d9c96d9fd77d020151b45839a5b59c37203bx`
+      - path: `/api/v2.1/user/positions`
+      - body: (empty)
+      - encrypted text:`/api/v2.1/user/positions1677668593571`
+    - Generated signature will be:
+      - request-sign: `254949204f2009705eba550b5a158867d678715cd4f6a14d00c6e46390329e57dddc36947542e1a0f03b010b140ca315`
+    - cURL example: 
+      ```
+      curl --location --request GET 'https://api.lmex.io/futures/api/v2.1/user/positions?symbol=BTC-PERP' \
+      --header 'request-api: 49e9d289fb926ed26aaa971ed4edabc93b675d2b316a7b22d76567a3c5c9f0a6' \
+      --header 'request-nonce: 1677668593571' \
+      --header 'request-sign: 254949204f2009705eba550b5a158867d678715cd4f6a14d00c6e46390329e57dddc36947542e1a0f03b010b140ca315'
+      ```
+
+    **Example 2: Place an order (`notice: the parameters in the request are case-sensitive`)**
+    - Endpoint to place an order is `/api/v2.1/order`
+    - Assume we have the values as follows (notice: the parameters in the request are **case-sensitive**):
+      - request-nonce:`1677669503458`
+      - request-api:`4e9536c79f0fdd72bf04f2430982d3f61d9d76c996f0175bbba470d69d59816x`
+      - secret:`848db84ac252b6726e5f6e7a711d9c96d9fd77d020151b45839a5b59c37203bx`
+      - path: `/api/v2.1/order`
+      - body: `{"symbol":"BTC-PERP","price":10000,"size":2,"side":"BUY","time_in_force":"GTC","type":"LIMIT","postOnly":false,"trailValue":0}`
+      - encrypted text:`/api/v2.1/order1677669503458{"symbol":"BTC-PERP","price":10000,"size":2,"side":"BUY","time_in_force":"GTC","type":"LIMIT","postOnly":false,"trailValue":0}`
+    - Generated signature will be:
+      - request-sign: `b8a866f7336b4870a2be3fed1a0734599cecca10a3e147957371b64c6cccee5561b7ad34c192572775529fce363c4bb5`
+    - cURL example:
+      ```
+      curl --location --request POST 'https://api.lmex.io/futures/api/v2.1/order' \
+      --header 'request-api: 49e9d289fb926ed26aaa971ed4edabc93b675d2b316a7b22d76567a3c5c9f0a6' \
+      --header 'request-nonce: 1677669503458' \
+      --header 'request-sign: b8a866f7336b4870a2be3fed1a0734599cecca10a3e147957371b64c6cccee5561b7ad34c192572775529fce363c4bb5' \
+      --header 'Content-Type: application/json' \
+      --data-raw '{"symbol":"BTC-PERP","price":10000,"size":2,"side":"BUY","time_in_force":"GTC","type":"LIMIT","postOnly":false,"trailValue":0}'
+      ```
+
+    ### Rate Limits
+    - The following rate limits are enforced:
+    Rate limits for platform is as follows:
+
+    **Query**
+
+    - Per API:`15 requests/second`
+    - Per User:`30 requests/second`
+
+    **Orders**
+
+    - Per API:`75 requests/second`
+    - Per User:`75 requests/second`
+
+    ### API Status Codes
+    Each API will return one of the following HTTP status:
+    Code | Description
+    :--|:--
+    200|API request was successful, refer to the specific API response for expected payload
+    400|Bad Request. Server will not process this request. This is usually due to invalid parameters sent in request
+    401|Unauthorized request. Server will not process this request as it does not have valid authentication credentials
+    403|Forbidden request. Credentials were provided but they were insufficient to perform the request
+    404|Not found. Indicates that the server understood the request but could not find a correct representation for the target resource
+    405|Method not allowed. Indicates that the request method is not known to the requested server
+    408|Request timeout. Indicates that the server did not complete the request. The API timeouts are set at 30secs
+    429|Too many requests. Indicates that the client has exceeded the rates limits set by the server. Refer to Rate Limits for more details
+    500|Internal server error. Indicates that the server encountered an unexpected condition resulting in not being able to fulfill the request
+    503|Service unavailable. Indicates that the server is not ready to handle the request
+
+    ### API Enum
+    When connecting up the API, you will come across number codes that represents different states or status types in platform. The following section provides a list of codes that you are expecting to see.
+    Code | Description
+    :--|:--
+    1|MARKET_UNAVAILABLE = Futures market is unavailable
+    2|ORDER_INSERTED = Order is inserted successfully
+    4|ORDER_FULLY_TRANSACTED = Order is fully transacted
+    5|ORDER_PARTIALLY_TRANSACTED = Order is partially transacted
+    6|ORDER_CANCELLED = ExecuteOrder/placeOrder/matchOrder fail. <br>*When user send an spot postOnly order and received reject status, maybe: <br>- Insert order to orderBook fail, because order will transact before insert to orderBook. (postOnly meanings insert first) <br>- FoK order execute fail, because FoK not allow partially transacted. Order transact with user self, because order not allow self trade.<br> When user send an futures postOnly order and received reject status. maybe: <br> - Insert order to orderBook fail, because order will transact before insert to orderBook. (postOnly meanings insert first) <br> - Insert order to orderBook fail, because order will belong to spam order. (postOnly not allow with spam order) <br> - FoK order execute fail, because FoK not allow partially transacted. Order transact with user self, because order not allow self trade.*
+    7|ORDER_REFUNDED = Turn user money back to user coin wallet, market order without any transacted will get refund, or self traded
+    8|INSUFFICIENT_BALANCE = Insufficient balance in account
+    9|TRIGGER_INSERTED = Trigger Order is inserted successfully
+    10|TRIGGER_ACTIVATED = Trigger Order is activated successfully
+    11|ERROR_INVALID_CURRENCY
+    12|ERROR_UPDATE_RISK_LIMIT = Error in updating risk limit
+    13|ERROR_INVALID_LEVERAGE
+    15|ORDER_REJECTED = PreCheck fail, then reject<br>*When user amendOrder and received reject status, maybe: <br> - Update order price fail, because order not fund. <br> - Update trigger price fail, because order not fund. <br> - Update order amount fail, because order not fund. ...<br> When user cancelOrder and received reject status, maybe: <br> - Market not fund. ... <br> When user placeOrder and received reject status, maybe: <br> - Internal timeout. user try to use same clOrderId with different order at same time. <br> - Update order amount fail, because order not fund. send closePositionOrder but without any position.*
+    16|ORDER_NOTFOUND = Order is not found with the order ID or clOrderID provided
+    17|REQUEST_FAILED = Failed to complete the request, please check order status
+    21|FREEZE_SUCCESSFUL
+    27|TRANSFER_SUCCESSFUL = Transfer funds between futures and spot is successful
+    28|TRANSFER_UNSUCCESSFUL = Transfer funds between spot and futures is unsuccessful
+    29|QUERY_GET_ORDERS
+    31|QUERY_GET_POSITIONS
+    33|QUERY_GET_ALL_POSITIONS_ORDERS
+    34|QUERY_WALLET
+    36|QUERY_FUTURES_MARGIN
+    41|ERROR_INVALID_RISK_LIMIT = Invalid risk limit was specified
+    51|QUERY_GET_ORDERS_WITH_LIMIT
+    64|STATUS_LIQUIDATION = Account is undergoing liquidation
+    65|ORDER_ACTIVE = Order is active
+    66|MODE_BUY
+    76|ORDER_TYPE_LIMIT = Limit order
+    77|ORDER_TYPE_MARKET = Market order
+    80|ORDER_TYPE_PEG = Peg/Algo order
+    81|ORDER_TYPE_OTC = Otc order
+    83|MODE_SELL
+    85|ORDER_PROCESSING = Order is inactive
+    88|ORDER_INACTIVE = Order is inactive
+    101|FUTURES_ORDER_PRICE_OUTSIDE_LIQUIDATION_PRICE = Futures order is outside of liquidation price
+    110|FUTURES_FUNDING
+    123|AMEND_ORDER = Order amended
+    124|UNFREEZE_SUCCESSFUL
+    129|FUTURES_CONFIG_MODE_CHANGE
+    300|ERROR_MAX_ORDER_SIZE_EXCEEDED
+    301|ERROR_INVALID_ORDER_SIZE
+    302|ERROR_INVALID_ORDER_PRICE
+    303|ERROR_RATE_LIMITS_EXCEEDED
+    304|ERROR_MAX_OPEN_ORDER_EXCEEDED
+    1003|ORDER_LIQUIDATION = Order is undergoing liquidation
+    1004|ORDER_ADL = Order is undergoing ADL
+    30000|ORDER_ADL = OTC_ORDER_QUERY
+    30001|ORDER_ADL = OTC_ORDER_QUOTE
+    30007|ORDER_ADL = OTC_ORDER_COMPLETE_SUCCESS
+    30410|ORDER_ADL = BLOCK_TRADE_COMPLETE_SUCCESS
+    
+    ### Error Code
+    When the request encounter exception ,it will return one of the following error code.
+
+    Code | Description
+    :--|:--
+    -8104|ORDER_BELONGS_TO_VENDOR = The order belongs to vendor
+    -7006|COIN_PAIR_IS_NOT_EXISTS_ERROR = Coin pair does not exist
+    -2023|UNKNOWN_CURRENCY = Unknown currency
+    -1042|USER_CANT_TRADE = User can not trade
+    -22|COMM_EXCESS_RATE_LIMIT_ERROR = Exceed rate limit
+    -7|COMM_AUTHENTICATE_ERROR = Authenticate failed
+    -2|COMM_REQUEST_PARAM_ERROR = Invalid request parameter
+    -1|COMM_FAILED_ERROR = Failed
+    10002|USER_TOKEN_EXPIRED = User token has expired
+    51523|FINANCE_INSUFFICIENT_WALLET_BALANCE_ERROR = Insufficient wallet balance
+
+    ### Spam Orders
+    Spam orders are large number of small order sizes that are placed into orderbook.In order to ensure that the platform and user's interests are protected from malicious players, we will apply the following rules when users place small sized orders.
+    - Orders with notional value below 5 USDT will be marked as spam orders.
+    - Orders marked as spam always pay the taker fee.
+    - Post-Only API orders marked as spam will be rejected.
+    - Too many spam orders may be grounds to temporarily ban an account from trading.
+    - API accounts placing >= 4 resting orders, with total size less than 20 USDT (notional value) are at risk of being marked as a spam account.
+    - Accounts marked as spam may have limitations placed on the account, including order rate limits, position limits, or have API functions disabled.
+servers:
+  - url: "https://api.lmex.io/futures"
+paths:
+  /api/v2.1/market_summary:
+    get:
+      summary: Market Summary
+      tags:
+        - Public Endpoints
+      operationId: get-api-v2.1-market_summary
+      description: 'Gets market summary information. If no symbol parameter is sent, then all markets will be retrieved.'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: symbol
+          description: Market symbol
+        - schema:
+            type: boolean
+          in: query
+          name: useNewSymbolNaming
+          description: Flag to use new symbol naming (eg. BTC-PERP)
+        - schema:
+            type: boolean
+          in: query
+          name: listFullAttributes
+          description: True to return all attributes of the market summary
+      responses:
+        '200':
+          $ref: '#/components/responses/marketSummary'
+  /api/v2.1/ohlcv:
+    get:
+      summary: Charting Data
+      tags:
+        - Public Endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/chartingData'
+      operationId: get-api-v2.1-ohlcv
+      description: Gets candle stick charting data. Default of 300 data points will be returned at any one time.
+      parameters:
+        - schema:
+            type: string
+            default: BTC-PERP
+          in: query
+          name: symbol
+          required: true
+          description: Market symbol
+        - schema:
+            type: string
+          in: query
+          name: start
+          description: Starting time (eg. 1624987283000)
+        - schema:
+            type: string
+          in: query
+          name: end
+          description: Ending time (eg. 1624987283000)
+        - schema:
+            type: string
+            default: '1'
+          in: query
+          name: resolution
+          required: true
+          description: |
+            Supported resolution is: <br>
+            `1`: 1min <br>
+            `5`: 5 minutes <br>
+            `15`: 15 minutes <br>
+            `30`: 30 minutes <br>
+            `60`: 60 minutes <br>
+            `240`: 4 hours <br>
+            `360`: 6 hours <br>
+            `1440`: 1 day <br>
+            `10080`: 1 week <br>
+            `43200`: 1 month
+  /api/v2.1/price:
+    get:
+      summary: Query Market Price
+      tags:
+        - Public Endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/queryMarketPrice'
+      operationId: get-api-v2.1-price
+      description: 'Retrieve current prices on the platform. If no symbol specified, all symbols will be returned.'
+      parameters:
+        - schema:
+            type: string
+            default: BTC-PERP
+          in: query
+          name: symbol
+          description: Market symbol
+        - schema:
+            type: boolean
+          in: query
+          name: useNewSymbolNaming
+          description: Flag to use new symbol naming (eg. BTC-PERP)
+  /api/v2.1/orderbook:
+    get:
+      summary: Orderbook (By grouping)
+      tags:
+        - Public Endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/oderbookByGrouping'
+      operationId: get-api-v2.1-orderbook-symbol
+      description: Retrieves a snapshot of the orderbook.
+      parameters:
+        - schema:
+            type: string
+            default: BTC-PERP
+          in: query
+          name: symbol
+          description: Market symbol
+        - schema:
+            type: boolean
+          in: query
+          name: useNewSymbolNaming
+          description: Flag to use new symbol naming (eg. BTC-PERP)
+  /api/v2.1/orderbook/L2:
+    get:
+      summary: Orderbook
+      tags:
+        - Public Endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/oderbook'
+      operationId: get-api-v2.1-orderbook-L2
+      description: Retrieves a Level 2 snapshot of the orderbook
+      parameters:
+        - schema:
+            type: string
+            default: BTC-PERP
+          in: query
+          name: symbol
+          description: Market symbol
+        - schema:
+            type: integer
+          in: query
+          name: depth
+          description: Orderbook depth
+        - schema:
+            type: boolean
+          in: query
+          name: useNewSymbolNaming
+          description: Flag to use new symbol naming (eg. BTC-PERP)
+  /api/v2.1/trades:
+    get:
+      summary: Query Trades Fills
+      tags:
+        - Public Endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/queryTradeFills'
+      operationId: get-api-v2.1-trades
+      description: |
+        <p>Get trade fills for the market specified by `symbol`</p>
+        maximum days of history records:
+        <table>
+          <tr>
+            <th>Time Interval</th>
+            <th>Maximum Days</th>
+            <th>Explanation</th>
+          </tr>
+          <tr>
+            <td>startTime / endTime</td>
+            <td>30</td>
+            <td>Maximum 30 days within the specified interval</td>
+          </tr>
+          <tr>
+            <td>startTime / -</td>
+            <td>3</td>
+            <td>If the end time is not specified, then 3 days after the start time</td>
+          </tr>
+          <tr>
+            <td>- / endTime</td>
+            <td>3</td>
+            <td>If the start time is not specified, then 3 days before the end time</td>
+          </tr>
+          <tr>
+            <td>- / -</td>
+            <td>3</td>
+            <td>
+              If neither start nor end time is specified, then 3 days before the current
+              time
+            </td>
+          </tr>
+        </table>
+      parameters:
+        - schema:
+            type: string
+            default: BTC-PERP
+          in: query
+          name: symbol
+          description: Market symbol
+        - schema:
+            type: string
+          in: query
+          name: startTime
+          description: Starting time (eg. 1624987283000)
+        - schema:
+            type: string
+          in: query
+          name: endTime
+          description: Ending time (eg. 1624987283000)
+        - schema:
+            type: string
+          in: query
+          name: beforeSerialId
+          description: Condition to retrieve records before the specified serial Id. Used for pagination
+        - schema:
+            type: string
+          in: query
+          name: afterSerialId
+          description: Condition to retrieve records after the specified serial Id. Used for pagination
+        - schema:
+            type: integer
+          in: query
+          name: count
+          description: Number of records to return
+        - schema:
+            type: boolean
+          in: query
+          name: useNewSymbolNaming
+          description: Flag to use new symbol naming (eg. BTC-PERP)
+  /api/v2.1/funding_history:
+    get:
+      summary: Get Funding Rate History
+      tags:
+        - Public Endpoints
+      operationId: get-api-v2.1-funding_history
+      responses:
+        '200':
+          $ref: '#/components/responses/getFundingHistory'
+      description: Get funding rate history for certain symbols
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                  description: Market symbol (e.g., BTC-PERP)
+                count:
+                  type: integer
+                  description: Number of records to return (mutually exclusive with from/to)
+                from:
+                  type: number
+                  description: Starting time in milliseconds (e.g., 1624987283000; mutually exclusive with count)
+                to:
+                  type: number
+                  description: Ending time in milliseconds (e.g., 1624987283000; mutually exclusive with count)
+                useNewSymbolNaming:
+                  type: boolean
+                  description: True to use new futures market name in symbol, default to False
+  /api/v2.1/order:
+    post:
+      summary: Create New Order
+      tags:
+        - Trade Endpoints
+      operationId: post-api-v2.1-order
+      responses:
+        '200':
+          $ref: '#/components/responses/createNewOrder'
+      description: |
+        Creates a new order.
+        Requires permission: `Trading`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                  description: Market symbol
+                price:
+                  type: number
+                  format: double
+                  description: Mandatory unless creating a `MARKET` order. Order price
+                size:
+                  type: integer
+                  description: |
+                    Contract order size, please note that the notional value of an order must be greater than **5 USD**. \
+                    P.S. `notional value` = `price` * `order size` * `contract size`
+                side:
+                  type: string
+                  description: |
+                    'BUY' or 'SELL'
+                time_in_force:
+                  type: string
+                  description: |
+                    Time validity of the order :\
+                    `GTC`:Good till Cancel \
+                    `IOC`:Immediate or Cancel \
+                    `FOK`:Fill or Kill \
+                    `HALFMIN`:Order valid for 30 seconds \
+                    `FIVEMIN`:Order valid for 5 minutes \
+                    `HOUR`:Order valid for an hour \
+                    `TWELVEHOUR`:Order valid for 12 hours \
+                    `DAY`:Order valid for a day \
+                    `WEEK`:Order valid for a week \
+                    `MONTH`:Order valid for a month
+                type:
+                  type: string
+                  description: |
+                    Order type \
+                    `LIMIT`: Limit Orders 
+                    `MARKET`: Market Orders 
+                    `OCO`: One cancel the other
+                txType:
+                  type: string
+                  description: 'Used for Stop orders or trigger orders<br> STOP: Stop Order, `stopPrice` is mandatory <br>TRIGGER: Trigger order, `triggerPrice` is mandatory <br>LIMIT: Default, used when its not a Stop order nor Trigger order'
+                stopPrice:
+                  type: integer
+                  description: Mandatory when creating a Stop or OCO order. Indicates the stop price
+                triggerPrice:
+                  type: integer
+                  description: Mandatory when creating a Trigger or OCO order. Indicates the trigger price
+                trailValue:
+                  type: integer
+                  description: Trail value
+                postOnly:
+                  type: boolean
+                  description: 'Boolean to indicate if this is a post only order. For post only orders, traders are charged maker fees'
+                reduceOnly:
+                  type: boolean
+                  description: |
+                    Boolean to indicate if this is a reduce only order, if in hedge mode, it is used to reduce the specified position, eg: sell to reduce long position, buy to reduce short position.
+                clOrderId:
+                  type: string
+                  description: Custom order Id
+                trigger:
+                  type: string
+                  description: 'For creating order with txType: `STOP` or `TRIGGER`. Valid options: `markPrice` (default) or `lastPrice`'
+                takeProfitPrice:
+                  type: number
+                  description: |
+                    Mandatory when creating new order with take profit order. Indicates the trigger price     
+                takeProfitTrigger:
+                  type: string
+                  description: |
+                    For creating order with take profit order. Valid options: `markPrice` (default) or `lastPrice`|
+                stopLossPrice:
+                  type: number
+                  description: |
+                    Mandatory when creating new order with stop loss order. Indicates the trigger price       
+                stopLossTrigger:
+                  type: string
+                  description: |
+                    For creating order with stop loss order. Valid options: `markPrice` (default) or `lastPrice`|
+                positionMode:
+                  type: string
+                  description: |
+                    For creating order and wanting to specify the positionMode. Valid options: `ONE_WAY` (default) or `HEDGE`   
+              required:
+                - symbol
+                - size
+                - side
+                - type
+            examples:
+              Request (create MARKET order):
+                value:
+                  symbol: BTC-PERP
+                  size: 1
+                  side: BUY
+                  type: MARKET
+              Request (create LIMIT order):
+                value:
+                  symbol: BTC-PERP
+                  size: 1
+                  price: 21000
+                  side: BUY
+                  type: LIMIT
+              Request (create LIMIT TRIGGER order):
+                value:
+                  symbol: BTC-PERP
+                  size: 1
+                  price: 21000
+                  side: BUY
+                  type: LIMIT
+                  txType: TRIGGER
+                  triggerPrice: 30000
+              Request (create LIMIT STOP order):
+                value:
+                  symbol: BTC-PERP
+                  size: 1
+                  price: 100
+                  side: BUY
+                  type: LIMIT
+                  txType: STOP
+                  triggerPrice: 30000
+              Request (create OCO order):
+                value:
+                  symbol: BTC-PERP
+                  size: 1
+                  price: 100
+                  side: BUY
+                  type: OCO
+                  txType: LIMIT
+                  trigger: markPrice
+                  stopPrice: 30010
+                  triggerPrice: 30000
+              Request (create hedge mode long position MARKET order):
+                value:
+                  symbol: "BTCPFC"
+                  size: 1
+                  side: "BUY"
+                  type: "MARKET"
+                  positionMode: "HEDGE"
+              Request (create hedge mode short position MARKET reduce order):
+                value:
+                  symbol: "BTCPFC"
+                  size: 1
+                  side: "BUY"
+                  type: "MARKET"
+                  reduceOnly: true
+                  positionMode: "HEDGE"
+          application/xml:
+            schema:
+              type: object
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+          text/html:
+            schema:
+              type: object
+              properties: {}
+        description: ''
+    put:
+      summary: Amend Order
+      tags:
+        - Trade Endpoints
+      operationId: put-api-v2.1-order
+      responses:
+        '200':
+          $ref: '#/components/responses/amendOrder'
+      description: |
+        Amend the price or size or trigger price of an order. 
+        For trigger orders, if the order has already been triggered, the trigger price cannot be further amended. 
+        Amend order does not apply to algo orders.
+        Requires permission: `Trading`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                  description: Market symbol
+                orderID:
+                  type: string
+                  description: 'Internal order ID. Mandatory when `clOrderID` is not provided. If `orderID` is provided, `clOrderID` will be ignored.'
+                clOrderID:
+                  type: string
+                  description: Custom order ID. Mandatory when `orderID` is not provided.
+                type:
+                  type: string
+                  description: |
+                    Type of amendment\
+                    `PRICE`: To amend order price\
+                    `SIZE`: To amend order size \
+                    `TRIGGERPRICE`: To amend trigger price for trigger orders only \
+                    `ALL`: To amend multiple fields. Note that the TRIGGERPRICE can only be amended if the order is a trigger order. Don't include TRIGGERPRICE if it is not a trigger order.
+                value:
+                  type: number
+                  description: The value to be amended to. Value depends on the type being set.
+                slide:
+                  type: boolean
+                  description: 'For type: `PRICE`. Used for Post-Only orders. When set to true will set price to best bid/ask'
+                orderPrice:
+                  type: number
+                  description: 'For type: `ALL`, order price to be amended'
+                orderSize:
+                  type: integer
+                  description: |
+                    For type: `ALL`, contract order size to be amended \
+                    please note that the notional value of an order must be greater than **5 USD**. \
+                    P.S. `notional value` = `price` * `order size` * `contract size`
+                triggerPrice:
+                  type: number
+                  description: 'For type: `ALL`, trigger price to be amended'
+              required:
+                - symbol
+                - type
+                - value
+            examples:
+              Request (amend price):
+                value:
+                  symbol: BTC-PERP
+                  orderID: <Order ID>
+                  type: PRICE
+                  value: 22000
+              Request (amend size):
+                value:
+                  symbol: BTC-PERP
+                  orderID: <Order ID>
+                  type: SIZE
+                  value: 10
+              Request (amend trigger price):
+                value:
+                  symbol: BTC-PERP
+                  orderID: <Order ID>
+                  type: TRIGGERPRICE
+                  value: 29000
+              Request (amend all):
+                value:
+                  symbol: BTC-PERP
+                  orderID: <Order ID>
+                  type: ALL
+                  orderPrice: 30010
+                  orderSize: 1
+                  triggerPrice: 30000
+    delete:
+      summary: Cancel Order
+      tags:
+        - Trade Endpoints
+      operationId: delete-api-v2.1-order
+      responses:
+        '200':
+          $ref: '#/components/responses/cancelOrder'
+      description: |
+        Cancels pending orders that has not yet been transacted.
+        The `orderID` is a unique identifier to cancel a particular order.
+        `clOrderID` is a custom ID sent in by the trader.
+        When cancel by `clOrderID`, all orders having the same ID will be cancelled.
+        If `orderID` and `clOrderID` is not sent in, then cancellation will be for all orders in the current market.
+        Requires permission: `Trading`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+        - schema:
+            type: string
+            default: BTC-PERP
+          in: query
+          name: symbol
+          required: true
+          description: Market symbol
+        - schema:
+            type: string
+          in: query
+          name: orderID
+          description: 'Unique identifier for an order. Mandatory when `clOrderID` is not provided. If `orderID` is provided, `clOrderID` will be ignored.'
+        - schema:
+            type: string
+          in: query
+          name: clOrderID
+          description: Client custom order ID. Mandatory when `orderID` is not provided.
+    get:
+      summary: Query Order
+      tags:
+        - Trade Endpoints
+      operationId: query-api-v3.2-order
+      responses:
+        '200':
+          $ref: '#/components/responses/queryOrder'
+      description: |
+        Query order detail for a specified orderID/clOrderID, please note that a canceled order will only exist for 30 minutes.
+        Requires permission: `Trading`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+        - schema:
+            type: string
+          in: query
+          name: orderID
+          description: 'Unique identifier for an order. Mandatory when `clOrderID` is not provided. If `orderID` is provided, `clOrderID` will be ignored.'
+        - schema:
+            type: string
+          in: query
+          name: 'clOrderID'
+          description: Client custom order ID. Mandatory when `orderID` is not provided.
+  /api/v2.1/order/peg:
+    post:
+      summary: Create New Algo Order
+      tags:
+        - Trade Endpoints
+      operationId: post-api-v3.2-order-peg
+      responses:
+        '200':
+          $ref: '#/components/responses/createNewAlgoOrder'
+      description: |
+        Creates a new algo order. Algo order is an order that price will change according to market price. To create an algo order, user will need to enter additional parameters:
+        - `price`: What is the min price (for a sell order) or maximum price(for a buy order) that a user will be willing to list his order at
+        - `size`: Total size of order
+        - `deviation`: How much should the order price deviate from index price. Value is in percentage and can range from `-10` to `10`
+        - `stealth`: How many percent of the order is to be displayed on the order book
+
+        Requires permission: `Trading`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                  description: Market symbol
+                price:
+                  type: number
+                  format: double
+                  description: 'Minimum price for a sell order, this is the lowest price that a user is willing to sell at. Maximum price for a buy order, this is the maximum price a user is willing to buy at.'
+                size:
+                  type: integer
+                  description: |
+                    Contract order size, please note that the notional value of an order must be greater than **5 USD**. \
+                    P.S. `notional value` = `price` * `order size` * `contract size`
+                side:
+                  type: string
+                  description: |
+                    Order side<br>
+                    BUY or SELL
+                clOrderID:
+                  type: string
+                  description: Custom order Id
+                deviation:
+                  type: number
+                  description: How much should the order price deviate from index price. Value is in percentage and can range from `-10` to `10`
+                stealth:
+                  type: string
+                  description: How many percent of the order is to be displayed on the orderbook.
+                positionMode:
+                  type: string
+                  description: |
+                    For creating order and wanting to specify the positionMode. Valid options: `ONE_WAY` (default) or `HEDGE`
+              required:
+                - symbol
+                - price
+                - size
+            examples:
+              Request:
+                value:
+                  symbol: BTC-PERP
+                  price: 21500
+                  size: 1
+                  side: BUY
+                  clOrderID: <Cl Order ID>
+                  stealth: 10
+                  deviation: -10
+        description: ''
+  /api/v2.1/order/cancelAllAfter:
+    post:
+      summary: Dead Man's Switch (Cancel All After)
+      tags:
+        - Trade Endpoints
+      operationId: post-api-v2.1-order-cancelAllAfter
+      responses:
+        '200':
+          description: 'If set correctly, a HTTP 200 response code will be returned'
+      description: |
+        Dead-man's switch allows the trader to send in a timeout value which is a Time to live (TTL) value for an order.
+        Extension of the timeout is done by sending another `cancelAllAfter` request.
+        If the server does not receive another request before the timeout is reached, all orders will be cancelled.
+        Requires permission: `Trading`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timeout:
+                  description: Timeout value in milliseconds
+                  type: integer
+            examples:
+              Request:
+                value:
+                  timeout: 60000
+        description: ''
+  /api/v2.1/user/open_orders:
+    get:
+      summary: Query Open Orders
+      tags:
+        - Trade Endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/queryOpenOrders'
+      operationId: get-api-v2.1-user-open_orders
+      description: |
+        Retrieves open orders that have not yet been matched or matched recently.
+        Requires permission: `Read`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+        - schema:
+            type: string
+            default: BTC-PERP
+          in: query
+          name: symbol
+          description: Market symbol
+        - schema:
+            type: string
+          in: query
+          name: orderID
+          description: Query using internal order ID
+        - schema:
+            type: string
+          in: query
+          name: clOrderID
+          description: 'Query using custom order ID. If `orderID` is provided, `clOrderID` will be ignored.'
+        - schema:
+            type: boolean
+          in: query
+          name: useNewSymbolNaming
+          description: Flag to use new symbol naming (eg. BTC-PERP)
+  /api/v2.1/user/trade_history:
+    get:
+      summary: Query Trades Fills
+      tags:
+        - Trade Endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/queryTradesFillsHistory'
+      operationId: get-api-v2.1-user-trade_history
+      description: |
+        Retrieves a user's trade history.
+        Requires permission: `Read`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+        - schema:
+            type: string
+            default: BTC-PERP
+          in: query
+          name: symbol
+          description: Market symbol
+        - schema:
+            type: string
+          in: query
+          name: startTime
+          description: Starting time (eg. 1624987283000)
+        - schema:
+            type: string
+          in: query
+          name: endTime
+          description: Ending time (eg. 1624987283000)
+        - schema:
+            type: string
+          in: query
+          name: beforeSerialId
+          description: Condition to retrieve records before the specified serial Id. Used for pagination
+        - schema:
+            type: string
+          in: query
+          name: afterSerialId
+          description: Condition to retrieve records after the specified serial Id. Used for pagination
+        - schema:
+            type: integer
+          in: query
+          name: count
+          description: Number of records to return
+        - schema:
+            type: string
+          in: query
+          name: clOrderID
+          description: Query trade history by custom order ID
+        - schema:
+            type: string
+          in: query
+          name: orderID
+          description: Query trade history by order ID
+        - schema:
+            type: boolean
+          in: query
+          name: useNewSymbolNaming
+          description: Flag to use new symbol naming (eg. BTC-PERP)
+  /api/v2.1/user/positions:
+    get:
+      summary: Query Position
+      tags:
+        - Trade Endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/queryPosition'
+      operationId: get-api-v2.1-user-positions
+      description: |
+        Queries user's current position.
+        When no symbol is specified, positions for all markets will be returned.
+        Requires permission: `Read`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+        - schema:
+            type: string
+          in: query
+          name: symbol
+          description: Market symbol
+        - schema:
+            type: boolean
+          in: query
+          name: useNewSymbolNaming
+          description: Flag to use new symbol naming (eg. BTC-PERP)
+  /api/v2.1/order/close_position:
+    post:
+      summary: Close Position
+      tags:
+        - Trade Endpoints
+      operationId: post-api-v2.1-order-close_position
+      responses:
+        '200':
+          $ref: '#/components/responses/closePosition'
+      description: |
+        Closes a user's position for the particular market as specified by symbol.
+        If type is specified as LIMIT, then price is mandatory. When type is MARKET, it closes the position at market price.
+        Requires permission: `Trading`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                price:
+                  type: integer
+                  description: Close price. Mandatory when type is `LIMIT`
+                symbol:
+                  type: string
+                  description: Market symbol
+                type:
+                  type: string
+                  description: |
+                    Close position type with values: <br>
+                    LIMIT: Close at `price` <br>
+                    MARKET: Close at market price
+                positionId:
+                  type: string
+                  description: The position ID that you want to close. Mandatory when positionMode is `HEDGE`  
+              required:
+                - symbol
+                - type
+            examples:
+              Request:
+                value:
+                  price: 0
+                  symbol: BTC-PERP
+                  type: MARKET
+              Request (For hedge mode position):
+                value:
+                  price: 0
+                  symbol: BTC-PERP
+                  type: MARKET
+                  positionId: BTCPFC-USD|LONG
+        description: ''
+  /api/v2.1/risk_limit:
+    get:
+      summary: Get Risk Limit
+      tags:
+        - Trade Endpoints
+      operationId: get-api-v2.1-risk_limit
+      responses:
+        '200':
+          $ref: '#/components/responses/getRiskLimit'
+      description: |
+        Changes risk limit for the specified market.
+        Requires permission: `Read`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+        - schema:
+            type: string
+            default: BTC-PERP
+          in: query
+          name: symbol
+          description: Market symbol
+          required: true
+    post:
+      summary: Set Risk Limit
+      tags:
+        - Trade Endpoints
+      operationId: post-api-v2.1-risk_limit
+      responses:
+        '200':
+          $ref: '#/components/responses/setRiskLimit'
+      description: |
+        Changes risk limit for the specified market.
+        Requires permission: `Trading`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                  description: Market symbol
+                riskLimit:
+                  type: integer
+                  description: Risk limit value
+                  minimum: 100000
+                  maximum: 1000000
+                positionMode:
+                  type: string
+                  description: ONE_WAY(default) or HEDGE. Mandatory when positionMode is `HEDGE`
+                useNewSymbolNaming:
+                  type: boolean
+                  description: True if use new futures market name as symbol, default to False
+              required:
+                - symbol
+                - riskLimit
+            examples:
+              Request:
+                value:
+                  symbol: BTC-PERP
+                  riskLimit: 100001
+              Request (When positionMode is HEDGE):
+                value:
+                  symbol: BTC-PERP
+                  riskLimit: 100001
+                  positionMode: HEDGE
+        description: ''
+  /api/v2.1/leverage:
+    get:
+      summary: Get Leverage
+      tags:
+        - Trade Endpoints
+      operationId: get-api-v2.1-leverage
+      responses:
+        '200':
+          $ref: '#/components/responses/getLeverage'
+      description: |
+        Get leverage value for the specified market.
+        Requires permission: `Read`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                  description: Market symbol
+              required:
+                - symbol
+            examples:
+              Request:
+                value:
+                  symbol: BTC-PERP
+        description: ''
+    post:
+      summary: Set Leverage
+      tags:
+        - Trade Endpoints
+      operationId: post-api-v2.1-leverage
+      responses:
+        '200':
+          $ref: '#/components/responses/setLeverage'
+      description: |
+        Change leverage values for the specified market.
+        Requires permission: `Trading`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                  description: Market symbol
+                leverage:
+                  type: number
+                  description: Leverage value, 0 means cross maximum leverage
+                useNewSymbolNaming:
+                  type: boolean
+                  description: True if use new futures market name in symbol default to False
+                positionMode:
+                  type: integer
+                  description: ONE_WAY (default) or HEDGE. Mandatory when positionMode is HEDGE
+                marginMode:
+                  type: integer
+                  description: CROSS or ISOLATED (default)
+              required:
+                - symbol
+                - leverage
+            examples:
+              Request:
+                value:
+                  symbol: BTC-PERP
+                  leverage: 0
+                  marginMode: CROSS
+              Request (When positionMode is HEDGE):
+                value:
+                  symbol: BTC-PERP
+                  leverage: 0
+                  positionMode: HEDGE
+                  marginMode: CROSS
+        description: ''
+  /api/v2.1/settle_in:
+    post:
+      summary: Change Contract Settlement Currency
+      tags:
+        - Trade Endpoints
+      operationId: post-api-v2.1-settle_in
+      description: |
+        Changes the settlement currency for the position in the current market.
+        Requires permission: `Trading`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                  description: Market symbol
+                currency:
+                  type: string
+                  description: Settlement currency to set
+                positionId:
+                  type: string
+                  description: The position ID that you want to set. Mandatory when positionMode is `HEDGE`
+            examples:
+              Request:
+                value:
+                  symbol: BTC-PERP
+                  currency: BTC
+              Request (When positionMode is HEDGE):
+                value:
+                  symbol: BTC-PERP
+                  currency: BTC
+                  positionId: BTCPFC-USD|LONG
+        description: ''
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/changeSettleIn'
+  /api/v2.1/user/fees:
+    get:
+      summary: Query Account Fees
+      tags:
+        - Trade Endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/queryAmountFees'
+      operationId: get-api-v2.1-user-fees
+      description: |
+        Retrieve user's trading fees.
+        Requires permission: `Read`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+        - schema:
+            type: string
+          in: query
+          name: symbol
+          description: Market symbol
+        - schema:
+            type: boolean
+          in: query
+          name: useNewSymbolNaming
+          description: Flag to use new symbol naming (eg. BTC-PERP)
+  /api/v2.1/order/bind/tpsl:
+    post:
+      summary: Bind TP/SL
+      tags:
+        - Trade Endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/bindTPSL'
+      operationId: get-api-v2.1-order-bind-tpsl
+      description: |
+        Bind TP/SL with an existing position.
+        Requires permission: `Trading`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+      requestBody:
+        $ref: '#/components/requestBodies/bindTPSL'
+  /api/v2.1/position_mode:
+    get:
+      summary: Query Position Mode
+      tags:
+        - Trade Endpoints
+      operationId: get-api-v2.1-position_mode
+      description: |
+        Retrieve user's position mode.
+        Requires permission: `Read`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+        - schema:
+            type: string
+          in: query
+          name: symbol
+          description: Market symbol
+      responses:
+        '200':
+          $ref: '#/components/responses/getPositionMode'
+    post:
+      summary: Change Position Mode
+      tags:
+        - Trade Endpoints
+      operationId: post-api-v2.1-position_mode
+      description: |
+        Changes position mode.
+        Requires permission: `Trading`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+        - schema:
+            type: string
+          in: query
+          name: symbol
+          description: Market symbol
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                  description: Market symbol
+                positionMode:
+                  type: string
+                  description: ONE_WAY or HEDGE
+      responses:
+        '200':
+          $ref: '#/components/responses/setPositionMode'
+  /api/v2.1/user/wallet:
+    get:
+      summary: Query Wallet Balance
+      tags:
+        - Wallet Endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/queryWalletBalance'
+      operationId: get-api-v2.1-user-wallet
+      description: |
+        Query user's wallet balance.
+        Requires permission: `Read`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+        - schema:
+            type: string
+            default: CROSS@
+          in: query
+          name: wallet
+          required: true
+          description: "Wallet name :<br> `CROSS@`: Cross wallet <br> `ISOLATED@market`: Market refers to the current symbol with\_`-USD`\_appended. Eg. BTC-PERP isolated wallet would be `ISOLATED@BTC-PERP-USD`"
+        - schema:
+            type: boolean
+            default: false
+          in: query
+          name: useNewSymbolNaming
+          description: Flag to use new symbol naming (eg. BTC-PERP)
+  /api/v2.1/user/wallet_history:
+    get:
+      summary: Query Wallet History
+      tags:
+        - Wallet Endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/queryWalletHistory'
+      operationId: get-api-v2.1-user-wallet_history
+      description: |
+        <p>Get user's wallet history records on the futures wallet</p>
+        maximum days of history records:
+        <table>
+          <tr>
+            <th>Time Interval</th>
+            <th>Maximum Days</th>
+            <th>Explanation</th>
+          </tr>
+          <tr>
+            <td>startTime / endTime</td>
+            <td>30</td>
+            <td>Maximum 30 days within the specified interval</td>
+          </tr>
+          <tr>
+            <td>startTime / -</td>
+            <td>3</td>
+            <td>If the end time is not specified, then 3 days after the start time</td>
+          </tr>
+          <tr>
+            <td>- / endTime</td>
+            <td>3</td>
+            <td>If the start time is not specified, then 3 days before the end time</td>
+          </tr>
+          <tr>
+            <td>- / -</td>
+            <td>3</td>
+            <td>
+              If neither start nor end time is specified, then 3 days before the current
+              time
+            </td>
+          </tr>
+        </table>
+        Requires permission: `Read`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+        - schema:
+            type: string
+          in: query
+          name: wallet
+          description: 'Wallet, if not specified will return all wallets. Valid values are: <br> `CROSS@:` Cross wallet <br> `ISOLATED@BTC-PERP-USD`: Isolated wallets'
+        - schema:
+            type: string
+            example: '1624987283000'
+          in: query
+          name: startTime
+          description: 'Starting time '
+        - schema:
+            type: string
+            example: '1624987283000'
+          in: query
+          name: endTime
+          description: Ending time
+        - schema:
+            type: integer
+          in: query
+          name: count
+          description: Number of records to return
+        - schema:
+            type: boolean
+            default: false
+          in: query
+          name: useNewSymbolNaming
+          description: Flag to use new symbol naming (eg. BTC-PERP)
+  /api/v2.1/user/margin:
+    get:
+      summary: Query Wallet Margin
+      tags:
+        - Wallet Endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/queryWalletMargin'
+      operationId: get-api-v2.1-user-margin
+      description: |
+        Gets margin information for the specified wallet so that users can know which wallet they are currently using in the market.
+        Requires permission: `Read`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+        - schema:
+            type: string
+            default: BTC-PERP
+          in: query
+          name: symbol
+          required: true
+          description: 'Currency, if not specified will return all currencies'
+        - schema:
+            type: string
+          in: query
+          name: startTime
+          description: Starting time (eg. 1624987283000)
+        - schema:
+            type: string
+          in: query
+          name: endTime
+          description: Ending time (eg. 1624987283000)
+        - schema:
+            type: integer
+          in: query
+          name: count
+          description: Number of records to return
+  /api/v2.1/user/wallet/transfer:
+    post:
+      summary: Transfer Funds Between Futures wallet
+      tags:
+        - Wallet Endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/transferBetweenFuturesWallet'
+      operationId: post-api-v2.1-wallet-transfer
+      description: |
+        Transfers funds between user's wallet.
+        User can specify the source and target wallet to transfer funds.
+        Requires permission: `Transfer`
+      parameters:
+        - $ref: '#/components/parameters/request-api'
+        - $ref: '#/components/parameters/request-nonce'
+        - $ref: '#/components/parameters/request-sign'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                walletSrc:
+                  type: string
+                  description: Source wallet, required if `walletSrcType` is `ISOLATED`
+                walletSrcType:
+                  type: string
+                  description: |
+                    Source type, valid values are: <br>
+                    `SPOT`: Spot Wallet <br>
+                    `CROSS`: Cross Wallet <br>
+                    `ISOLATED`: Isolated wallet for the market where market the market symbol
+                walletDest:
+                  type: string
+                  description: Destination wallet, required if `walletDestType` is `ISOLATED`
+                walletDestType:
+                  type: string
+                  description: |
+                    Destination type, valid values are: <br>
+                    `SPOT`: Spot Wallet <br>
+                    `CROSS`: Cross Wallet <br>
+                    `ISOLATED`: Isolated wallet for the market where market the market symbol
+                apiWallets:
+                  type: array
+                  description: Transfer details
+                  items:
+                    type: object
+                    properties:
+                      currency:
+                        type: string
+                        description: Wallet Currency
+                      allBalance:
+                        type: boolean
+                        description: Indicator if all wallet balance is to be transferred
+                    required:
+                      - currency
+                      - allBalance
+              required:
+                - walletSrcType
+                - walletDestType
+                - apiWallets
+            examples:
+              Request:
+                value:
+                  walletSrcType: CROSS
+                  walletDestType: ISOLATED
+                  apiWallets:
+                    - currency: USD
+                      balance: '10'
+                  walletDest: BTC-PERP
+        description: ''
+    parameters: []
+components:
+  schemas: {}
+  parameters:
+    request-api:
+      name: request-api
+      in: header
+      required: true
+      schema:
+        type: string
+      description: The API key you apply
+    request-nonce:
+      name: request-nonce
+      in: header
+      required: true
+      schema:
+        type: string
+      description: Current Timestamp in millisecond
+    request-sign:
+      name: request-sign
+      in: header
+      required: true
+      schema:
+        type: string
+      description: The signature you sign
+  responses:
+    marketSummary:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                  description: Market symbol
+                last:
+                  type: number
+                  description: Last price
+                lowestAsk:
+                  type: number
+                  description: Lowest ask price in the orderbook
+                highestBid:
+                  type: number
+                  description: Highest bid price in the orderbook
+                openInterest:
+                  type: number
+                  description: Number of open positions in the futures market
+                openInterestUSD:
+                  type: number
+                  description: Number of open positions in the futures market in USD notional value
+                percentageChange:
+                  type: number
+                  description: Percentage change against the price within the last 24hours
+                volume:
+                  type: number
+                  description: Transacted volume
+                high24Hr:
+                  type: number
+                  description: Highest price over the last 24hours
+                low24Hr:
+                  type: number
+                  description: Lowest price over the last 24hours
+                base:
+                  type: string
+                  description: Base currency
+                quote:
+                  type: string
+                  description: Quote currency
+                contractStart:
+                  description: Contract start time
+                  type: string
+                contractEnd:
+                  type: string
+                  description: Contract end time
+                active:
+                  type: boolean
+                  description: Indicator if market is active
+                size:
+                  type: number
+                  description: Transacted size
+                  deprecated: true
+                timeBasedContract:
+                  type: boolean
+                  description: Indicator to indicate if it is a time based contract
+                openTime:
+                  type: string
+                  description: Market opening time
+                closeTime:
+                  type: string
+                  description: Market closing time
+                startMatching:
+                  type: string
+                  description: Matching start time
+                inactiveTime:
+                  type: string
+                  description: Time where market is inactive
+                fundingRate:
+                  type: number
+                  description: The funding rate
+                contractSize:
+                  type: number
+                  description: Size of one contract
+                maxPosition:
+                  type: number
+                  description: Maximum position a user is allowed to have
+                minValidPrice:
+                  type: number
+                  description: Minimum valid price
+                minPriceIncrement:
+                  type: number
+                  description: Price increment
+                minOrderSize:
+                  type: number
+                  description: Minimum tick size
+                maxOrderSize:
+                  type: number
+                  description: Maximum order size
+                minRiskLimit:
+                  type: number
+                  description: Minimum risk limit
+                maxRiskLimit:
+                  type: number
+                  description: Maximum risk limit
+                minSizeIncrement:
+                  type: number
+                  description: Tick size
+                availableSettlement:
+                  type: array
+                  description: Currencies available for settlement
+                  items: {}
+                futures:
+                  type: boolean
+                  description: Indicator if symbol is a futures contract
+                  deprecated: true
+                fundingIntervalMinutes:
+                  type: integer
+                  description: Funding interval, only display when param `listFullAttributes` is true
+                fundingTime:
+                  type: number
+                  description: Next funding time, only display when param `listFullAttributes` is true
+            required:
+              - symbol
+              - last
+              - lowestAsk
+              - highestBid
+              - percentageChange
+              - volume
+              - high24Hr
+              - low24Hr
+              - base
+              - quote
+              - active
+              - openTime
+              - closeTime
+              - startMatching
+              - inactiveTime
+              - minValidPrice
+              - minPriceIncrement
+              - minOrderSize
+              - maxOrderSize
+              - minSizeIncrement
+          examples:
+            General:
+              value:
+                - symbol: BTC-PERP
+                  last: 36365
+                  lowestAsk: 36377
+                  highestBid: 36376
+                  percentageChange: 4.973731309
+                  volume: 172418318.7575521
+                  high24Hr: 36447
+                  low24Hr: 33989.5
+                  base: BTC
+                  quote: USD
+                  active: true
+                  size: 4916.8266
+                  minValidPrice: 0.5
+                  minPriceIncrement: 0.5
+                  minOrderSize: 0.00001
+                  maxOrderSize: 2000
+                  minSizeIncrement: 0.00001
+                  openInterest: 0
+                  openInterestUSD: 0
+                  contractStart: 0
+                  contractEnd: 0
+                  timeBasedContract: false
+                  openTime: 0
+                  closeTime: 0
+                  startMatching: 0
+                  inactiveTime: 0
+                  fundingRate: 0
+                  contractSize: 0
+                  maxPosition: 0
+                  minRiskLimit: 0
+                  maxRiskLimit: 0
+                  availableSettlement: null
+                  futures: false
+    chartingData:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                description: |
+                  `0`: Unix Time<br>
+                  `1`: Open Price<br>
+                  `2`: High Price<br>
+                  `3`: Low Price<br>
+                  `4`: Closing Price<br>
+                  `5`: Volume (USD notional value)<br>
+                type: number
+          examples:
+            General:
+              value:
+                - - 1666145400
+                  - 26000
+                  - 26000
+                  - 26000
+                  - 26000
+                  - 0
+                - - 1666145340
+                  - 26000
+                  - 26000
+                  - 26000
+                  - 26000
+                  - 0
+    queryMarketPrice:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                symbol:
+                  type: number
+                  description: Market symbol
+                indexPrice:
+                  type: number
+                  description: Index price
+                lastPrice:
+                  type: number
+                  description: Last transacted price
+                markPrice:
+                  type: number
+                  description: Mark price
+            required:
+              - symbol
+              - indexPrice
+              - lastPrice
+              - markPrice
+          examples:
+            General:
+              value:
+                - symbol: BTC-PERP
+                  indexPrice: 36288.949684967
+                  lastPrice: 36286.5
+                  markPrice: 0
+    oderbookByGrouping:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              symbol:
+                type: string
+                description: Market symbol
+              buyQuote:
+                type: array
+                description: Array of Buy quotes
+                items:
+                  type: object
+                  properties:
+                    price:
+                      type: number
+                      description: order price
+                    size:
+                      type: number
+                      description: order size
+                  required:
+                    - price
+                    - size
+              sellQuote:
+                type: array
+                description: Array of Sell quotes
+                items:
+                  type: object
+                  properties:
+                    price:
+                      type: string
+                      description: order price
+                    size:
+                      type: string
+                      description: order size
+                  required:
+                    - price
+                    - size
+              timestamp:
+                type: number
+                description: Timestamp of orderbook
+            required:
+              - symbol
+              - buyQuote
+              - sellQuote
+              - timestamp
+          examples:
+            General:
+              value:
+                buyQuote:
+                  - price: 36371
+                    size: '100'
+                sellQuote:
+                  - price: '36380.5'
+                    size: '100'
+                timestamp: 1624989459489
+                symbol: BTC-PERP
+    oderbook:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              symbol:
+                type: string
+                description: Market symbol
+              buyQuote:
+                type: array
+                description: Array of Buy quotes
+                items:
+                  type: object
+                  properties:
+                    price:
+                      type: string
+                      description: order price
+                    size:
+                      type: string
+                      description: order size
+              timestamp:
+                type: integer
+                description: Timestamp of orderbook
+              depth:
+                type: integer
+                description: Order depth
+          examples:
+            General:
+              value:
+                symbol: BTC-PERP
+                buyQuote:
+                  - price: '18956.5'
+                    size: '1676'
+                  - price: '18954.5'
+                    size: '1116'
+                timestamp: 1666316095340
+                depth: 10
+    queryTradeFills:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                price:
+                  type: number
+                  description: Transacted price
+                size:
+                  type: number
+                  description: Transacted size
+                side:
+                  type: string
+                  description: 'Trade side. Values are: [`Buy`, `SELL`]'
+                  deprecated: true
+                symbol:
+                  type: string
+                  description: Market symbol
+                serialId:
+                  type: number
+                  description: 'Serial Id, running sequence number'
+                timestamp:
+                  type: integer
+                  description: Transacted timestamp
+          examples:
+            Response:
+              value:
+                - price: 36164
+                  size: 100
+                  side: SELL
+                  symbol: BTC-PERP
+                  serialId: <Serial Id>
+                  timestamp: 1624990097000
+    getFundingHistory:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                  description: Market symbol
+                time:
+                  type: number
+                  description: The epoch timestamp in second of the funding rate
+                rate:
+                  type: number
+                  description: Funding rate
+          examples:
+            Response:
+              value:
+                BTC-PERP:
+                  - time: 1706515200
+                    rate: 0.000011405
+                    symbol: BTC-PERP
+    createNewOrder:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                status:
+                  type: integer
+                  description: |
+                    Order status<br>
+                    `2`: Order Inserted<br>
+                    `4`: Order Fully Transacted<br>
+                    `5`: Order Partially Transacted<br>
+                    `6`: Order Cancelled<br>
+                    `7`: Order Refunded<br>
+                    `8`: Insufficient Balance<br>
+                    `9`: Trigger Inserted<br>
+                    `10`: Trigger Activated<br>
+                    `15`: Order Rejected<br>
+                    `16`: Order Not Found<br>
+                    `17`: Request Failed
+                symbol:
+                  type: string
+                  description: Market symbol
+                orderType:
+                  type: integer
+                  description: |
+                    Order type<br>
+                    `76`: Limit Order<br>
+                    `77`: Market order<br>
+                    `80`: Algo order
+                price:
+                  type: number
+                  description: Order price
+                side:
+                  type: string
+                  description: |
+                    Order side
+                    BUY or SELL
+                size:
+                  type: number
+                  description: Order size
+                orderID:
+                  type: string
+                  description: Order ID
+                timestamp:
+                  type: number
+                  description: Order timestamp
+                triggerPrice:
+                  type: number
+                  description: 'Order trigger price, returns 0 if order is not a trigger order'
+                stopPrice:
+                  type: number
+                  description: Stop price
+                trigger:
+                  type: boolean
+                  description: Indicator if order is a trigger order
+                deviation:
+                  type: string
+                  description: Only valid for Algo orders
+                stealth:
+                  type: string
+                  description: Only valid for Algo orders
+                message:
+                  type: string
+                  description: Trade messages
+                avgFillPrice:
+                  type: string
+                  description: Average filled price. Returns the average filled price for partially transacted orders
+                fillSize:
+                  type: number
+                  description: Trade filled size
+                clOrderID:
+                  type: string
+                  description: Customer tag sent in by trader
+                originalSize:
+                  type: number
+                  description: Original order size
+                postOnly:
+                  type: boolean
+                  description: Indicates if order is a post only order
+                remainingSize:
+                  type: number
+                  description: Size left to be transacted
+                time_in_force:
+                  type: string
+                  description: Order validity
+                positionMode:
+                  type: string
+                  description: Position mode<br/>ONE_WAY or HEDGE
+                positionDirection:
+                  type: string
+                  description: Position direction
+                positionId:
+                  type: string
+                  description: The current order belongs to the id of position.
+            required:
+              - status
+              - symbol
+              - orderType
+              - price
+              - side
+              - size
+              - orderID
+              - timestamp
+              - triggerPrice
+              - stopPrice
+              - trigger
+              - message
+              - averageFillPrice
+              - fillSize
+              - clOrderID
+              - stealth
+              - deviation
+              - postOnly
+              - originalSize
+              - remainingSize
+              - time_in_force
+          examples:
+            Response (general):
+              value:
+                - status: 4
+                  symbol: BTC-PERP
+                  orderType: 76
+                  price: 21000
+                  side: BUY
+                  size: 1
+                  orderID: <Order UUID>
+                  timestamp: 1660558270207
+                  triggerPrice: 0
+                  trigger: false
+                  deviation: 100
+                  stealth: 100
+                  message: ''
+                  avgFillPrice: 21000
+                  fillSize: 1
+                  clOrderID: <clOrderID>
+                  originalSize: 1
+                  postOnly: false
+                  remainingSize: 0
+                  positionMode: ONE_WAY
+                  positionDirection: null
+                  positionId: BTCPFC-USD
+                  time_in_force: GTC
+            Response (for OCO order):
+              value:
+                - status: 9
+                  symbol: BTC-PERP
+                  orderType: 76
+                  price: 23000
+                  side: BUY
+                  size: 1
+                  orderID: <Order UUID>
+                  timestamp: 1660558185243
+                  triggerPrice: 30000
+                  trigger: true
+                  deviation: 100
+                  stealth: 100
+                  message: ''
+                  avgFillPrice: 0
+                  fillSize: 0
+                  clOrderID: <clOrderID>
+                  originalSize: 1
+                  postOnly: false
+                  remainingSize: 1
+                  time_in_force: GTC
+                - status: 2
+                  symbol: BTC-PERP
+                  orderType: 76
+                  price: 21000
+                  side: BUY
+                  size: 1
+                  orderID: <Order UUID>
+                  timestamp: 1660558185225
+                  triggerPrice: 0
+                  trigger: false
+                  deviation: 100
+                  stealth: 100
+                  message: ''
+                  avgFillPrice: 0
+                  fillSize: 0
+                  clOrderID: <clOrderID>
+                  originalSize: 1
+                  postOnly: false
+                  remainingSize: 1
+                  positionMode: ONE_WAY
+                  positionDirection: null
+                  positionId: BTCPFC-USD
+                  time_in_force: GTC
+            Response (for hedge mode order):
+              value:
+                - status: 4
+                  symbol: BTCPFC
+                  orderType: 76
+                  price: 21000.0
+                  side: BUY
+                  size: 1
+                  orderID: abb3f457-fdc0-4bdb-a46b-8e4aa49a57c2
+                  timestamp: 1660558270207
+                  triggerPrice: 0.0
+                  trigger: false
+                  deviation: 100.0
+                  stealth: 100.0
+                  message: ""
+                  avgFillPrice: 21000.0
+                  fillSize: 1.0
+                  clOrderID: ""
+                  originalSize: 1.0
+                  postOnly: false
+                  remainingSize: 0.0
+                  positionMode: HEDGE
+                  positionDirection: LONG
+                  positionId: BTCPFC-USD|LONG
+                  time_in_force: "GTC"
+    amendOrder:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                status:
+                  type: integer
+                  description: |
+                    Order status<br>
+                    `2`: Order Inserted<br>
+                    `4`: Order Fully Transacted<br>
+                    `5`: Order Partially Transacted<br>
+                    `6`: Order Cancelled<br>
+                    `7`: Order Refunded<br>
+                    `8`: Insufficient Balance<br>
+                    `9`: Trigger Inserted<br>
+                    `10`: Trigger Activated<br>
+                    `15`: Order Rejected<br>
+                    `16`: Order Not Found<br>
+                    `17`: Request Failed
+                symbol:
+                  type: string
+                  description: Market symbol
+                orderType:
+                  type: integer
+                  description: |
+                    Order type<br>
+                    `76`: Limit Order<br>
+                    `77`: Market order<br>
+                    `80`: Algo order
+                price:
+                  type: double
+                  description: Order price
+                side:
+                  type: string
+                  description: |
+                    Order side
+                    BUY or SELL
+                size:
+                  type: long
+                  description: Order size in `contract size` (this remains unchanged even after risk limit adjustment)
+                orderID:
+                  type: string
+                  description: Order ID
+                timestamp:
+                  type: long
+                  description: Order timestamp
+                triggerPrice:
+                  type: string
+                  description: Order trigger price, returns 0 if order is not a trigger order
+                trigger:
+                  type: boolean
+                  description: Indicator if order is a trigger order
+                deviation:
+                  type: string
+                  description: Deviation value of order
+                stealth:
+                  type: double
+                  description: Stealth value of order
+                message:
+                  type: string
+                  description: Trade messages
+                avgFillPrice:
+                  type: string
+                  description: Average filled price. Returns the average filled price for partially transacted orders
+                fillSize:
+                  type: string
+                  description: Trade filled size
+                clOrderID:
+                  type: string
+                  description: Customer tag sent in by trader
+                originalSize:
+                  type: double
+                  description: Original order size
+                postOnly:
+                  type: boolean
+                  description: Indicates if order is a post only order
+                remainingSize:
+                  type: double
+                  description: Size left to be transacted
+                time_in_force:
+                  type: string
+                  description: Order validity
+            required:
+              - status
+              - symbol
+              - orderType
+              - price
+              - side
+              - size
+              - orderID
+              - timestamp
+              - triggerPrice
+              - stopPrice
+              - trigger
+              - message
+              - averageFillPrice
+              - fillSize
+              - clOrderID
+              - stealth
+              - deviation
+              - postOnly
+              - originalSize
+              - remainingSize
+              - time_in_force
+          examples:
+            General:
+              value:
+                - status: 16
+                  symbol: BTC-PERP
+                  orderType: 0
+                  price: 0
+                  side: SELL
+                  size: 0
+                  orderID: <Order UUID>
+                  timestamp: 1666168192502
+                  triggerPrice: 0
+                  trigger: false
+                  deviation: 100
+                  stealth: 100
+                  message: ''
+                  avgFillPrice: 0
+                  fillSize: 0
+                  clOrderID: ''
+                  originalSize: 0
+                  postOnly: false
+                  remainingSize: 0
+                  time_in_force: GTC
+    createNewAlgoOrder:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                status:
+                  type: integer
+                  description: |
+                    Order status<br>
+                    `2`: Order Inserted<br>
+                    `4`: Order Fully Transacted<br>
+                    `5`: Order Partially Transacted<br>
+                    `6`: Order Cancelled<br>
+                    `7`: Order Refunded<br>
+                    `8`: Insufficient Balance<br>
+                    `9`: Trigger Inserted<br>
+                    `10`: Trigger Activated<br>
+                    `15`: Order Rejected<br>
+                    `16`: Order Not Found<br>
+                    `17`: Request Failed
+                symbol:
+                  type: string
+                  description: Market symbol
+                orderType:
+                  type: integer
+                  description: |
+                    Order type<br>
+                    `76`: Limit Order<br>
+                    `77`: Market order<br>
+                    `80`: Algo order
+                price:
+                  type: number
+                  description: Order price
+                side:
+                  type: string
+                  description: |
+                    Order side
+                    BUY or SELL
+                size:
+                  type: number
+                  description: Order size
+                orderID:
+                  type: string
+                  description: Order ID
+                timestamp:
+                  type: number
+                  description: Order timestamp
+                triggerPrice:
+                  type: number
+                  description: 'Order trigger price, returns 0 if order is not a trigger order'
+                trigger:
+                  type: boolean
+                  description: Indicator if order is a trigger order
+                deviation:
+                  type: string
+                  description: Only valid for Algo orders
+                stealth:
+                  type: string
+                  description: Only valid for Algo orders
+                message:
+                  type: string
+                  description: Trade messages
+                avgFillPrice:
+                  type: string
+                  description: Average filled price. Returns the average filled price for partially transacted orders
+                fillSize:
+                  type: number
+                  description: Trade filled size
+                clOrderID:
+                  type: string
+                  description: Customer tag sent in by trader
+                originalSize:
+                  type: number
+                  description: Original order size
+                postOnly:
+                  type: boolean
+                  description: Indicates if order is a post only order
+                remainingSize:
+                  type: number
+                  description: Size left to be transacted
+                time_in_force:
+                  type: string
+                  description: Order validity
+                positionMode:
+                  type: string
+                  description: Position mode<br/>ONE_WAY or HEDGE
+                positionDirection:
+                  type: string
+                  description: Position direction
+                positionId:
+                  type: string
+                  description: The current order belongs to the id of position.
+          examples:
+            General:
+              value:
+                - status: 8
+                  symbol: BTC-USD
+                  orderType: 0
+                  price: 0
+                  side: SELL
+                  size: 0
+                  orderID: null
+                  timestamp: 1666147315661
+                  triggerPrice: 0
+                  stopPrice: null
+                  trigger: false
+                  message: ''
+                  averageFillPrice: 0
+                  fillSize: 0
+                  clOrderID: <Client Order ID>
+                  stealth: 1
+                  deviation: 1
+                  postOnly: false
+                  originalSize: 0
+                  remainingSize: 0
+                  time_in_force: GTC
+                  positionMode: ONE_WAY
+                  positionDirection: null
+                  positionId: BTCPFC-USD
+    cancelOrder:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                status:
+                  type: integer
+                  description: |
+                    Order status<br>
+                    `2`: Order Inserted<br>
+                    `4`: Order Fully Transacted<br>
+                    `5`: Order Partially Transacted<br>
+                    `6`: Order Cancelled<br>
+                    `7`: Order Refunded<br>
+                    `8`: Insufficient Balance<br>
+                    `9`: Trigger Inserted<br>
+                    `10`: Trigger Activated<br>
+                    `15`: Order Rejected<br>
+                    `16`: Order Not Found<br>
+                    `17`: Request Failed
+                symbol:
+                  type: string
+                  description: Market symbol
+                orderType:
+                  type: integer
+                  description: |
+                    Order type<br>
+                    `76`: Limit Order<br>
+                    `77`: Market order<br>
+                    `80`: Algo order
+                price:
+                  type: number
+                  description: Order price
+                side:
+                  type: string
+                  description: |
+                    Order side
+                    BUY or SELL
+                size:
+                  type: number
+                  description: Order size
+                orderID:
+                  type: string
+                  description: Order ID
+                timestamp:
+                  type: number
+                  description: Order timestamp
+                triggerPrice:
+                  type: number
+                  description: 'Order trigger price, returns 0 if order is not a trigger order'
+                trigger:
+                  type: boolean
+                  description: Indicator if order is a trigger order
+                deviation:
+                  type: string
+                  description: Only valid for Algo orders
+                stealth:
+                  type: string
+                  description: Only valid for Algo orders
+                message:
+                  type: string
+                  description: Trade messages
+                avgFillPrice:
+                  type: string
+                  description: Average filled price. Returns the average filled price for partially transacted orders
+                fillSize:
+                  type: number
+                  description: Trade filled size
+                clOrderID:
+                  type: string
+                  description: Customer tag sent in by trader
+                originalSize:
+                  type: number
+                  description: Original order size
+                postOnly:
+                  type: boolean
+                  description: Indicates if order is a post only order
+                remainingSize:
+                  type: number
+                  description: Size left to be transacted
+                time_in_force:
+                  type: string
+                  description: Order validity
+                positionMode:
+                  type: string
+                  description: Position mode<br/>ONE_WAY or HEDGE
+                positionDirection:
+                  type: string
+                  description: Position direction
+                positionId:
+                  type: string
+                  description: The current order belongs to the id of position.
+          examples:
+            General:
+              value:
+                - status: 6
+                  symbol: BTC-PERP
+                  orderType: 76
+                  price: 100
+                  side: BUY
+                  size: 1
+                  orderID: <Order UUID>
+                  timestamp: 1666168241273
+                  triggerPrice: 0
+                  trigger: false
+                  deviation: 100
+                  stealth: 100
+                  message: ''
+                  avgFillPrice: 0
+                  fillSize: 0
+                  clOrderID: <Client Order ID>
+                  originalSize: 1
+                  postOnly: false
+                  remainingSize: 1
+                  time_in_force: GTC
+                  positionMode: ONE_WAY
+                  positionDirection: null
+                  positionId: BTCPFC-USD
+    queryOrder:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                description: |
+                  Order status<br>
+                  `2`: Order Inserted<br>
+                  `4`: Order Fully Transacted<br>
+                  `5`: Order Partially Transacted<br>
+                  `6`: Order Cancelled<br>
+                  `7`: Order Refunded<br>
+                  `8`: Insufficient Balance<br>
+                  `9`: Trigger Inserted<br>
+                  `10`: Trigger Activated<br>
+                  `15`: Order Rejected<br>
+                  `16`: Order Not Found<br>
+                  `17`: Request Failed<br>
+                  `64`: Account is undergoing liquidation<br>
+                  `65`: Order is active<br>
+                  `85`: Order is inactive<br>
+                  `88`: Order is inactive
+              symbol:
+                type: string
+                description: Market symbol
+              orderType:
+                type: integer
+                description: |
+                  Order type<br>
+                  `76`: Limit Order<br>
+                  `77`: Market order<br>
+                  `80`: Algo order
+              price:
+                type: number
+                description: Order price
+              side:
+                type: string
+                description: |
+                  Order side
+                  BUY or SELL
+              size:
+                type: number
+                description: Order size
+              orderID:
+                type: string
+                description: Order ID
+              timestamp:
+                type: number
+                description: Order timestamp
+              triggerPrice:
+                type: number
+                description: 'Order trigger price, returns 0 if order is not a trigger order'
+              stopPrice:
+                type: number
+                description: Stop price
+              trigger:
+                type: boolean
+                description: Indicator if order is a trigger order
+              deviation:
+                type: string
+                description: Only valid for Algo orders
+              stealth:
+                type: string
+                description: Only valid for Algo orders
+              message:
+                type: string
+                description: Trade messages
+              avgFillPrice:
+                type: string
+                description: Average filled price. Returns the average filled price for partially transacted orders
+              fillSize:
+                type: number
+                description: Trade filled size
+              clOrderID:
+                type: string
+                description: Customer tag sent in by trader
+              originalSize:
+                type: number
+                description: Original order size
+              postOnly:
+                type: boolean
+                description: Indicates if order is a post only order
+              remainingSize:
+                type: number
+                description: Size left to be transacted
+              time_in_force:
+                type: string
+                description: Order validity
+              positionMode:
+                type: string
+                description: Position mode<br/>ONE_WAY or HEDGE
+              positionDirection:
+                type: string
+                description: Position direction
+              positionId:
+                type: string
+                description: The current order belongs to the id of position.
+              contractSize:
+                type: number
+                format: double
+                description: The order contract size
+          examples:
+            Response (general):
+              value:
+                status: 4
+                symbol: BTC-PERP
+                orderType: 76
+                price: 21000
+                side: BUY
+                size: 1
+                orderID: <Order UUID>
+                timestamp: 1660558270207
+                triggerPrice: 0
+                trigger: false
+                deviation: 100
+                stealth: 100
+                message: ''
+                avgFillPrice: 21000
+                fillSize: 1
+                clOrderID: <clOrderID>
+                originalSize: 1
+                postOnly: false
+                remainingSize: 0
+                time_in_force: GTC
+                positionMode: ONE_WAY
+                positionDirection: null
+                positionId: BTCPFC-USD
+                contractSize: 0.001
+    queryOpenOrders:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              description: Market symbol
+              properties:
+                vendorName:
+                  type: string
+                  description: Vendor Name
+                botID:
+                  type: string
+                  description: bot ID
+                orderID:
+                  type: string
+                  description: Order ID
+                orderType:
+                  type: integer
+                  description: |
+                    Order type<br>
+                    76: Limit Order<br>
+                    77: Market order<br>
+                    80: Algo order
+                price:
+                  type: integer
+                  description: Order price
+                size:
+                  type: integer
+                  description: Order size
+                side:
+                  type: string
+                  description: |
+                    Order side <br>
+                    BUY or SELL
+                filledSize:
+                  type: integer
+                  description: Trade filled size
+                orderValue:
+                  type: number
+                  description: Notional value
+                pegPriceMin:
+                  type: integer
+                  description: peg price min
+                pegPriceMax:
+                  type: integer
+                  description: peg price max
+                pegPriceDeviation:
+                  type: integer
+                  description: Deviation percentage. Only for Algo orders
+                cancelDuration:
+                  type: integer
+                  description: |
+                    Expire in milliseconds.<br>
+                    0: GTC<br>
+                    -1: IOC
+                timestamp:
+                  type: integer
+                  description: Order timestamp
+                stealth:
+                  type: integer
+                  description: Stealth value of order
+                triggerOrder:
+                  type: boolean
+                  description: Indicate if this is a trigger order
+                triggered:
+                  type: boolean
+                  description: Indicate if this order has been triggered
+                triggerPrice:
+                  type: integer
+                  description: 'Order trigger price, returns 0 if order is not a trigger order'
+                triggerOriginalPrice:
+                  type: integer
+                  description: Original trigger price
+                triggerOrderType:
+                  type: integer
+                  description: |
+                    Trigger order type<br>
+                    1001: Trigger stop loss<br>
+                    1002: Trigger take profit
+                triggerTrailingStopDeviation:
+                  type: integer
+                  description: Reserved attribute
+                triggerStopPrice:
+                  type: integer
+                  description: Reserved attribute
+                symbol:
+                  type: string
+                  description: Customer tag sent in by trader
+                trailValue:
+                  type: integer
+                  description: Reserved attribute
+                clOrderID:
+                  type: string
+                  description: Trade filled size
+                reduceOnly:
+                  type: boolean
+                  description: Indicate if this order is reduce only
+                orderState:
+                  type: string
+                  description: '`STATUS_ACTIVE`, `STATUS_INACTIVE`'
+                triggerUseLastPrice:
+                  type: boolean
+                  description: Indicate if this trigger order uses last price
+                avgFilledPrice:
+                  type: integer
+                  description: Average filled price. Returns the average filled price for partially transacted orders
+                timeInForce:
+                  type: string
+                  description: Order validity
+                averageFillPrice:
+                  type: integer
+                  description: Average fill price
+                positionMode:
+                  type: string
+                  description: Position mode<br/>ONE_WAY or HEDGE
+                positionDirection:
+                  type: string
+                  description: Position direction
+                positionId:
+                  type: string
+                  description: The current order belongs to the id of position.
+                contractSize:
+                  type: number
+                  format: double
+                  description: The order contract size
+          examples:
+            General:
+              value:
+                - vendorName: null
+                  botID: <bot ID>
+                  orderID: <Order UUID>
+                  orderType: 80
+                  price: 21500
+                  size: 1
+                  side: BUY
+                  filledSize: 0
+                  orderValue: 21.5
+                  pegPriceMin: 1
+                  pegPriceMax: 21500
+                  pegPriceDeviation: -0.1
+                  cancelDuration: 0
+                  timestamp: 1666147151158
+                  stealth: 0.1
+                  triggerOrder: false
+                  triggered: false
+                  triggerPrice: 0
+                  triggerOriginalPrice: 0
+                  triggerOrderType: 0
+                  triggerTrailingStopDeviation: 0
+                  triggerStopPrice: 0
+                  symbol: BTC-PERP
+                  trailValue: 0
+                  clOrderID: <Client Order ID>
+                  reduceOnly: false
+                  orderState: STATUS_ACTIVE
+                  triggerUseLastPrice: false
+                  avgFilledPrice: 0
+                  timeInForce: GTC
+                  averageFillPrice: 0
+                  positionMode: ONE_WAY
+                  positionDirection: null
+                  positionId: BTCPFC-USD
+                  contractSize: 0.001
+    queryTradesFillsHistory:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                tradeId:
+                  type: string
+                  description: Trade identifier
+                orderID:
+                  type: string
+                  description: Order ID
+                username:
+                  type: string
+                  description: User Name
+                side:
+                  type: string
+                  description: 'Trade side. Values are: [BUY, SELL]'
+                orderType:
+                  type: string
+                  description: Order Type
+                triggerType:
+                  type: string
+                  description: Trigger Type
+                price:
+                  type: number
+                  description: Original order price
+                size:
+                  type: number
+                  description: Original order size
+                filledPrice:
+                  type: string
+                  description: Filled price
+                filledSize:
+                  type: string
+                  description: Filled size
+                triggerPrice:
+                  type: number
+                  description: Trigger Price
+                base:
+                  type: string
+                  description: Base currency
+                quote:
+                  type: string
+                  description: Quote currency
+                symbol:
+                  type: string
+                  description: Market symbol
+                feeCurrency:
+                  type: string
+                  description: Fee currency
+                feeAmount:
+                  type: string
+                  description: Fee amount
+                wallet:
+                  type: string
+                  description: wallet
+                realizedPnL:
+                  type: string
+                  description: Not used in Spot
+                total:
+                  type: string
+                  description: Not used in Spot
+                serialId:
+                  type: string
+                  description: 'Serial Id, running sequence number'
+                timestamp:
+                  type: number
+                  description: Transacted timestamp
+                clOrderID:
+                  type: string
+                  description: Custom order ID
+                averageFillPrice:
+                  type: number
+                  description: Average fill price
+                positionId:
+                  type: string
+                  description: The current order belongs to the id of position
+                contractSize:
+                  type: number
+                  format: double
+                  description: The order contract size
+          examples:
+            General:
+              value:
+                - tradeId: <Trade Id>
+                  orderId: <Order Id>
+                  username: '-'
+                  side: BUY
+                  orderType: 80
+                  triggerType: null
+                  price: 21500
+                  size: 1
+                  filledPrice: 15705.5
+                  filledSize: 1
+                  triggerPrice: 0
+                  base: BTC
+                  quote: USD
+                  symbol: BTC-PERP
+                  feeCurrency: USD
+                  feeAmount: 0.00785275
+                  wallet: '-'
+                  realizedPnl: 0
+                  total: -0.00785275
+                  serialId: <Serial Id>
+                  timestamp: 1673422143680
+                  clOrderID: ClOrderID
+                  averageFillPrice: 15705.5
+                  positionId: null
+                  contractSize: 0.001
+    queryPosition:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                marginType:
+                  type: integer
+                  description: |
+                    Margin Type. Values as follows
+                    91: CROSS wallet
+                    92: Isolated wallet
+                entryPrice:
+                  type: number
+                  description: Entry price
+                markPrice:
+                  type: number
+                  description: Mark price
+                symbol:
+                  type: string
+                  description: Market symbol
+                side:
+                  type: string
+                  description: 'Position side. Values are: [Buy, SELL]'
+                orderValue:
+                  type: number
+                  description: Notional value
+                settleWithAsset:
+                  type: string
+                  description: Settlement currency
+                unrealizedProfitLoss:
+                  type: number
+                  description: Unrealized profit and loss
+                totalMaintenanceMargin:
+                  type: number
+                  description: Maintenance margin
+                size:
+                  type: number
+                  description: Position size
+                liquidationPrice:
+                  type: number
+                  description: Liquidation Price
+                isolatedLeverage:
+                  type: number
+                  description: Isolated leverage value
+                adlScoreBucket:
+                  type: integer
+                  description: ADL Score probability
+                liquidationInProgress:
+                  type: boolean
+                  description: Indicator if liquidation is in progress
+                timestamp:
+                  type: string
+                  description: Timestamp when position was queried
+                currentLeverage:
+                  type: number
+                  description: Current leverage
+                takeProfitOrder:
+                  type: object
+                  description: Take profit order info
+                  properties:
+                    orderId:
+                      type: string
+                    side:
+                      type: string
+                    triggerPrice:
+                      type: number
+                    triggerUseLastPrice:
+                      type: boolean
+                stopLossOrder:
+                  type: object
+                  description: Stop loss order info
+                  properties:
+                    orderId:
+                      type: string
+                    side:
+                      type: string
+                    triggerPrice:
+                      type: number
+                    triggerUseLastPrice:
+                      type: boolean
+                positionMode:
+                  type: string
+                  description: Position mode<br/>ONE_WAY or HEDGE
+                positionDirection:
+                  type: string
+                  description: Position direction
+                positionId:
+                  type: string
+                  description: The current order belongs to the id of position.
+                contractSize:
+                  type: number
+                  format: double
+                  description: The order contract size
+          examples:
+            General:
+              value:
+                - marginType: 0
+                  entryPrice: 0
+                  markPrice: 71126.6
+                  symbol: BTC-PERP
+                  side: BUY
+                  orderValue: 441.8492
+                  settleWithAsset: BTC
+                  unrealizedProfitLoss: -0.23538014
+                  totalMaintenanceMargin: 2.366912551
+                  size: 62
+                  liquidationPrice: 0
+                  isolatedLeverage: 25
+                  adlScoreBucket: 2
+                  liquidationInProgress: false
+                  timestamp: 1576661434072
+                  currentLeverage: 0
+                  takeProfitOrder:
+                    orderId: ea1ab233-c79a-4503-a475-f8633ecc9d79
+                    side: SELL
+                    triggerPrice: 31000.0
+                    triggerUseLastPrice: false
+                  stopLossOrder:
+                    orderId: 48523190-77b9-44ea-bee0-d67a428a51b8
+                    side: SELL
+                    triggerPrice: 27000.0
+                    triggerUseLastPrice: true
+                  positionMode: ONE_WAY
+                  positionDirection: null
+                  positionId: BTCPFC-USD
+                - marginType: 91
+                  entryPrice: 1631.106666667
+                  markPrice: 1630.398947255
+                  symbol: ETHPFC
+                  side: BUY
+                  orderValue: 48.9119684176
+                  settleWithAsset: USDT
+                  unrealizedProfitLoss: -0.02123158
+                  totalMaintenanceMargin: 0.254871114
+                  size: 3
+                  liquidationPrice: 0
+                  isolatedLeverage: 0
+                  adlScoreBucket: 2
+                  liquidationInProgress: false
+                  timestamp: 0
+                  takeProfitOrder: null
+                  stopLossOrder: null
+                  positionMode: HEDGE
+                  positionDirection: LONG
+                  positionId: ETHPFC-USD|LONG
+                  currentLeverage: 0.0340349245
+                  contractSize: 0.001
+    closePosition:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                status:
+                  type: integer
+                  description: |
+                    Order status
+                    2: Order Inserted
+                    3: Order Transacted
+                    4: Order Fully Transacted
+                    5: Order Partially Transacted
+                    6: Order Cancelled
+                    7: Order Refunded
+                    9: Trigger Inserted
+                    10: Trigger Activated
+                    15: Order Rejected
+                    16: Order Not Found
+                    17: Request failed
+                symbol:
+                  type: string
+                  description: Market symbol
+                orderType:
+                  type: string
+                  description: |
+                    Order type
+                    76: Limit Order
+                    77: Market order
+                    80: Algo order
+                price:
+                  type: number
+                  description: Order price
+                side:
+                  type: string
+                  description: |
+                    Order side
+                    BUY or SELL
+                size:
+                  type: number
+                  description: Cancelled size
+                orderID:
+                  type: string
+                  description: Order ID
+                timestamp:
+                  type: string
+                  description: Order timestamp
+                triggerPrice:
+                  type: string
+                  description: 'Order trigger price, returns 0 if order is not a trigger order'
+                trigger:
+                  type: string
+                  description: Indicator if order is a trigger order
+                deviation:
+                  type: string
+                  description: Deviation value of order
+                stealth:
+                  type: string
+                  description: Stealth value of order
+                message:
+                  type: string
+                  description: Trade messages
+                avgFillPrice:
+                  type: string
+                  description: Average filled price. Returns the average filled price for partially transacted orders
+                fillSize:
+                  type: string
+                  description: Trade filled size
+                clOrderID:
+                  type: string
+                  description: Customer tag sent in by trader
+                originalSize:
+                  type: number
+                  description: Original order size
+                postOnly:
+                  type: boolean
+                  description: Indicates if order is a post only order
+                  deprecated: true
+                remainingSize:
+                  type: number
+                  description: Size left to be transacted
+                time_in_force:
+                  type: string
+                  description: Order validity
+                  deprecated: true
+                positionMode:
+                  type: string
+                  description: Position mode<br/>ONE_WAY or HEDGE
+                positionDirection:
+                  type: string
+                  description: Position direction
+                positionId:
+                  type: string
+                  description: The current order belongs to the id of position.
+          examples:
+            General:
+              value:
+                - status: 0
+                  symbol: BTC-PERP
+                  orderType: 76
+                  price: 8300
+                  side: BUY
+                  size: 4
+                  orderID: <Order UUID>
+                  timestamp: 1576812000872
+                  triggerPrice: 8300
+                  trigger: false
+                  deviation: 0
+                  stealth: 0
+                  message: 'false'
+                  avgFillPrice: 0
+                  fillSize: 0
+                  clOrderID: <Client Order ID>
+                  remainingSize: 2
+                  originalSize: 4
+                  positionMode: ONE_WAY
+                  positionDirection: null
+                  positionId: null
+    getRiskLimit:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              symbol:
+                type: string
+                description: Market symbol
+              riskLimit:
+                type: integer
+                description: Risk limit value now in position size, but will be changed to USD value along with futures market name change
+          examples:
+            General:
+              value:
+                symbol: BTC-PERP
+                riskLimit: 100000
+    setRiskLimit:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              symbol:
+                type: string
+                description: Market symbol
+              timestamp:
+                type: number
+                description: Timestamp where risk limit was set
+              status:
+                type: integer
+                description: |
+                  Status of the request. Values are:
+                  8: Insufficient Balance
+                  12: Error in updating risk limit
+                  20: Success
+                  41: Invalid risk limit
+              type:
+                type: number
+                description: Value will be 94 indicating that type is Risk Limit
+              message:
+                type: string
+                description: Message
+            required:
+              - symbol
+              - timestamp
+              - status
+              - type
+              - message
+          examples:
+            General:
+              value:
+                symbol: BTC-PERP
+                timestamp: 1577093486551
+                status: 20
+                type: 94
+                message: 'false'
+    getLeverage:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              symbol:
+                type: string
+                description: Market symbol
+              leverage:
+                type: number
+                description: Current leverage value for the market, return 0 means the leverage is the maximum cross leverage
+              marginMode:
+                type: string
+                description: Current margin mode
+          examples:
+            Response:
+              value:
+                symbol: BTC-PERP
+                leverage: 100.0
+                marginMode: ISOLATED
+    setLeverage:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              symbol:
+                type: string
+                description: Market symbol
+              timestamp:
+                type: number
+                description: Timestamp where leverage was set
+              status:
+                type: integer
+                description: |
+                  Status of the request. Values are:
+                  8: Insufficient Balance
+                  13: Invalid leverage
+                  20: Success
+                  64: Undergoing liquidation
+              type:
+                type: number
+                description: Value will be 93 indicating that type is Leverage
+              message:
+                type: string
+                description: Message
+          examples:
+            Response:
+              value:
+                symbol: BTC-PERP
+                timestamp: 1577093486551
+                status: 20
+                type: 94
+                message: 'false'
+    changeSettleIn:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                description: |
+                  Request status
+                  1: Success
+                  -2: Invalid parameters
+              errorCode:
+                type: integer
+                description: Error code
+              message:
+                type: string
+                description: Response message
+            required:
+              - status
+              - errorCode
+              - message
+          examples:
+            General:
+              value:
+                status: 401
+                errorCode: -7
+                message: Authenticate failed
+    queryAmountFees:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                  description: Market symbol
+                makerFee:
+                  type: number
+                  description: Maker fees
+                takerFee:
+                  type: number
+                  description: Taker fees
+            required:
+              - symbol
+              - makerFee
+              - takerFee
+          examples:
+            General:
+              value:
+                - makerFee: 0
+                  symbol: BTC-PERP
+                  takerFee: 0
+    bindTPSL:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              symbol:
+                type: string
+                description: Market symbol
+              clOrderID:
+                type: string
+                description: Customer tag sent in by trader
+              fillSize:
+                type: number
+                description: Trade filled size
+              orderID:
+                type: string
+                description: Order ID
+              orderType:
+                type: string
+                description: |
+                  Order type <br/>76: Limit Order<br/>77: Market order<br/>80: Algo order
+              postOnly:
+                type: boolean
+                description: Indicates if order is a post only order
+              price:
+                type: number
+                description: Order price
+              side:
+                type: string
+                description: Order side<br/>BUY or SELL
+              size:
+                type: number
+                description: Order size in `contract size` (this remains unchanged even after risk limit adjustment)
+              status:
+                type: number
+                description: |
+                  Order status<br/> 2: Order Inserted<br/>3: Order Transacted<br/>4: Order Fully Transacted<br/>5: Order Partially Transacted<br/>6: Order Cancelled<br/>7: Order Refunded<br/>9: Trigger Inserted<br>10: Trigger Activated<br/>15: Order Rejected<br/>16: Order Not Found<br/>17: Request failed
+              time_in_force:
+                type: string
+                description: Order validity
+              timestamp:
+                type: number
+                description: Order timestamp
+              trigger:
+                type: boolean
+                description: Indicator if order is a trigger order
+              triggerPrice:
+                type: number
+                description: Order trigger price, returns 0 if order is not a trigger order
+              avgFillPrice:
+                type: number
+                description: Average filled price. Returns the average filled price for partially transacted orders
+              message:
+                type: string
+                description: Trade messages
+              stealth:
+                type: string
+                description: Only valid for Algo orders
+              deviation:
+                type: number
+                description: Only valid for Algo
+              remainingSize:
+                type: number
+                description: Size left to be transacted
+              originalSize:
+                type: number
+                description: Original order size
+              positionMode:
+                type: string
+                description: Position mode<br/>ONE_WAY or HEDGE
+              positionDirection:
+                type: string
+                description: Position direction
+              positionId:
+                type: string
+                description: Position id
+          examples:
+            General:
+              value:
+                - status: 9,
+                  symbol: "BTCPFC"
+                  orderType: 77,
+                  price: 0.0,
+                  side: "SELL"
+                  size: 100,
+                  orderID: "4820b20a-e41b-4273-b3ad-4b19920aeeb5"
+                  timestamp: 1691974463934,
+                  triggerPrice: 31000.0,
+                  trigger: true,
+                  deviation: 100.0,
+                  stealth: 100.0,
+                  message: ""
+                  avgFillPrice: 0.0,
+                  fillSize: 0.0,
+                  clOrderID: ""
+                  originalSize: 100.0,
+                  postOnly: false,
+                  remainingSize: 100.0,
+                  orderDetailType: null,
+                  positionMode: "ONE_WAY"
+                  positionDirection: null,
+                  positionId: "BTCPFC-USD"
+                  time_in_force: "GTC"
+    getPositionMode:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                  description: Market symbol
+                positionMode:
+                  type: string
+                  description: ONE_WAY or HEDGE
+          examples:
+            General:
+              value:
+                - symbol: "ETH-PERP"
+                  positionMode: "HEDGE"
+                - symbol: "BTC-PERP"
+                  positionMode: "ONE_WAY"
+    setPositionMode:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              symbol:
+                type: string
+                description: Market symbol
+              timestamp:
+                type: number
+                description: Timestamp where position mode was set
+              status:
+                type: string
+                description: |
+                  Status of the request. Values are: <br>20: Success
+              type:
+                type: string
+                description: Value will be 129 indicating that type is `Futures Config Mode Change`
+              message:
+                type: string
+                description: Message
+    queryWalletBalance:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                wallet:
+                  type: string
+                  description: Wallet name
+                totalValue:
+                  type: number
+                  description: Total value
+                marginBalance:
+                  type: number
+                  description: Margin balance
+                availableBalance:
+                  type: number
+                  description: Available Balance
+                unrealisedProfitLoss:
+                  type: number
+                  description: Unrealised Profit / Loss
+                maintenanceMargin:
+                  type: number
+                  description: Maintenance margin
+                leverage:
+                  type: number
+                  description: Leverage
+                openMargin:
+                  type: number
+                  description: Open margin
+                assets:
+                  type: object
+                  required:
+                    - balance
+                    - assetPrice
+                    - currency
+                  description: Assets available
+                  properties:
+                    balance:
+                      type: number
+                      description: Balance
+                    assetPrice:
+                      type: number
+                      description: Asset price
+                    currency:
+                      type: string
+                      description: Currency
+                    display:
+                      type: boolean
+                      description: Display
+                assetsInUse:
+                  type: object
+                  required:
+                    - balance
+                    - assetPrice
+                    - currency
+                  description: Assets in use
+                  properties:
+                    balance:
+                      type: number
+                      description: Balance
+                    assetPrice:
+                      type: number
+                      description: Asset price
+                    currency:
+                      type: string
+                      description: Currency
+                trackingID:
+                  type: string
+                  description: 'Internal tracking ID, not being used'
+                  deprecated: true
+                queryType:
+                  type: integer
+                  description: Query type
+                  deprecated: true
+                activeWalletName:
+                  type: string
+                  description: Active wallet name
+                  deprecated: true
+                username:
+                  type: string
+                  description: username
+                  deprecated: true
+                walletTotalValue:
+                  type: number
+                  description: Wallet total value
+                  deprecated: true
+            required:
+              - wallet
+              - walletTotalValue
+              - totalValue
+              - marginBalance
+              - availableBalance
+              - unrealisedProfitLoss
+              - maintenanceMargin
+              - leverage
+              - openMargin
+              - assets
+              - assetsInUse
+          examples:
+            General:
+              value:
+                - wallet: CROSS@
+                  totalValue: 98833163.39324835
+                  marginBalance: 98833163.39324833
+                  availableBalance: 98833163.39324835
+                  unrealisedProfitLoss: 0
+                  maintenanceMargin: 0
+                  leverage: 0
+                  openMargin: 0
+                  assets:
+                    - balance: 98833159.57335196
+                      assetPrice: 1
+                      currency: USD
+                      display: true
+                    - balance: 0.00020168
+                      assetPrice: 18940.3827
+                      currency: BTC
+                      display: false
+                  assetsInUse: []
+    queryWalletHistory:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Username (New Entry)
+                orderId:
+                  type: string
+                  description: Internal wallet order ID
+                wallet:
+                  type: string
+                  description: Wallet type. For futures will return CROSS@ or ISOLATED@
+                currency:
+                  type: string
+                  description: Currency
+                type:
+                  type: integer
+                  description: |
+                    `105`: Wallet Transfer<br>
+                    `106`: Wallet Liquidation<br>
+                    `108`: Realized PnL<br>
+                    `110`: Funding<br>
+                    `121`: Asset Conversion
+                amount:
+                  type: number
+                  description: Amount in the record
+                fees:
+                  type: number
+                  description: Fees charged if any
+                description:
+                  type: string
+                  description: Description of the transaction
+                timestamp:
+                  type: integer
+                  description: Timestamp (New Entry)
+                userModeModernNaming:
+                  type: boolean
+                  description: User Mode Modern Naming
+            required:
+              - orderId
+              - wallet
+              - currency
+              - type
+              - amount
+              - fees
+              - description
+          examples:
+            General:
+              value:
+                - username: <Username>
+                  orderId: <Order UUID>
+                  wallet: CROSS@
+                  currency: USD
+                  type: 108
+                  amount: -14.14512675
+                  fees: 0
+                  description: null
+                  timestamp: 1666262048
+    queryWalletMargin:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              wallet:
+                type: string
+                description: Wallet name
+              totalValue:
+                type: number
+                description: Total value
+              marginBalance:
+                type: number
+                description: Margin balance
+              availableBalance:
+                type: number
+                description: Available Balance
+              unrealisedProfitLoss:
+                type: number
+                description: Unrealised Profit / Loss
+              maintenanceMargin:
+                type: number
+                description: Maintenance margin
+              leverage:
+                type: number
+                description: Leverage
+              openMargin:
+                type: number
+                description: Open margin
+              assets:
+                type: object
+                description: Assets available
+                required:
+                  - balance
+                  - assetPrice
+                  - currency
+                properties:
+                  balance:
+                    type: number
+                    description: Balance
+                  assetPrice:
+                    type: number
+                    description: Asset price
+                  currency:
+                    type: string
+                    description: Currency
+              assetsInUse:
+                type: object
+                description: Assets in use
+                required:
+                  - balance
+                  - assetPrice
+                  - currency
+                properties:
+                  balance:
+                    type: number
+                    description: Balance
+                  assetPrice:
+                    type: number
+                    description: Asset price
+                  currency:
+                    type: string
+                    description: Currency
+              activeWalletName:
+                type: string
+                description: Active wallet name
+                deprecated: true
+              queryType:
+                type: integer
+                description: Query type
+                deprecated: true
+              trackingID:
+                type: string
+                description: 'Internal tracking ID, not being used'
+                deprecated: true
+              walletTotalValue:
+                type: number
+                description: Wallet total value
+                deprecated: true
+            required:
+              - wallet
+              - totalValue
+              - marginBalance
+              - availableBalance
+              - unrealisedProfitLoss
+              - maintenanceMargin
+              - leverage
+              - openMargin
+              - assets
+              - assetsInUse
+          examples:
+            General:
+              value:
+                wallet: CROSS@
+                totalValue: 98833183.41848214
+                marginBalance: 98833183.41848214
+                availableBalance: 98833183.41848214
+                unrealisedProfitLoss: 0
+                maintenanceMargin: 0
+                leverage: 0
+                openMargin: 0
+                assets:
+                  - balance: 98833179.57335196
+                    assetPrice: 1
+                    currency: USD
+                  - balance: 0.00020168
+                    assetPrice: 19065.5007
+                    currency: BTC
+                assetsInUse: []
+    transferBetweenFuturesWallet:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: Code (New Entry)
+              msg:
+                type: string
+                description: Msg (New Entry)
+              time:
+                type: integer
+                description: Time (New Entry)
+              data:
+                type: object
+                properties:
+                  requestId:
+                    type: string
+                    description: Request Id (New Entry)
+              success:
+                type: boolean
+                description: Status (New Entry)
+          examples:
+            Response:
+              value:
+                code: 1
+                msg: null
+                time: 1666150752818
+                data:
+                  requestId: <Request Id>
+                success: true
+    Subscription:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              event:
+                type: string
+                description: Respond with the event type
+              channel:
+                type: array
+                description: Topics which have been successfully subscribed
+                items: {}
+            required:
+              - event
+              - channel
+          examples:
+            General:
+              value:
+                event: subscribe
+                channel:
+                  - 'orderBookApi:BTC-PERP_0'
+    orderbookSnapshotByGrouping:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              topic:
+                type: string
+                description: Websocket topic
+              data:
+                type: object
+                required:
+                  - buyQuote
+                  - sellQuote
+                  - symbol
+                  - timestamp
+                description: Refer to data object below
+                properties:
+                  buyQuote:
+                    type: object
+                    required:
+                      - price
+                      - size
+                    description: Bid quotes
+                    properties:
+                      price:
+                        type: string
+                        description: order price
+                      size:
+                        type: string
+                        description: order size
+                  sellQuote:
+                    type: object
+                    required:
+                      - price
+                      - size
+                    description: Asks quotes
+                    properties:
+                      price:
+                        type: string
+                        description: order price
+                      size:
+                        type: string
+                        description: order size
+                  symbol:
+                    type: string
+                    description: Market symbol
+                  timestamp:
+                    type: string
+                    description: Orderbook timestamp
+            required:
+              - topic
+              - data
+          examples:
+            General:
+              value:
+                topic: orderBookApi
+                data:
+                  buyQuote:
+                    - price: 0
+                      size: 0
+                  sellQuote:
+                    - price: 0
+                      size: 0
+                  symbol: BTC-PERP
+                  timestamp: 1565135165600
+    orderbookSnapshotByDepth:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              topic:
+                type: string
+                description: Websocket topic
+              data:
+                type: object
+                required:
+                  - buyQuote
+                  - sellQuote
+                  - symbol
+                  - depth
+                  - timestamp
+                description: Refer to data object below
+                properties:
+                  buyQuote:
+                    type: object
+                    required:
+                      - price
+                      - size
+                    description: Bid quotes
+                    properties:
+                      price:
+                        type: string
+                        description: order price
+                      size:
+                        type: string
+                        description: order size
+                  sellQuote:
+                    type: object
+                    required:
+                      - price
+                      - size
+                    description: Asks quotes
+                    properties:
+                      price:
+                        type: string
+                        description: order price
+                      size:
+                        type: string
+                        description: order size
+                  symbol:
+                    type: string
+                    description: Market symbol
+                  depth:
+                    type: integer
+                    description: Orderbook depth
+                  timestamp:
+                    type: string
+                    description: Orderbook timestamp
+            required:
+              - topic
+              - data
+          examples:
+            General:
+              value:
+                topic: orderBookL2Api
+                data:
+                  buyQuote:
+                    - price: 0
+                      size: 0
+                  sellQuote:
+                    - price: 0
+                      size: 0
+                  symbol: BTC-PERP
+                  depth: 0
+                  timestamp: 1565135165600
+    orderbookIncrementalUpdates:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              topic:
+                type: string
+                description: Websocket topic
+              data:
+                type: object
+                required:
+                  - bids
+                  - asks
+                  - seqNum
+                  - preSeqNum
+                  - type
+                  - timestamp
+                  - symbol
+                description: Refer to data object below
+                properties:
+                  bids:
+                    type: object
+                    description: Bid quotes
+                  asks:
+                    type: object
+                    description: Asks quotes
+                  seqNum:
+                    type: string
+                    description: Current sequence number
+                  preSeqNum:
+                    type: string
+                    description: Previous sequence number
+                  type:
+                    type: string
+                    description: "`snapshot`\_- Snapshot of the orderbook with a maximum of 50 levels\n`delta`\_- Updates of the orderbook"
+                  timestamp:
+                    type: string
+                    description: Timestamp of the orderbook
+                  symbol:
+                    type: string
+                    description: Orderbook symbol
+            required:
+              - topic
+              - data
+          examples:
+            General:
+              value:
+                topic: string
+                data:
+                  bids: {}
+                  asks: {}
+                  seqNum: string
+                  preSeqNum: string
+                  type: string
+                  timestamp: string
+                  symbol: string
+    publicTradeFills:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              topic:
+                type: string
+                description: Websocket topic
+              data:
+                type: object
+                required:
+                  - symbol
+                  - side
+                  - size
+                  - price
+                  - tradeId
+                  - timestamp
+                description: Refer to data object below
+                properties:
+                  symbol:
+                    type: string
+                    description: Market symbol
+                  side:
+                    type: string
+                    description: 'Trade Side, BUY or SELL'
+                  size:
+                    type: number
+                    description: Transacted size
+                  price:
+                    type: number
+                    description: Transacted price
+                  tradeId:
+                    type: string
+                    description: Trade sequence Id
+                  timestamp:
+                    type: string
+                    description: Trade timestamp
+            required:
+              - topic
+              - data
+          examples:
+            General:
+              value:
+                topic: 'tradeHistoryApi:BTC-PERP'
+                data:
+                  - symbol: BTC-PERP
+                    side: SELL
+                    size: 0.007
+                    price: 5302.8
+                    tradeId: <Trade UUID>
+                    timestamp: 1584446020295
+    notifications:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              symbol:
+                type: string
+                description: Market symbol
+              orderID:
+                type: string
+                description: Internal order ID
+              side:
+                type: string
+                description: Trade side. BUY or SELL
+              type:
+                type: integer
+                description: 'Order type. Valid values are: 76:Limit Order 77:Market Order 80:Algo orders'
+              price:
+                type: string
+                description: Order price or transacted price
+              size:
+                type: string
+                description: Order size or transacted size
+              originalSize:
+                type: string
+                description: Original order size
+              avgFilledPrice:
+                type: string
+                description: Average filled price
+              fillSize:
+                type: string
+                description: Filled size of order
+              status:
+                type: integer
+                description: |
+                  Status with values as follows:
+                  1: MARKET_UNAVAILABLE, Market is currently unavailable
+                  2: ORDER_INSERTED, Order is inserted successfully
+                  4: ORDER_FULLY_TRANSACTED, Order is fully transacted
+                  5: ORDER_PARTIALLY_TRANSACTED, Order is partially transacted
+                  6: ORDER_CANCELLED, ExecuteOrder/placeOrder/matchOrder fail
+                  8: INSUFFICIENT_BALANCE, Insufficient balance in account
+                  9: TRIGGER_INSERTED, Trigger Order is inserted successfully
+                  10: TRIGGER_ACTIVATED, Trigger Order is activated successfully
+                  12: ERROR_UPDATE_RISK_LIMIT, Error in updating risk limit
+                  28: TRANSFER_UNSUCCESSFUL, Transfer funds between spot and futures is unsuccessful
+                  27: TRANSFER_SUCCESSFUL, Transfer funds between futures and spot is successful
+                  41: ERROR_INVALID_RISK_LIMIT, Invalid risk limit was specified
+                  64: STATUS_LIQUIDATION, Account is undergoing liquidation
+                  101: FUTURES_ORDER_PRICE_OUTSIDE_LIQUIDATION_PRICE, Futures order is outside of liquidation price
+                  1003: ORDER_LIQUIDATION, Order is undergoing liquidation
+                  1004: ORDER_ADL, Order is undergoing ADL
+              clOrderID:
+                type: string
+                description: Custom order ID
+              maker:
+                type: boolean
+                description: Indicator to indicate if trade is a maker trade
+              remainingSize:
+                type: number
+                description: Remaining size on the order
+              time_in_force:
+                type: string
+                description: Validity of the order
+              timestamp:
+                type: string
+                description: Order timestamp or transacted timestamp
+              txType:
+                type: string
+                description: 'Used by trigger or OCO orders. STOP indicates its a Stop order, TAKEPROFIT indicates its a take profit order, and LIMIT is when its not any of the above'
+              stealth:
+                type: number
+                description: Percentage of orders to show on orderbook. Only for Algo orders
+              pegPriceDeviation:
+                type: number
+                description: Deviation percentage. Only for Algo orders
+              positionId:
+                type: string
+                description: Position ID
+          examples:
+            General:
+              value:
+                topic: notificationApiV1
+                data:
+                  - symbol: Market Symbol (eg. BTC-PERP)
+                    orderID: <Order UUID>
+                    side: BUY
+                    type: '76'
+                    price: Order price or transacted price
+                    size: Order size or transacted size
+                    originalSize: Order size
+                    avgFillPrice: 35000
+                    fillSize: 0.001
+                    status: <Refer to Status description on the left>
+                    clOrderID: <Client Order ID>
+                    maker: '<Maker flag, if true indicates that trade is a maker trade>'
+                    stealth: 1
+                    timestamp: 1624985375123
+                    pegPriceDeviation: Indicate the deviation percentage. Valid for only algo orders.
+                    remainingSize: <Remaining size on the order>
+                    time_in_force: <Time where this order is valid>
+                    txType: STOP | TAKE_PROFIT
+                    positionId: BTCPFC-USD
+                    triggerPrice: Trade Trigger Price
+    userTradeFills:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              symbol:
+                type: string
+                description: Market symbol
+              orderID:
+                type: string
+                description: Internal order ID
+              clOrderID:
+                type: string
+                description: Custom order ID
+              serialId:
+                type: string
+                description: Trade sequence ID
+              tradeId:
+                type: string
+                description: Trade unique identifier
+              type:
+                type: integer
+                description: |
+                  Order type. Valid values are:
+                  76:Limit Order
+                  77:Market Order
+                  80:Algo orders
+              side:
+                type: string
+                description: Trade side. BUY or SELL
+              price:
+                type: number
+                description: Transacted price
+              size:
+                type: number
+                description: Transacted size
+              feeAmount:
+                type: number
+                description: Fee amount charged
+              feeCurrency:
+                type: string
+                description: Fee currency
+              base:
+                type: string
+                description: Base currency
+              quote:
+                type: string
+                description: Quote currency
+              maker:
+                type: boolean
+                description: Indicator to indicate if trade is a maker trade
+              timestamp:
+                type: string
+                description: Order timestamp or transacted timestamp
+            required:
+              - symbol
+              - orderID
+              - clOrderID
+              - serialId
+              - tradeId
+              - type
+              - side
+              - price
+              - size
+              - feeAmount
+              - feeCurrency
+              - base
+              - quote
+              - maker
+              - timestamp
+          examples:
+            General:
+              value:
+                symbol: string
+                orderID: string
+                clOrderID: <Client Order ID>
+                serialId: <Serial ID>
+                tradeId: <Trade UUID>
+                type: 0
+                side: string
+                price: 0
+                size: 0
+                feeAmount: 0
+                feeCurrency: string
+                base: string
+                quote: string
+                maker: true
+                timestamp: string
+    allPosition:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              requestId:
+                type: integer
+                description: request id
+              username:
+                type: string
+                description: test username
+              marketName:
+                type: string
+                description: market name
+              orderType:
+                type: integer
+                description: '90: Futures Position'
+              orderTypeName:
+                type: string
+                description: String representation of orderType
+              orderMode:
+                type: integer
+                description: |
+                  66: BUY
+                  83: SELL
+              orderModeName:
+                type: string
+                description: String representation of orderModeName
+              originalAmount:
+                type: number
+                description: order amount
+              maxPriceHeld:
+                type: number
+                description: max price of all time
+              pegPriceMin:
+                type: number
+                description: peg price min
+              stealth:
+                type: number
+                description: used for peg order
+              orderID:
+                type: string
+                description: order id
+              maxStealthDisplayAmount:
+                type: number
+                description: used for peg order
+              sellExchangeRate:
+                type: number
+              triggerPrice:
+                type: number
+                description: OCO order
+              closeOrder:
+                type: boolean
+                description: Is there TP/SL order binding to the position 
+              liquidationInProgress:
+                type: boolean
+                description: whether is in liquidation
+              marginType:
+                type: integer
+                description: |
+                  WALLET TYPE:
+                  91: CROSS
+                  92: ISOLATED
+              marginTypeName:
+                type: string
+                description: String representation of marginType
+              entryPrice:
+                type: number
+                description: entry price
+              liquidationPrice:
+                type: number
+                description: liquidation price
+              markPrice:
+                type: number
+                description: mark price
+              unrealizedProfitLoss:
+                type: number
+                description: unrealized pnl
+              totalMaintenanceMargin:
+                type: number
+                description: maintenance margin
+              totalContract:
+                type: number
+                description: size of the contract
+              isolatedLeverage:
+                type: number
+              totalFees:
+                type: number
+              totalValue:
+                type: number
+              adlScoreBucket:
+                type: number
+              currentLeverage:
+                type: number
+              averageFillPrice:
+                type: number
+              settleWithNonUSDAsset:
+                type: string
+              takeProfitOrder:
+                type: object
+                description: Take profit order info
+                properties:
+                  orderId:
+                    type: string
+                  side:
+                    type: string
+                  triggerPrice:
+                    type: number
+                  triggerUseLastPrice:
+                    type: boolean
+              stopLossOrder:
+                type: object
+                description: Take profit order info
+                properties:
+                  orderId:
+                    type: string
+                  side:
+                    type: string
+                  triggerPrice:
+                    type: number
+                  triggerUseLastPrice:
+                    type: boolean
+              positionMode:
+                type: string
+                description: Position mode<br/>ONE_WAY or HEDGE
+              positionDirection:
+                type: string
+                description: Position direction
+              positionId:
+                type: string
+                description: Position id
+          examples:
+            General:
+              value:
+                topic: allPosition
+                data:
+                  - requestId: <Request Id>
+                    username: test
+                    marketName: BTC-PERP-USD
+                    orderType: 90
+                    orderMode: 66
+                    originalAmount: 0.001
+                    maxPriceHeld: 0
+                    pegPriceMin: 0
+                    stealth: 1
+                    orderID: <Order UUID>
+                    maxStealthDisplayAmount: 0
+                    sellExchangeRate: 0
+                    triggerPrice: 0
+                    closeOrder: false
+                    liquidationInProgress: false
+                    marginType: 91
+                    entryPrice: 47303.404761929
+                    liquidationPrice: 0
+                    markedPrice: 47293.949862586
+                    unrealizedProfitLoss: -0.13236859
+                    totalMaintenanceMargin: 3.484381756
+                    totalContracts: 14
+                    isolatedLeverage: 0
+                    totalFees: 0
+                    totalValue: 662.115298076
+                    adlScoreBucket: 2
+                    orderTypeName: TYPE_FUTURES_POSITION
+                    orderModeName: MODE_BUY
+                    marginTypeName: FUTURES_MARGIN_CROSS
+                    currentLeverage: 0.02
+                    averageFillPrice: 0
+                    positionId: BTCPFC-USD|SHORT
+                    positionMode: HEDGE
+                    positionDirection: SHORT
+                    settleWithNonUSDAsset: BTC
+                    takeProfitOrder:
+                      orderId: 4820b20a-e41b-4273-b3ad-4b19920aeeb5
+                      side: SELL
+                      triggerPrice: 31000.0
+                      triggerUseLastPrice: false
+                    stopLossOrder:
+                      orderId: eff2b232-e2ce-4562-b0b4-0bd3713c11ec
+                      side: SELL
+                      triggerPrice: 27000.0
+                      triggerUseLastPrice: true
+                  - requestId: 0
+                    username: btse
+                    userCurrency: null
+                    marketName: LTCPFC-USD
+                    orderType: 90
+                    orderMode: 83
+                    originalAmount: 0.01
+                    maxPriceHeld: 0
+                    pegPriceMin: 0
+                    stealth: 1
+                    orderID: null
+                    maxStealthDisplayAmount: 0
+                    sellexchangeRate: 0
+                    triggerPrice: 0
+                    closeOrder: false
+                    liquidationInProgress: false
+                    marginType: 91
+                    entryPrice: 69.9
+                    liquidationPrice: 29684.3743872669
+                    markedPrice: 70.062346733
+                    unrealizedProfitLoss: -0.04870402
+                    totalMaintenanceMargin: 0.319484301
+                    totalContracts: 30
+                    isolatedLeverage: 0
+                    totalFees: 0
+                    totalValue: -21.01870402
+                    adlScoreBucket: 1
+                    booleanVar1: false
+                    orderTypeName: TYPE_FUTURES_POSITION
+                    orderModeName: MODE_SELL
+                    marginTypeName: FUTURES_MARGIN_CROSS
+                    currentLeverage: 0.1116510969
+                    takeProfitOrder: null
+                    stopLossOrder: null
+                    settleWithNonUSDAsset: USDT
+                    positionId: LTCPFC-USD|SHORT
+                    positionMode: HEDGE
+                    positionDirection: SHORT
+  requestBodies:
+    Subscription:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              op:
+                type: string
+                description: "Operation.\_`subscribe`\_will subscribe to the topics provided in\_`args`.\_`unsubscribe`\_will unsubscribe from the topics"
+              args:
+                type: array
+                description: Topics to subscribe to.
+                items: {}
+            required:
+              - op
+              - args
+          examples:
+            General:
+              value:
+                op: subscribe
+                args:
+                  - 'orderBookApi:BTC-PERP_0'
+      description: To subscribe to a websocket feed
+    Orderbook-Snapshot-(By-grouping):
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              op:
+                type: string
+                description: "Operation.\_`subscribe`\_will subscribe to the topics provided in\_`args`.\_`unsubscribe`\_will unsubscribe from the topics"
+              args:
+                type: array
+                description: Topics to subscribe to.
+                items: {}
+            required:
+              - op
+              - args
+          examples:
+            General:
+              value:
+                op: subscribe
+                args:
+                  - 'orderBookApi:BTC-PERP_0'
+      description: |
+        Subscribe to the Orderbook in different groupings. The format to subscribe to will be `symbol_grouping`.
+        - `symbol` indicates the market symbol
+        - `grouping` indicates the grouping granularity. Valid values are 0-9.
+    Orderbook-Snapshot-(By-depth):
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              op:
+                type: string
+                description: "Operation.\_`subscribe`\_will subscribe to the topics provided in\_`args`.\_`unsubscribe`\_will unsubscribe from the topics"
+              args:
+                type: array
+                description: Topics to subscribe to.
+                items: {}
+            required:
+              - op
+              - args
+          examples:
+            General:
+              value:
+                op: subscribe
+                args:
+                  - 'orderBookL2Api:BTC-PERP_0'
+      description: |
+        Subscribe to the Level 2 Orderbook. The format to subscribe to will be `symbol_depth`.
+        - `symbol` indicates the market symbol
+        - `depth` indicates the levels of orderbook to retrieve. Value of 0 will retrieve the entire orderbook.
+    Orderbook-Incremental-Updates:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              op:
+                type: string
+                description: "Operation.\_`subscribe`\_will subscribe to the topics provided in\_`args`.\_`unsubscribe`\_will unsubscribe from the topics"
+              args:
+                type: array
+                description: Topics to subscribe to.
+                items: {}
+            required:
+              - op
+              - args
+          examples:
+            General:
+              value: {}
+      description: |
+        The topic to subscribe to will be `update` specifying the symbol (eg. `update:BTC-PERP`). The first response received will be a snapshot of the current orderbook (this is indicated in the `type` field) and 50 levels will be returned. Incremental updates will be sent in subsequent packets with type `delta`.
+
+        Bids and asks will be sent in `price` and `size` tuples. The size sent will be the new updated size for the price. If a value of `0`is sent, the price should be removed from the local copy of the orderbook.
+
+        To ensure that the updates are received in sequence, `seqNum` indicates the current sequence and `prevSeqNum`refers to the packet before. `seqNum` will always be one after the `prevSeqNum`. If the sequence is out of order, you will need to unsubscribe and re-subscribe to the topic again.
+
+        Also if [crossed orderbook](https://en.wikipedia.org/wiki/Order_book#Crossed_book) ever occurs when the best bid higher or equal to the best ask, please unsubscribe and re-subscribe to the topic again.
+    Public-Trade-Fills:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              op:
+                type: string
+                description: "Operation.\_`subscribe`\_will subscribe to the topics provided in\_`args`.\_`unsubscribe`\_will unsubscribe from the topics"
+              args:
+                type: array
+                description: Topics to subscribe to.
+                items: {}
+            required:
+              - op
+              - args
+          examples:
+            General:
+              value:
+                op: subscribe
+                args:
+                  - 'tradeHistoryApi:BTC-PERP'
+      description: 'Subscribe to recent trade feed for a market. The topic will be `tradeHistoryApi:<market>` where `<market>` is the market symbol.'
+    Notifications:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              op:
+                type: string
+                description: "Operation.\_`subscribe`\_will subscribe to the topics provided in\_`args`.\_`unsubscribe`\_will unsubscribe from the topics"
+              args:
+                type: array
+                description: Topics to subscribe to.
+                items: {}
+            required:
+              - op
+              - args
+      description: "Receive trade notifications by subscribing to the topic\_`notificationApiV2`. The websocket feed will push trade level notifications to the subscriber. If topic is subscribed without being authenticated, no messages will be sent."
+    User-Trade-Fills:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              op:
+                type: string
+                description: "Operation.\_`subscribe`\_will subscribe to the topics provided in\_`args`.\_`unsubscribe`\_will unsubscribe from the topics"
+              args:
+                type: array
+                description: Topics to subscribe to.
+                items: {}
+            required:
+              - op
+              - args
+          examples:
+            General:
+              value:
+                op: subscribe
+                args:
+                  - fills
+      description: 'When a trade has been transacted, this topic will send the trade information back to the subscriber.'
+    All-Position:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              op:
+                type: string
+                description: "Operation.\_`subscribe`\_will subscribe to the topics provided in\_`args`.\_`unsubscribe`\_will unsubscribe from the topics"
+              args:
+                type: array
+                description: Topics to subscribe to.
+                items: {}
+            required:
+              - op
+              - args
+      description: All futures positions will be pushed periodically via this topic.
+    bindTPSL:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              symbol:
+                type: string
+                description: Market symbol
+              side:
+                type: string
+                description: |
+                  "BUY" or "SELL" Mandatory when positionMode is `HEDGE`, in hedge mode, it is used to clsoe the specified position, ex: sell to close long position, buy to close short position
+              takeProfitPrice:
+                type: number
+                description: Mandatory when creating new order with take profit order. Indicates the trigger price. Must set takeProfitPrice or stopLossPrice at least when using this API.
+              takeProfitTrigger:
+                type: string
+                description: |
+                  For creating order with take profit order. Valid options: `markPrice` (default) or `lastPrice`
+              stopLossPrice:
+                type: number
+                description: Mandatory when creating new order with stop loss order. Indicates the trigger price
+              stopLossTrigger:
+                type: string
+                description: |
+                  For creating order with stop loss order. Valid options: `markPrice` (default) or `lastPrice`
+              positionMode:
+                type: string
+                description: ONE_WAY(default) or HEDGE. Mandatory when positionMode is `HEDGE`
+          examples:
+            General:
+              value:
+                symbol: "BTC-PERP"
+                takeProfitPrice: 31000,
+                takeProfitTrigger: "markPrice"
+                stopLossPrice: 22000,
+                stopLossTrigger: "lastPrice"
