@@ -99,6 +99,8 @@ export interface Position {
   leverage: number | string
   percentage: number | string
   timestamp: string
+  take_profit_price?: number | string
+  stop_loss_price?: number | string
 }
 
 export interface Balance {

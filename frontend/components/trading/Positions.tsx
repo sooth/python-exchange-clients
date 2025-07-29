@@ -6,6 +6,7 @@ import { useWebSocketSubscription } from '@/hooks/useWebSocket'
 import { useQuery } from '@tanstack/react-query'
 import type { Position } from '@/types/api'
 import toast from 'react-hot-toast'
+import { useMarket } from '@/contexts/MarketContext'
 
 interface PositionsProps {
   exchange?: string
@@ -16,6 +17,7 @@ export function Positions({ exchange }: PositionsProps) {
   const [loading, setLoading] = useState(true)
   const [sortColumn, setSortColumn] = useState<'pnl' | null>(null)
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
+  const { setSelectedSymbol } = useMarket()
 
   // Fetch account balance
   const { data: accountInfo, error: balanceError } = useQuery({
@@ -252,7 +254,15 @@ export function Positions({ exchange }: PositionsProps) {
                     key={`${position.symbol}-${position.side}`} 
                     className="border-b border-gray-700 hover:bg-[#2a2d3a]"
                   >
-                    <td className="px-3 py-1 text-xs font-medium">{position.symbol}</td>
+                    <td className="px-3 py-1 text-xs font-medium">
+                      <button
+                        onClick={() => setSelectedSymbol(position.symbol)}
+                        className="hover:text-[#00d395] hover:underline transition-colors cursor-pointer"
+                        title="Click to view market"
+                      >
+                        {position.symbol}
+                      </button>
+                    </td>
                     <td className="text-right px-3 py-1">
                       <div className={`text-xs font-mono tabular-nums ${
                         position.unrealized_pnl >= 0 ? 'text-[#00d395]' : 'text-[#f6465d]'

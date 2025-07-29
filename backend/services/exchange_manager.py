@@ -407,6 +407,20 @@ class ExchangeManager:
                 # Use size to determine side
                 side = 'short' if pos.size < 0 else 'long'
             
+            # Extract TP/SL prices from raw response if available
+            take_profit_price = None
+            stop_loss_price = None
+            
+            if hasattr(pos, 'raw_response') and pos.raw_response:
+                # Check for LMEX format TP/SL orders
+                tp_order = pos.raw_response.get('takeProfitOrder')
+                if tp_order and isinstance(tp_order, dict):
+                    take_profit_price = float(tp_order.get('triggerPrice', 0)) or None
+                
+                sl_order = pos.raw_response.get('stopLossOrder')
+                if sl_order and isinstance(sl_order, dict):
+                    stop_loss_price = float(sl_order.get('triggerPrice', 0)) or None
+            
             result.append(Position(
                 symbol=pos.symbol,
                 side=side,
@@ -419,7 +433,9 @@ class ExchangeManager:
                 margin=0.0,  # Not available in ExchangePosition
                 leverage=1,  # Not available in ExchangePosition
                 percentage=float(pos.pnlPercentage),
-                timestamp=datetime.utcnow()  # Not available in ExchangePosition
+                timestamp=datetime.utcnow(),  # Not available in ExchangePosition
+                take_profit_price=take_profit_price,
+                stop_loss_price=stop_loss_price
             ))
         
         return result

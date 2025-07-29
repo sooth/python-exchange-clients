@@ -1,13 +1,15 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { createChart, ColorType, IChartApi, ISeriesApi, UTCTimestamp } from 'lightweight-charts'
-import { marketApi } from '@/lib/api'
+import { createChart, ColorType, IChartApi, ISeriesApi, UTCTimestamp, IPriceLine } from 'lightweight-charts'
+import { marketApi, tradingApi } from '@/lib/api'
 import { useMarket } from '@/contexts/MarketContext'
 import { getChartWebSocket } from '@/lib/websocket/lmexChartWebSocket'
 import { getOrderbookWebSocket, type BestBidAsk } from '@/lib/websocket/lmexOrderbookWebSocket'
 import { Candle } from '@/types/market'
 import type { CandleResponse } from '@/types/candle'
+import type { Position } from '@/types/api'
+import { useQuery } from '@tanstack/react-query'
 
 interface ChartContainerProps {
   symbol: string
@@ -27,6 +29,46 @@ export function ChartContainer({ symbol }: ChartContainerProps) {
   const candleMapRef = useRef<Map<number, any>>(new Map())
   const selectedTimeframeRef = useRef(selectedTimeframe)
   const lastCandleRef = useRef<{ time: number; candle: any & { volume?: number } } | null>(null)
+  
+  // Position indicator refs
+  const positionLineRef = useRef<IPriceLine | null>(null)
+  const takeProfitLineRef = useRef<IPriceLine | null>(null)
+  const stopLossLineRef = useRef<IPriceLine | null>(null)
+  const positionDataRef = useRef<Position | null>(null)
+  const currentPriceRef = useRef<number>(0)
+
+  // Fetch symbol info for price precision
+  const { data: symbolInfo } = useQuery({
+    queryKey: ['symbolInfo', symbol, selectedExchange],
+    queryFn: () => marketApi.getSymbolInfo(symbol, selectedExchange),
+    staleTime: 60 * 60 * 1000, // Cache for 1 hour
+  })
+
+  // Helper function to calculate decimal precision from tick size
+  const getPricePrecision = useCallback((tickSize: number): number => {
+    if (tickSize === 0) return 2 // Default to 2 decimals
+    
+    // For values >= 1, precision is 0
+    if (tickSize >= 1) return 0
+    
+    // Convert tick size to string and count decimals
+    const tickStr = tickSize.toString()
+    const decimalIndex = tickStr.indexOf('.')
+    if (decimalIndex === -1) return 0
+    
+    // Count non-zero decimals
+    const decimals = tickStr.substring(decimalIndex + 1)
+    // Find the last non-zero digit
+    let precision = decimals.length
+    for (let i = decimals.length - 1; i >= 0; i--) {
+      if (decimals[i] !== '0') {
+        precision = i + 1
+        break
+      }
+    }
+    
+    return precision
+  }, [])
 
   // Update ref when timeframe changes
   useEffect(() => {
@@ -54,7 +96,103 @@ export function ChartContainer({ symbol }: ChartContainerProps) {
 
     candleSeriesRef.current.update(chartCandle)
     volumeSeriesRef.current.update(volumeBar)
+    
+    // Update current price for PnL calculations
+    currentPriceRef.current = candle.close
   }, []) // Empty deps - uses ref for selectedTimeframe
+
+  // Function to update position line on chart
+  const updatePositionLine = useCallback((position: Position | null) => {
+    if (!candleSeriesRef.current) return
+
+    // Remove existing lines
+    if (positionLineRef.current) {
+      candleSeriesRef.current.removePriceLine(positionLineRef.current)
+      positionLineRef.current = null
+    }
+    if (takeProfitLineRef.current) {
+      candleSeriesRef.current.removePriceLine(takeProfitLineRef.current)
+      takeProfitLineRef.current = null
+    }
+    if (stopLossLineRef.current) {
+      candleSeriesRef.current.removePriceLine(stopLossLineRef.current)
+      stopLossLineRef.current = null
+    }
+
+    // Add new lines if position exists
+    if (position) {
+      const isLong = position.side.toLowerCase() === 'long'
+      const pnl = typeof position.unrealized_pnl === 'string' ? parseFloat(position.unrealized_pnl) : position.unrealized_pnl
+      const pnlFormatted = pnl >= 0 ? `+${pnl.toFixed(2)}` : pnl.toFixed(2)
+      
+      // Parse entry price
+      const entryPrice = typeof position.entry_price === 'string' ? parseFloat(position.entry_price) : position.entry_price
+      
+      // Get precision for formatting
+      let precision = 2
+      if (symbolInfo?.tick_size) {
+        precision = getPricePrecision(symbolInfo.tick_size)
+      }
+      
+      // Format entry price
+      const formattedEntryPrice = entryPrice.toFixed(precision)
+      
+      // Create position line
+      positionLineRef.current = candleSeriesRef.current.createPriceLine({
+        price: entryPrice,
+        color: isLong ? '#00d395' : '#f6465d',
+        lineWidth: 2,
+        lineStyle: 2, // Dashed line
+        axisLabelVisible: true,
+        title: `${position.side.toUpperCase()} ${position.size} @ ${formattedEntryPrice} | PnL: ${pnlFormatted}`,
+      })
+      
+      // Create take profit line if exists
+      if (position.take_profit_price) {
+        const tpPrice = typeof position.take_profit_price === 'string' ? parseFloat(position.take_profit_price) : position.take_profit_price
+        if (tpPrice > 0) {
+          const formattedTpPrice = tpPrice.toFixed(precision)
+          takeProfitLineRef.current = candleSeriesRef.current.createPriceLine({
+            price: tpPrice,
+            color: '#00d395', // Green for profit
+            lineWidth: 1,
+            lineStyle: 2, // Dashed line
+            axisLabelVisible: true,
+            title: `TP @ ${formattedTpPrice}`,
+          })
+        }
+      }
+      
+      // Create stop loss line if exists
+      if (position.stop_loss_price) {
+        const slPrice = typeof position.stop_loss_price === 'string' ? parseFloat(position.stop_loss_price) : position.stop_loss_price
+        if (slPrice > 0) {
+          const formattedSlPrice = slPrice.toFixed(precision)
+          stopLossLineRef.current = candleSeriesRef.current.createPriceLine({
+            price: slPrice,
+            color: '#f6465d', // Red for loss
+            lineWidth: 1,
+            lineStyle: 2, // Dashed line
+            axisLabelVisible: true,
+            title: `SL @ ${formattedSlPrice}`,
+          })
+        }
+      }
+    }
+    
+    positionDataRef.current = position
+  }, [symbolInfo, getPricePrecision])
+
+  // Fetch positions for current symbol
+  const fetchPositions = useCallback(async () => {
+    try {
+      const positions = await tradingApi.getPositions(selectedExchange)
+      const currentPosition = positions.find(p => p.symbol === symbol)
+      updatePositionLine(currentPosition || null)
+    } catch (error) {
+      console.error('Failed to fetch positions:', error)
+    }
+  }, [symbol, selectedExchange, updatePositionLine])
 
   useEffect(() => {
     if (!chartContainerRef.current) return
@@ -523,6 +661,17 @@ export function ChartContainer({ symbol }: ChartContainerProps) {
       // Don't disconnect - let singleton manage its own lifecycle
     }
   }, [symbol, selectedExchange, queuePriceUpdate])
+
+  // Fetch positions periodically (every 5 seconds)
+  useEffect(() => {
+    // Initial fetch
+    fetchPositions()
+    
+    // Set up periodic refresh
+    const interval = setInterval(fetchPositions, 5000)
+    
+    return () => clearInterval(interval)
+  }, [fetchPositions])
 
   // Helper function to get timeframe period in seconds
   const getTimeframePeriod = (timeframe: string): number => {

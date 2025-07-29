@@ -6,6 +6,7 @@ import { useWebSocketSubscription } from '@/hooks/useWebSocket'
 import { useQuery } from '@tanstack/react-query'
 import type { OrderResponse } from '@/types/api'
 import toast from 'react-hot-toast'
+import { useMarket } from '@/contexts/MarketContext'
 
 interface OpenOrdersProps {
   symbol?: string
@@ -26,6 +27,7 @@ export function OpenOrders({ symbol, exchange }: OpenOrdersProps) {
     }
     return false
   })
+  const { setSelectedSymbol } = useMarket()
   const [orderTypeFilter, setOrderTypeFilter] = useState<'all' | 'orders' | 'tpsl'>(() => {
     // Initialize from localStorage
     if (typeof window !== 'undefined') {
@@ -260,7 +262,15 @@ export function OpenOrders({ symbol, exchange }: OpenOrdersProps) {
                 key={order.id} 
                 className="border-b border-gray-700 hover:bg-[#2a2d3a]"
               >
-                <td className="px-3 py-2 text-xs font-medium">{order.symbol}</td>
+                <td className="px-3 py-2 text-xs font-medium">
+                  <button
+                    onClick={() => setSelectedSymbol(order.symbol)}
+                    className="hover:text-[#00d395] hover:underline transition-colors cursor-pointer"
+                    title="Click to view market"
+                  >
+                    {order.symbol}
+                  </button>
+                </td>
                 <td className="px-3 py-2 text-xs">
                   <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                     (() => {

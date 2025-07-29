@@ -427,11 +427,19 @@ class LMEXExchange(ExchangeProtocol):
             
             for item in positions_data:
                 symbol = item.get("symbol")
-                # LMEX uses 'size' field for position size
+                # LMEX uses 'size' field for position size (always positive)
                 qty = float(item.get("size", 0))
                 avg_price = float(item.get("entryPrice", 0))
                 mark_price = float(item.get("markPrice", avg_price))
                 unrealized_pnl = float(item.get("unrealizedProfitLoss", 0))
+                
+                # LMEX uses 'side' field to indicate direction: "BUY" = long, "SELL" = short
+                side = item.get("side", "BUY")
+                
+                # Convert to signed size for consistency with other exchanges
+                # Negative size indicates short position
+                if side == "SELL":
+                    qty = -qty
                 
                 if symbol and qty != 0:
                     # Calculate PnL percentage based on entry value
@@ -446,11 +454,12 @@ class LMEXExchange(ExchangeProtocol):
                     positions.append(
                         ExchangePosition(
                             symbol=symbol,
-                            size=qty,  # Already signed (negative for short)
+                            size=qty,  # Now properly signed (negative for short)
                             entryPrice=avg_price,
                             markPrice=mark_price,
                             pnl=unrealized_pnl,
-                            pnlPercentage=pnl_percentage
+                            pnlPercentage=pnl_percentage,
+                            raw_response=item  # Include raw response for debugging
                         )
                     )
 

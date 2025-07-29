@@ -92,3 +92,6 @@ class Position(BaseModel):
     leverage: int
     percentage: float
     timestamp: datetime
+    # TP/SL order prices
+    take_profit_price: Optional[float] = None
+    stop_loss_price: Optional[float] = None
