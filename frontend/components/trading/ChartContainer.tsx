@@ -10,6 +10,7 @@ import { Candle } from '@/types/market'
 import type { CandleResponse } from '@/types/candle'
 import type { Position } from '@/types/api'
 import { useQuery } from '@tanstack/react-query'
+import { useOrderPreview } from '@/contexts/OrderPreviewContext'
 
 interface ChartContainerProps {
   symbol: string
@@ -24,6 +25,7 @@ export function ChartContainer({ symbol }: ChartContainerProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [isConnected, setIsConnected] = useState(false)
   const { selectedExchange } = useMarket()
+  const { orderPreview } = useOrderPreview()
   const wsRef = useRef<ReturnType<typeof getChartWebSocket> | null>(null)
   const orderbookWsRef = useRef<ReturnType<typeof getOrderbookWebSocket> | null>(null)
   const candleMapRef = useRef<Map<number, any>>(new Map())
@@ -36,6 +38,11 @@ export function ChartContainer({ symbol }: ChartContainerProps) {
   const stopLossLineRef = useRef<IPriceLine | null>(null)
   const positionDataRef = useRef<Position | null>(null)
   const currentPriceRef = useRef<number>(0)
+  
+  // Preview line refs
+  const previewEntryLineRef = useRef<IPriceLine | null>(null)
+  const previewTakeProfitLineRef = useRef<IPriceLine | null>(null)
+  const previewStopLossLineRef = useRef<IPriceLine | null>(null)
 
   // Fetch symbol info for price precision
   const { data: symbolInfo } = useQuery({
@@ -183,6 +190,98 @@ export function ChartContainer({ symbol }: ChartContainerProps) {
     positionDataRef.current = position
   }, [symbolInfo, getPricePrecision])
 
+  // Function to update preview lines on chart
+  const updatePreviewLines = useCallback(() => {
+    if (!candleSeriesRef.current) return
+    
+    // Only show preview lines for matching symbol and if user has interacted
+    if (orderPreview.symbol !== symbol || !orderPreview.hasInteracted) {
+      // Remove any existing preview lines if symbol doesn't match
+      if (previewEntryLineRef.current) {
+        candleSeriesRef.current.removePriceLine(previewEntryLineRef.current)
+        previewEntryLineRef.current = null
+      }
+      if (previewTakeProfitLineRef.current) {
+        candleSeriesRef.current.removePriceLine(previewTakeProfitLineRef.current)
+        previewTakeProfitLineRef.current = null
+      }
+      if (previewStopLossLineRef.current) {
+        candleSeriesRef.current.removePriceLine(previewStopLossLineRef.current)
+        previewStopLossLineRef.current = null
+      }
+      return
+    }
+
+    // Get precision for formatting
+    let precision = 2
+    if (symbolInfo?.tick_size) {
+      precision = getPricePrecision(symbolInfo.tick_size)
+    }
+
+    // Update entry preview line
+    if (orderPreview.entryPrice && orderPreview.entryPrice > 0) {
+      const formattedPrice = orderPreview.entryPrice.toFixed(precision)
+      
+      if (previewEntryLineRef.current) {
+        candleSeriesRef.current.removePriceLine(previewEntryLineRef.current)
+      }
+      
+      previewEntryLineRef.current = candleSeriesRef.current.createPriceLine({
+        price: orderPreview.entryPrice,
+        color: orderPreview.side === 'buy' ? '#00d39580' : '#f6465d80', // Semi-transparent
+        lineWidth: 1,
+        lineStyle: 3, // Dotted line
+        axisLabelVisible: true,
+        title: `Preview Entry: ${formattedPrice}`,
+      })
+    } else if (previewEntryLineRef.current) {
+      candleSeriesRef.current.removePriceLine(previewEntryLineRef.current)
+      previewEntryLineRef.current = null
+    }
+
+    // Update TP preview line
+    if (orderPreview.takeProfitPrice && orderPreview.takeProfitPrice > 0 && orderPreview.placeTakeProfit) {
+      const formattedPrice = orderPreview.takeProfitPrice.toFixed(precision)
+      
+      if (previewTakeProfitLineRef.current) {
+        candleSeriesRef.current.removePriceLine(previewTakeProfitLineRef.current)
+      }
+      
+      previewTakeProfitLineRef.current = candleSeriesRef.current.createPriceLine({
+        price: orderPreview.takeProfitPrice,
+        color: '#00d39550', // Semi-transparent green
+        lineWidth: 1,
+        lineStyle: 3, // Dotted line
+        axisLabelVisible: true,
+        title: `Preview TP: ${formattedPrice}`,
+      })
+    } else if (previewTakeProfitLineRef.current) {
+      candleSeriesRef.current.removePriceLine(previewTakeProfitLineRef.current)
+      previewTakeProfitLineRef.current = null
+    }
+
+    // Update SL preview line
+    if (orderPreview.stopLossPrice && orderPreview.stopLossPrice > 0 && orderPreview.placeStopLoss) {
+      const formattedPrice = orderPreview.stopLossPrice.toFixed(precision)
+      
+      if (previewStopLossLineRef.current) {
+        candleSeriesRef.current.removePriceLine(previewStopLossLineRef.current)
+      }
+      
+      previewStopLossLineRef.current = candleSeriesRef.current.createPriceLine({
+        price: orderPreview.stopLossPrice,
+        color: '#f6465d50', // Semi-transparent red
+        lineWidth: 1,
+        lineStyle: 3, // Dotted line
+        axisLabelVisible: true,
+        title: `Preview SL: ${formattedPrice}`,
+      })
+    } else if (previewStopLossLineRef.current) {
+      candleSeriesRef.current.removePriceLine(previewStopLossLineRef.current)
+      previewStopLossLineRef.current = null
+    }
+  }, [orderPreview.symbol, orderPreview.side, orderPreview.entryPrice, orderPreview.takeProfitPrice, orderPreview.stopLossPrice, orderPreview.placeTakeProfit, orderPreview.placeStopLoss, orderPreview.hasInteracted, symbol, symbolInfo, getPricePrecision])
+
   // Fetch positions for current symbol
   const fetchPositions = useCallback(async () => {
     try {
@@ -292,6 +391,22 @@ export function ChartContainer({ symbol }: ChartContainerProps) {
     return () => {
       resizeObserver.disconnect()
       window.removeEventListener('resize', handleResize)
+      
+      // Clean up preview lines
+      if (candleSeriesRef.current) {
+        if (previewEntryLineRef.current) {
+          candleSeriesRef.current.removePriceLine(previewEntryLineRef.current)
+          previewEntryLineRef.current = null
+        }
+        if (previewTakeProfitLineRef.current) {
+          candleSeriesRef.current.removePriceLine(previewTakeProfitLineRef.current)
+          previewTakeProfitLineRef.current = null
+        }
+        if (previewStopLossLineRef.current) {
+          candleSeriesRef.current.removePriceLine(previewStopLossLineRef.current)
+          previewStopLossLineRef.current = null
+        }
+      }
       
       // Clean up the chart immediately
       if (chart) {
@@ -672,6 +787,11 @@ export function ChartContainer({ symbol }: ChartContainerProps) {
     
     return () => clearInterval(interval)
   }, [fetchPositions])
+
+  // Update preview lines when order preview changes
+  useEffect(() => {
+    updatePreviewLines()
+  }, [orderPreview, updatePreviewLines])
 
   // Helper function to get timeframe period in seconds
   const getTimeframePeriod = (timeframe: string): number => {

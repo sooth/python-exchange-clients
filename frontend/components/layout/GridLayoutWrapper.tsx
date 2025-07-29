@@ -11,6 +11,7 @@ import { OpenOrders } from '@/components/trading/OpenOrders'
 import { Positions } from '@/components/trading/Positions'
 import { MarketInfo } from '@/components/trading/MarketInfo'
 import { useMarket } from '@/contexts/MarketContext'
+import { OrderPreviewProvider } from '@/contexts/OrderPreviewContext'
 import { DragHandle } from './DraggablePanel'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
@@ -326,15 +327,16 @@ export function GridLayoutWrapper({
   }
 
   return (
-    <>
-      {/* Market info bar */}
-      <div className="h-12 border-b border-gray-600">
-        <MarketInfo symbol={selectedSymbol} exchange={selectedExchange} />
-      </div>
-      
-      {/* Grid layout */}
-      <div className="flex-1 p-2 overflow-auto">
-        <ResponsiveGridLayout
+    <OrderPreviewProvider>
+      <>
+        {/* Market info bar */}
+        <div className="h-12 border-b border-gray-600">
+          <MarketInfo symbol={selectedSymbol} exchange={selectedExchange} />
+        </div>
+        
+        {/* Grid layout */}
+        <div className="flex-1 p-2 overflow-auto">
+          <ResponsiveGridLayout
           className={`layout ${editMode ? 'edit-mode' : ''}`}
           layouts={layouts}
           onLayoutChange={handleLayoutChange}
@@ -380,5 +382,6 @@ export function GridLayoutWrapper({
         </ResponsiveGridLayout>
       </div>
     </>
+    </OrderPreviewProvider>
   )
 }

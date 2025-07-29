@@ -5,6 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { tradingApi, marketApi, accountApi } from '@/lib/api'
 import toast from 'react-hot-toast'
 import type { CreateOrderRequest, OrderType, OrderSide } from '@/types/api'
+import { useOrderPreview } from '@/contexts/OrderPreviewContext'
 
 interface OrderFormProps {
   symbol: string
@@ -55,6 +56,10 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
   const [stopLossReduce, setStopLossReduce] = useState(true)
   const [placeTakeProfit, setPlaceTakeProfit] = useState(true)
   const [placeStopLoss, setPlaceStopLoss] = useState(true)
+  const [hasInteracted, setHasInteracted] = useState(false)
+  
+  // Order preview context
+  const { updateOrderPreview, clearOrderPreview } = useOrderPreview()
 
   // Fetch current market price
   const { data: ticker } = useQuery({
@@ -66,6 +71,24 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
   // Use market price for entry when market order
   const currentPrice = parseFloat(ticker?.last || '0')
   const effectiveEntryPrice = orderType === 'Market' ? currentPrice : parseFloat(entryPrice || '0')
+  
+  // Mark as interacted when user changes any input
+  const markInteracted = () => {
+    if (!hasInteracted) {
+      setHasInteracted(true)
+    }
+  }
+
+  // Clear interaction state and reset form when symbol changes
+  useEffect(() => {
+    setHasInteracted(false)
+    clearOrderPreview()
+    // Reset TP/SL percentages and clear prices to trigger recalculation
+    setTakeProfitPercent('5')
+    setStopLossPercent('1.5')
+    setTakeProfitPrice('')
+    setStopLossPrice('')
+  }, [symbol, clearOrderPreview])
 
   // Update entry price when switching to market
   useEffect(() => {
@@ -76,6 +99,7 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
 
   // Handle TP percentage change -> update price
   const handleTakeProfitPercentChange = (value: string) => {
+    markInteracted()
     setTakeProfitPercent(value)
     if (effectiveEntryPrice > 0 && value) {
       const percent = parseFloat(value) / 100
@@ -88,6 +112,7 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
 
   // Handle TP price change -> update percentage
   const handleTakeProfitPriceChange = (value: string) => {
+    markInteracted()
     setTakeProfitPrice(value)
     if (effectiveEntryPrice > 0 && value) {
       const price = parseFloat(value)
@@ -103,6 +128,7 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
 
   // Handle SL percentage change -> update price
   const handleStopLossPercentChange = (value: string) => {
+    markInteracted()
     setStopLossPercent(value)
     if (effectiveEntryPrice > 0 && value) {
       const percent = parseFloat(value) / 100
@@ -115,6 +141,7 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
 
   // Handle SL price change -> update percentage
   const handleStopLossPriceChange = (value: string) => {
+    markInteracted()
     setStopLossPrice(value)
     if (effectiveEntryPrice > 0 && value) {
       const price = parseFloat(value)
@@ -130,19 +157,28 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
 
   // Initialize TP/SL when entry price or side changes
   useEffect(() => {
-    if (effectiveEntryPrice > 0) {
-      // Only update if fields are empty (initial load)
-      if (!takeProfitPrice) {
-        handleTakeProfitPercentChange(takeProfitPercent)
+    if (effectiveEntryPrice > 0 && !hasInteracted) {
+      // Calculate prices directly without triggering handlers
+      if (!takeProfitPrice && takeProfitPercent) {
+        const percent = parseFloat(takeProfitPercent) / 100
+        const price = side === 'buy' 
+          ? effectiveEntryPrice * (1 + percent)
+          : effectiveEntryPrice * (1 - percent)
+        setTakeProfitPrice(price.toFixed(2))
       }
-      if (!stopLossPrice) {
-        handleStopLossPercentChange(stopLossPercent)
+      if (!stopLossPrice && stopLossPercent) {
+        const percent = parseFloat(stopLossPercent) / 100
+        const price = side === 'buy' 
+          ? effectiveEntryPrice * (1 - percent)
+          : effectiveEntryPrice * (1 + percent)
+        setStopLossPrice(price.toFixed(2))
       }
     }
-  }, [effectiveEntryPrice, side])
+  }, [effectiveEntryPrice, side, hasInteracted])
 
   // Handle amount change -> update USD
   const handleAmountChange = (value: string) => {
+    markInteracted()
     setAmount(value)
     if (effectiveEntryPrice > 0 && value) {
       const assetAmount = parseFloat(value)
@@ -153,6 +189,7 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
 
   // Handle USD amount change -> update asset amount
   const handleAmountInUSDChange = (value: string) => {
+    markInteracted()
     setAmountInUSD(value)
     if (effectiveEntryPrice > 0 && value) {
       const usdValue = parseFloat(value)
@@ -177,6 +214,20 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
       }
     }
   }, [effectiveEntryPrice])
+
+  // Update order preview when values change
+  useEffect(() => {
+    updateOrderPreview({
+      symbol,
+      side,
+      entryPrice: effectiveEntryPrice > 0 ? effectiveEntryPrice : null,
+      takeProfitPrice: takeProfitPrice ? parseFloat(takeProfitPrice) : null,
+      stopLossPrice: stopLossPrice ? parseFloat(stopLossPrice) : null,
+      placeTakeProfit,
+      placeStopLoss,
+      hasInteracted,
+    })
+  }, [symbol, side, effectiveEntryPrice, takeProfitPrice, stopLossPrice, placeTakeProfit, placeStopLoss, hasInteracted, updateOrderPreview])
 
   // PnL Calculations
   const calculations = useMemo(() => {
@@ -263,10 +314,13 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
     },
     onSuccess: () => {
       toast.success('Orders placed successfully')
+      // Clear preview lines from chart
+      clearOrderPreview()
       // Reset form
       setAmount('1')
       setTakeProfitPercent('5')
       setStopLossPercent('1.5')
+      setHasInteracted(false)
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.detail || 'Failed to place orders')
@@ -301,7 +355,10 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
               ? 'bg-[#00d395] text-black'
               : 'bg-[#2a2d3a] text-gray-400 hover:text-gray-300'
           }`}
-          onClick={() => setSide('buy')}
+          onClick={() => {
+            markInteracted()
+            setSide('buy')
+          }}
         >
           Buy {baseAsset}-PERP
         </button>
@@ -312,7 +369,10 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
               ? 'bg-[#f6465d] text-white'
               : 'bg-[#2a2d3a] text-gray-400 hover:text-gray-300'
           }`}
-          onClick={() => setSide('sell')}
+          onClick={() => {
+            markInteracted()
+            setSide('sell')
+          }}
         >
           Sell {baseAsset}-PERP
         </button>
@@ -328,7 +388,10 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
             <input
               type="number"
               value={entryPrice}
-              onChange={(e) => setEntryPrice(e.target.value)}
+              onChange={(e) => {
+                markInteracted()
+                setEntryPrice(e.target.value)
+              }}
               disabled={orderType === 'Market'}
               className="flex-1 px-3 py-1.5 bg-[#2a2d3a] rounded text-white text-sm disabled:opacity-50"
               step="0.01"
@@ -338,7 +401,10 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
             <div className="relative w-[120px]">
               <select
                 value={orderType}
-                onChange={(e) => setOrderType(e.target.value as 'Market' | 'Limit')}
+                onChange={(e) => {
+                  markInteracted()
+                  setOrderType(e.target.value as 'Market' | 'Limit')
+                }}
                 className="w-full px-2 py-1.5 pr-8 bg-[#2a2d3a] rounded text-center text-white text-sm appearance-none cursor-pointer"
               >
                 <option value="Market">Market</option>
@@ -379,7 +445,10 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
             <span className="text-xs text-gray-500">%</span>
             <CustomCheckbox
               checked={takeProfitReduce}
-              onChange={setTakeProfitReduce}
+              onChange={(value) => {
+                markInteracted()
+                setTakeProfitReduce(value)
+              }}
               disabled={!placeTakeProfit}
             />
           </div>
@@ -413,7 +482,10 @@ export function OrderFormV3({ symbol, exchange }: OrderFormProps) {
             <span className="text-xs text-gray-500">%</span>
             <CustomCheckbox
               checked={stopLossReduce}
-              onChange={setStopLossReduce}
+              onChange={(value) => {
+                markInteracted()
+                setStopLossReduce(value)
+              }}
               disabled={!placeStopLoss}
             />
           </div>
