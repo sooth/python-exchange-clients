@@ -14,7 +14,7 @@ This script tests the creation of a grid bot on LMEX with the following paramete
 import os
 import sys
 from dotenv import load_dotenv
-from LMEX import LMEXExchange
+from exchanges.lmex import LMEXExchange
 import time
 
 # Load environment variables

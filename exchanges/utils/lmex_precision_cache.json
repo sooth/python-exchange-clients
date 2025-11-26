@@ -1,5 +1,5 @@
 {
-  "last_update": "2025-07-29T10:27:36.310514",
+  "last_update": "2025-11-26T07:02:58.431156",
   "symbols": {
     "SKL-PERP": {
       "contract_size": 1.0,
@@ -772,8 +772,8 @@
     "BTC-PERP": {
       "contract_size": 1e-05,
       "min_qty": 1.0,
-      "max_qty": 7500000.0,
-      "tick_size": 0.1
+      "max_qty": 1000000.0,
+      "tick_size": 0.01
     }
   }
 }

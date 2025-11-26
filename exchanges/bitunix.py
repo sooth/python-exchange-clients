@@ -18,6 +18,7 @@ from .base import (
 )
 from .utils.precision import SymbolPrecisionManager
 from .utils.api_keys import APIKeyStorage
+from .utils.logging import ExchangeLogger
 from .websocket_manager import BaseWebSocketManager, ReconnectConfig
 
 import requests
@@ -50,7 +51,8 @@ class ExchangeWebSocketManagerProtocol:
     def subscribeToOrders(self, symbols: list[str]):
         raise NotImplementedError
 
-logger = logging.getLogger(__name__)
+# Module-level logger for BitUnix
+logger = ExchangeLogger.get_logger("BitUnix")
 
 
 class BitUnixWebSocketManager(BaseWebSocketManager):

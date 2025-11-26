@@ -28,11 +28,11 @@ __all__ = [
     "__version__",
     "__author__",
     "__email__",
-    
+
     # Exchange classes
     "LMEXExchange",
     "BitUnixExchange",
-    
+
     # Base classes
     "ExchangeProtocol",
     "ExchangeOrderRequest",
@@ -43,5 +43,5 @@ __all__ = [
     "ExchangeOrder",
     "PositionSide",
     "TradingType",
-    
+
 ]
